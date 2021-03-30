@@ -17,6 +17,17 @@ class myDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
         db?.execSQL("CREATE TABLE routine_info (routine_name TEXT, Exercise_name TEXT);")
 
         // 운동 기록 테이블 생성
+        db?.execSQL("CREATE TABLE exercise_record (" +
+                "date INTEGER, " +
+                "routine TEXT, " +
+                "exercise_name TEXT, " +
+                "set_num INTEGER, " +
+                "weight INTEGER, " +
+                "exercise_count INTEGER, " +
+                "time INTEGER, " +
+                "is_complete INTEGER, " +
+                "sets INTEGER, " +
+                "PRIMARY KEY(date, exercise_name, set_num));")
 
         // 식단 기록 테이블 생성
         db?.execSQL("CREATE TABLE diet_record (" +
@@ -27,13 +38,19 @@ class myDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
                 "PRIMARY KEY(date, time));")
 
         // 신체 기록 테이블 생성
-        db?.execSQL("CREATE TABLE body_record (date INTEGER PRIMARY KEY, height INTEGER, weight INTEGER, " +
-                "muscle_mass INTEGER, fat_mass INTEGER, body_photo BLOB)")
+        db?.execSQL("CREATE TABLE body_record (" +
+                "date INTEGER PRIMARY KEY, " +
+                "height INTEGER, " +
+                "weight INTEGER, " +
+                "muscle_mass INTEGER, " +
+                "fat_mass INTEGER, " +
+                "body_photo BLOB);")
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         db?.execSQL("DROP TABLE IF EXISTS exercise_info")
         db?.execSQL("DROP TABLE IF EXISTS routine_info")
+        db?.execSQL("DROP TABLE IF EXISTS exercise_record")
         db?.execSQL("DROP TABLE IF EXISTS diet_record")
         db?.execSQL("DROP TABLE IF EXISTS body_record")
         onCreate(db)
