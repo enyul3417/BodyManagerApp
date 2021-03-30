@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">BodyManagerApp</string>
+    <string name="navigation_exercise">운동</string>
+    <string name="navigation_diet">식단</string>
+    <string name="navigation_body">신체</string>
+    <string name="navigation_stats">통계</string>
+    <string name="navigation_settings">환경설정</string>
 </resources>
