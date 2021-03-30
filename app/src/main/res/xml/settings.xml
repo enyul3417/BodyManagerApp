@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceScreen
+        android:key="1rm_calc"
+        android:title="1RM 계산기">
+
+    </PreferenceScreen>
+
+    <PreferenceScreen
+        android:key="set_goal"
+        android:title="목표 설정"
+        android:summary="일일/주간/월간 목표 설정">
+
+    </PreferenceScreen>
+
+    <SwitchPreference
+        android:key="alarm"
+        android:defaultValue="true"
+        android:title="알림 설정"/>
+
+    <PreferenceCategory android:title="테마 선택">
+        <ListPreference
+            android:key="theme_selection"
+            android:title="테마 선택"
+            android:entries="@array/array_themes"
+            android:entryValues="@array/array_themes"/>
+
+        <ListPreference
+            android:key="font_selection"
+            android:title="글씨 선택"
+            android:entries="@array/array_fonts"
+            android:entryValues="@array/array_fonts" />
+
+        <ListPreference
+            android:key="font_size"
+            android:title="글씨 크기"
+            android:entries="@array/array_font_size"
+            android:entryValues="@array/array_font_size"/>
+    </PreferenceCategory>
+
+
+    <PreferenceCategory android:title="데이터 저장/백업">
+        <PreferenceScreen
+            android:key="backup"
+            android:title="백업하기">
+        </PreferenceScreen>
+
+        <PreferenceScreen
+            android:key="laod"
+            android:title="불러오기">
+        </PreferenceScreen>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
