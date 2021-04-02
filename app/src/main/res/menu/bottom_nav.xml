@@ -18,7 +18,7 @@
         android:icon="@drawable/ic_baseline_insights_24"
         android:title="@string/navigation_stats" />
     <item
-        android:id="@+id/navigation_settings"
-        android:icon="@drawable/ic_baseline_settings_24"
-        android:title="@string/navigation_settings" />
+        android:id="@+id/navigation_pet"
+        android:icon="@drawable/ic_baseline_catching_pokemon_24"
+        android:title="@string/navigation_pet" />
 </menu>

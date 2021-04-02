@@ -26,7 +26,6 @@ class myDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
                 "exercise_count INTEGER, " +
                 "time INTEGER, " +
                 "is_complete INTEGER, " +
-                "sets INTEGER, " +
                 "PRIMARY KEY(date, exercise_name, set_num));")
 
         // 식단 기록 테이블 생성
