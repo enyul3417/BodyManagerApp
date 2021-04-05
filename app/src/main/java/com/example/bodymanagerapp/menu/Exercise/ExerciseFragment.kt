@@ -1,29 +1,34 @@
-package com.example.bodymanagerapp.menu
+package com.example.bodymanagerapp.menu.Exercise
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.example.bodymanagerapp.MainActivity
+import androidx.fragment.app.FragmentManager
 import com.example.bodymanagerapp.R
 import java.util.*
 import kotlin.concurrent.timer
 
-class ExerciseFragment : Fragment() {
+class ExerciseFragment : Fragment(){
     private var time = 0
     private var isRunning = false
     private var timerTask : Timer? = null
 
-    // 타이머/스톱워치
+    // 운동 타이머
     lateinit var timer_hour : TextView
     lateinit var timer_minute : TextView
     lateinit var timer_second : TextView
     lateinit var button_start : Button
     lateinit var button_done : Button
+
+    // 만보기
+    //lateinit var steps : TextView
+
+    // 운동 추가
+    lateinit var button_exercise_add : Button
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,6 +41,8 @@ class ExerciseFragment : Fragment() {
         timer_second = view.findViewById(R.id.timer_second)
         button_start = view.findViewById(R.id.button_startnpause)
         button_done = view.findViewById(R.id.button_done)
+        //steps = view.findViewById(R.id.steps)
+        button_exercise_add = view.findViewById(R.id.button_exercise_add)
 
         button_start.setOnClickListener {
             isRunning = !isRunning
@@ -50,10 +57,15 @@ class ExerciseFragment : Fragment() {
             done()
         }
 
+        button_exercise_add.setOnClickListener {
+            FragmentManager().beginTransaction().replace(R.id.exercise_weight_number_fragment, ExerciseFragment())
+        }
+
         return view
     }
 
-    private fun start() { // 운동 시작
+    // 운동 시작
+    private fun start() {
         button_start.setText("운동 중지")
         timerTask = timer(period=1000) { // 1초
             time++
@@ -73,12 +85,14 @@ class ExerciseFragment : Fragment() {
         }
     }
 
-    private fun stop() { // 운동 중지
+    // 운동 중지
+    private fun stop() {
         button_start.text = "운동 시작"
         timerTask?.cancel()
     }
 
-    private fun done() { // 운동 완료
+    // 운동 완료
+    private fun done() {
         timerTask?.cancel()
         isRunning = false
         button_start.text = "운동 시작"
@@ -86,4 +100,5 @@ class ExerciseFragment : Fragment() {
         timer_minute.text = "00"
         timer_second.text = "00"
     }
+
 }

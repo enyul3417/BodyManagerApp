@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".menu.ExerciseFragment">
+    tools:context=".menu.Exercise.ExerciseFragment">
 
     <!-- 타이머/스톱워치 -->
     <LinearLayout
@@ -131,6 +131,7 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/button_exercise_add"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:text="운동 추가"
