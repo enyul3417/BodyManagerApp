@@ -12,13 +12,13 @@
         android:layout_height="wrap_content"
         android:gravity="center">
 
-        <EditText
+        <TextView
             android:id="@+id/timer_hour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:inputType="number"
-            android:hint="0"
+            android:text="0"
             android:textSize="50sp"
             android:maxLength="2"/>
 
@@ -29,12 +29,12 @@
             android:textSize="50sp"
             android:layout_marginTop="10dp"/>
 
-        <EditText
+        <TextView
             android:id="@+id/timer_minute"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:inputType="number"
-            android:hint="00"
+            android:text="00"
             android:textSize="50sp"
             android:layout_marginTop="10dp"
             android:maxLength="2"/>
@@ -46,12 +46,12 @@
             android:textSize="50sp"
             android:layout_marginTop="10dp"/>
 
-        <EditText
+        <TextView
             android:id="@+id/timer_second"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:inputType="number"
-            android:hint="00"
+            android:text="00"
             android:textSize="50sp"
             android:layout_marginTop="10dp"
             android:maxLength="2"/>
@@ -68,14 +68,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="시작" />
+            android:text="운동 시작" />
 
         <Button
-            android:id="@+id/button_reset"
+            android:id="@+id/button_done"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="초기화" />
+            android:text="운동 종료" />
     </LinearLayout>
 
     <!-- 만보기 -->
