@@ -1,6 +1,6 @@
 package com.example.bodymanagerapp
 
-import android.content.Context
+import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.view.Menu
@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.example.bodymanagerapp.menu.*
+import com.example.bodymanagerapp.menu.Diet.DietActivity
 import com.example.bodymanagerapp.menu.Exercise.ExerciseFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -20,6 +21,20 @@ class MainActivity : AppCompatActivity() {
     // DB
     lateinit var myDBHelper: myDBHelper
     lateinit var sqldb : SQLiteDatabase
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        myDBHelper = myDBHelper(this)
+        sqldb = myDBHelper.writableDatabase
+
+        bottom_nav_view = findViewById(R.id.bottom_nav_view)
+        toolbar = findViewById(R.id.toolbar)
+
+        replaceFragment(ExerciseFragment())
+        bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
+        setSupportActionBar(toolbar)
+    }
 
     // 하단 메뉴 선택 시 작동
     private val bottomNavItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
@@ -32,7 +47,8 @@ class MainActivity : AppCompatActivity() {
 
             // 식단 메뉴 선택 시
             R.id.navigation_diet -> {
-                replaceFragment(DietFragment())
+                var intent : Intent = Intent(this, DietActivity::class.java)
+                startActivity(intent)
                 return@OnNavigationItemSelectedListener true
             }
 
@@ -57,21 +73,6 @@ class MainActivity : AppCompatActivity() {
             // 그 외
             else -> false
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        myDBHelper = myDBHelper(this)
-        sqldb = myDBHelper.writableDatabase
-
-        bottom_nav_view = findViewById(R.id.bottom_nav_view)
-        toolbar = findViewById(R.id.toolbar)
-
-        replaceFragment(ExerciseFragment())
-        bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
-        setSupportActionBar(toolbar)
     }
 
     // 하단 메뉴 선택 시 fragment 변경 기능

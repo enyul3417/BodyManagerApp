@@ -29,11 +29,12 @@ class myDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
 
         // 식단 기록 테이블 생성
         db?.execSQL("CREATE TABLE diet_record (" +
-                "date INTEGER, " +
-                "time INTEGER, " +
+                "id INTEGER, " +
+                "date TEXT, " +
+                "time TEXT, " +
                 "diet_photo BLOB, " +
                 "memo TEXT," +
-                "PRIMARY KEY(date, time));")
+                "PRIMARY KEY(id AUTOINCREMENT));")
 
         // 신체 기록 테이블 생성
         db?.execSQL("CREATE TABLE body_record (" +
