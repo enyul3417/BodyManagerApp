@@ -27,6 +27,7 @@ import com.example.bodymanagerapp.myDBHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.io.ByteArrayOutputStream
 import java.util.*
+import kotlin.collections.ArrayList
 
 class DietActivity : AppCompatActivity() {
 
@@ -37,6 +38,7 @@ class DietActivity : AppCompatActivity() {
     // DB
     lateinit var myDBHelper: myDBHelper
     lateinit var sqldb : SQLiteDatabase
+    lateinit var ids : ArrayList<Int>
 
     // 권한 관련 변수
     private val REQUEST_READ_EXTERNAL_STORAGE : Int = 2000
@@ -96,13 +98,23 @@ class DietActivity : AppCompatActivity() {
 
         // 저장 버튼 클릭 시
         button_diet_save.setOnClickListener {
-            saveDiet()
-            Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
+            if(ids.size < 0) {
+                saveDiet()
+                Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
+            } else {
+                updateDiet()
+                Toast.makeText(this, "수정되었습니다.", Toast.LENGTH_SHORT).show()
+            }
+
         }
 
         // 삭제 버튼 클릭 시
         button_diet_delete.setOnClickListener {
             deleteDiet()
+            Toast.makeText(this, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
+            var intent : Intent = Intent(this, DietActivity::class.java)
+            finish()
+            startActivity(intent)
         }
     }
 
@@ -223,16 +235,48 @@ class DietActivity : AppCompatActivity() {
 
     // 삭제
     private fun deleteDiet() {
-
+        sqldb = myDBHelper.writableDatabase
+        var id : Int = ids[0]
+        sqldb.execSQL("DELETE FROM diet_record WHERE id = $id")
     }
 
     // 수정
     private fun updateDiet() {
+        sqldb = myDBHelper.writableDatabase
 
+        var id : Int = ids[0]
+        var diet_date : String = text_date.text.toString()
+        var diet_time : String = text_time.text.toString()
+        var image : Drawable = image_diet.drawable
+        var memo : String = diet_memo.text.toString()
+        var byteArray : ByteArray ?= null
+
+        try {
+            // 이미지 파일을 Bitmap 파일로, Bitmap 파일을 byteArray로 변환시켜서 BLOB 형으로 DB에 저장
+            val bitmapDrawable = image as BitmapDrawable?
+            val bitmap = bitmapDrawable?.bitmap
+            val stream = ByteArrayOutputStream()
+            bitmap?.compress(Bitmap.CompressFormat.JPEG, 70, stream)
+            byteArray = stream.toByteArray()
+        } catch (cce: ClassCastException) { // 사진을 따로 저장안할 경우
+            Log.d("image null", "이미지 저장 안함")
+        }
+
+        if(byteArray == null) { // 저장하려는 사진이 없을 경우
+            sqldb.execSQL("UPDATE diet_record SET date = '$diet_date', " +
+                    "time = '$diet_time', diet_photo = null, memo = '$memo' WHERE id = $id")
+        } else { // 저장하려는 사진이 있는 경우
+            var udtQuery : String = "UPDATE diet_record SET date = '$diet_date', "+
+                    "time = '$diet_time', diet_photo = ?, memo = '$memo' WHERE id = $id"
+            var stmt : SQLiteStatement = sqldb.compileStatement(udtQuery)
+            stmt.bindBlob(1, byteArray)
+            stmt.execute()
+        }
     }
 
     // 불러오기
     private fun loadDiet() {
+        ids = ArrayList<Int>()
         text_time.text = "시간을 선택해주세요"
         image_diet.setImageResource(R.drawable.ic_baseline_image_24)
         diet_memo.setText("메모")
@@ -242,8 +286,13 @@ class DietActivity : AppCompatActivity() {
 
         // 해당 날짜에 저장된 식단들 가져오기
         if(cursor.moveToFirst()) {
+            // id 값 가져오기
+            var i : Int = 0
+            ids.add(cursor.getInt(cursor.getColumnIndex("id")))
+            i++
+            // 시간 값 가져오기
             text_time.text = cursor.getString(cursor.getColumnIndex("time"))
-
+            // 사진 가져오기
             try {
                 val image = cursor.getBlob(cursor.getColumnIndex("diet_photo")) ?: null
                 val bitmap = BitmapFactory.decodeByteArray(image, 0, image!!.size)
@@ -251,7 +300,7 @@ class DietActivity : AppCompatActivity() {
             } catch (knpe : KotlinNullPointerException) {
                 Toast.makeText(this, "저장된 사진이 없습니다.", Toast.LENGTH_SHORT).show()
             }
-
+            // 메모 내용 가져오기
             diet_memo.setText(cursor.getString(cursor.getColumnIndex("memo")))
         }
     }
