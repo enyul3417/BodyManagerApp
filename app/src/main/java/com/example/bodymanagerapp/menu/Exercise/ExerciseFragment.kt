@@ -1,5 +1,6 @@
 package com.example.bodymanagerapp.menu.Exercise
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.example.bodymanagerapp.MainActivity
 import com.example.bodymanagerapp.R
 import java.util.*
 import kotlin.concurrent.timer
@@ -28,13 +30,18 @@ class ExerciseFragment : Fragment(){
     //lateinit var steps : TextView
 
     // 운동 추가
-    lateinit var button_exercise_add : Button
+    lateinit var button_exercise_add :Button
+
+    fun newInstance() : ExerciseFragment {
+        return ExerciseFragment()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         var view : View = inflater.inflate(R.layout.fragment_exercise, container, false)
+
 
         timer_hour = view.findViewById(R.id.timer_hour)
         timer_minute = view.findViewById(R.id.timer_minute)
@@ -58,7 +65,8 @@ class ExerciseFragment : Fragment(){
         }
 
         button_exercise_add.setOnClickListener {
-            FragmentManager().beginTransaction().replace(R.id.exercise_weight_number_fragment, ExerciseFragment())
+            val intent : Intent = Intent(activity, ExerciseAddtionActivity::class.java)
+            startActivity(intent)
         }
 
         return view
