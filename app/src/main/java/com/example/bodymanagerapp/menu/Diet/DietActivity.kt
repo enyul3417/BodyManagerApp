@@ -279,7 +279,7 @@ class DietActivity : AppCompatActivity() {
         ids = ArrayList<Int>()
         text_time.text = "시간을 선택해주세요"
         image_diet.setImageResource(R.drawable.ic_baseline_image_24)
-        diet_memo.setText("메모")
+        diet_memo.setHint("메모")
 
         sqldb = myDBHelper.readableDatabase
         var cursor : Cursor = sqldb.rawQuery("SELECT * FROM diet_record WHERE date = '${text_date.text.toString()}'", null)
