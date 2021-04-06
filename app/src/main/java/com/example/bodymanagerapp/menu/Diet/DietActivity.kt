@@ -98,7 +98,7 @@ class DietActivity : AppCompatActivity() {
 
         // 저장 버튼 클릭 시
         button_diet_save.setOnClickListener {
-            if(ids.size < 0) {
+            if(ids.size == 0) {
                 saveDiet()
                 Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             } else {
