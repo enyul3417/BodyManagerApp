@@ -27,13 +27,15 @@ class ExerciseFragment : Fragment(){
     lateinit var button_done : Button
 
     // 만보기
-    //lateinit var steps : TextView
+    lateinit var stepsTextView: TextView
+    lateinit var steps: Steps
 
     // 운동 추가
     lateinit var button_exercise_add :Button
 
-    fun newInstance() : ExerciseFragment {
-        return ExerciseFragment()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
     }
 
     override fun onCreateView(
@@ -42,13 +44,12 @@ class ExerciseFragment : Fragment(){
     ): View? {
         var view : View = inflater.inflate(R.layout.fragment_exercise, container, false)
 
-
         timer_hour = view.findViewById(R.id.timer_hour)
         timer_minute = view.findViewById(R.id.timer_minute)
         timer_second = view.findViewById(R.id.timer_second)
         button_start = view.findViewById(R.id.button_startnpause)
         button_done = view.findViewById(R.id.button_done)
-        //steps = view.findViewById(R.id.steps)
+        stepsTextView = view.findViewById(R.id.steps)
         button_exercise_add = view.findViewById(R.id.button_exercise_add)
 
         button_start.setOnClickListener {
@@ -71,6 +72,17 @@ class ExerciseFragment : Fragment(){
 
         return view
     }
+
+    /*companion object {
+        const val KEY = "Key"
+        fun newInstance(data : String) = ExerciseFragment().apply {
+            arguments = Bundle().apply {
+                putString(KEY, data)
+            }
+        }
+    }
+
+    val receiveData by lazy { requireArguments().getString(KEY) }*/
 
     // 운동 시작
     private fun start() {

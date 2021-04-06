@@ -19,7 +19,6 @@ class myDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
         // 운동 기록 테이블 생성
         db?.execSQL("CREATE TABLE exercise_record (" +
                 "date INTEGER, " +
-                "routine TEXT, " +
                 "exercise_name TEXT, " +
                 "set_num INTEGER, " +
                 "weight INTEGER, " +
