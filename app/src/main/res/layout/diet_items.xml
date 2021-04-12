@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:theme="@style/Theme.AppCompat">
@@ -12,8 +12,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <TextView
-            android:onClick="click_diet_time"
-            android:id="@+id/text_diet_time"
+            android:id="@+id/text_diet_time_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="시간을 선택해주세요"
@@ -22,13 +21,13 @@
             android:layout_marginLeft="10dp"
             android:layout_weight="1"/>
         <Button
-            android:id="@+id/button_diet_save"
+            android:id="@+id/button_diet_update_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="저장"
+            android:text="수정"
             android:layout_marginHorizontal="10dp"/>
         <Button
-            android:id="@+id/button_diet_delete"
+            android:id="@+id/button_diet_delete_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="삭제"
@@ -37,7 +36,7 @@
 
 
     <ImageView
-        android:id="@+id/image_diet"
+        android:id="@+id/image_diet_item"
         android:layout_width="300dp"
         android:layout_height="300dp"
         android:src="@drawable/ic_baseline_image_24"
@@ -45,7 +44,7 @@
         android:layout_margin="15dp"/>
 
     <EditText
-        android:id="@+id/diet_memo"
+        android:id="@+id/diet_memo_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="메모"

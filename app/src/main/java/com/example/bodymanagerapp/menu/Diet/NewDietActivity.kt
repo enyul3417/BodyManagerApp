@@ -3,7 +3,7 @@ package com.example.bodymanagerapp.menu.Diet
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
-import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
@@ -17,244 +17,85 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import com.example.bodymanagerapp.R
-import com.example.bodymanagerapp.menu.SettingsFragment
 import com.example.bodymanagerapp.myDBHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.io.ByteArrayOutputStream
 import java.util.*
-import kotlin.collections.ArrayList
 
-class DietActivity : AppCompatActivity() {
+class NewDietActivity : AppCompatActivity() {
 
-    // BottomNavigationView
-    lateinit var bottom_nav_view: BottomNavigationView
     lateinit var toolbar: Toolbar
-
     // DB
     lateinit var myDBHelper: myDBHelper
-    lateinit var sqldb: SQLiteDatabase
-    lateinit var ids: ArrayList<Int>
-
+    lateinit var sqldb : SQLiteDatabase
+    lateinit var ids : ArrayList<Int>
     // 권한 관련 변수
-    private val REQUEST_READ_EXTERNAL_STORAGE: Int = 2000
+    private val REQUEST_READ_EXTERNAL_STORAGE : Int = 2000
     private val REQUEST_CODE = 0
 
-    //식단 관련 변수
-    lateinit var text_date: TextView // 날짜
-    lateinit var button_diet_save: Button // 저장 버튼
-
-    /*
-    lateinit var button_diet_delete : Button // 삭제 버튼
+    lateinit var button_diet_save : Button // 저장 버튼
+    lateinit var button_diet_cancel : Button // 삭제 버튼
     lateinit var text_time : TextView // 시간
     lateinit var image_diet : ImageView // 식단 사진
-    lateinit var diet_memo : EditText // 메모*/
-    lateinit var button_diet_add: Button // 식단 추가 버튼
+    lateinit var diet_memo : EditText // 메모
+
     var date : String = ""
 
-    lateinit var diet_layout: LinearLayout // 식단이 추가되는 부분
-    lateinit var inflater: LayoutInflater
-
-    var currenturi: Uri? = null
+    var currenturi: Uri?=null // 사진 uri
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_diet)
-
-        bottom_nav_view = findViewById(R.id.bottom_nav_view)
-        toolbar = findViewById(R.id.toolbar)
+        setContentView(R.layout.activity_new_diet)
 
         myDBHelper = myDBHelper(this)
 
-        text_date = findViewById(R.id.date_text) // 날짜
-        button_diet_add = findViewById(R.id.button_diet_add) // 식단 추가 버튼
-        diet_layout = findViewById(R.id.diet_layout)
-/*
-        val inflater : LayoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        inflater.inflate(R.layout.new_diet, diet_layout, true)
+        var intent : Intent = getIntent()
+        date = intent.getStringExtra("date").toString()
 
         button_diet_save = findViewById(R.id.button_diet_save) // 저장 버튼
-        button_diet_delete = findViewById(R.id.button_diet_delete) // 삭제 버튼
+        button_diet_cancel = findViewById(R.id.button_diet_cancel) // 삭제 버튼
         text_time = findViewById(R.id.text_diet_time) // 시간
         image_diet = findViewById(R.id.image_diet) // 식단 사진
         diet_memo = findViewById(R.id.diet_memo) // 식단 메모
-*/
-        bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
-        setSupportActionBar(toolbar)
 
-        // 날짜 텍스트 클릭 시
-        text_date.setOnClickListener {
-
+        // 시간 텍스트 클릭 시
+        text_time.setOnClickListener {
             val cal = Calendar.getInstance()
-            DatePickerDialog(this, DatePickerDialog.OnDateSetListener { datePicker, y, m, d ->
-                date = "${y}년 ${m + 1}월 ${d}일"
-                text_date.text = date
-                //addDiet()
-
-                //loadDiet()
-            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE)).show()
+            TimePickerDialog(this, TimePickerDialog.OnTimeSetListener { timePicker, h, m ->
+                text_time.text = "${h}시 ${m}분"
+            }, cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), true).show()
         }
 
-        // 식단 추가 버튼 클릭 시
-        button_diet_add.setOnClickListener {
-            if(date == "") {
-                Toast.makeText(this, "날짜를 선택해주세요.", Toast.LENGTH_SHORT).show()
-            }
-            else {
-                var intent : Intent = Intent(this, NewDietActivity::class.java)
-                intent.putExtra("date", date)
-                startActivity(intent)
-            }
-
-            //addDiet()
-            //val inflater : LayoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            //inflater.inflate(R.layout.new_diet, diet_layout, true)
-
-/*
-            button_diet_save = diet_layout.findViewById(R.id.button_diet_save) // 저장 버튼
-            button_diet_delete = diet_layout.findViewById(R.id.button_diet_delete) // 삭제 버튼
-            text_time = diet_layout.findViewById(R.id.text_diet_time) // 시간
-            image_diet = diet_layout.findViewById(R.id.image_diet) // 식단 사진
-            diet_memo = diet_layout.findViewById(R.id.diet_memo) // 식단 메모
-
-            // 시간 텍스트 클릭 시
-            text_time.setOnClickListener {
-                val cal = Calendar.getInstance()
-                TimePickerDialog(this, TimePickerDialog.OnTimeSetListener { timePicker, h, m ->
-                    text_time.text = "${h}시 ${m}분"
-                }, cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), true).show()
-            }
-
-            // 이미지 그림 클릭 시
-            image_diet.setOnClickListener{
-                selectGallery()
-            }
-
-            // 저장 버튼 클릭 시
-            button_diet_save.setOnClickListener {
-                if(ids.size == 0) {
-                    saveDiet()
-                    Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-                } else {
-                    updateDiet()
-                    Toast.makeText(this, "수정되었습니다.", Toast.LENGTH_SHORT).show()
-                }
-
-            }
-
-            // 삭제 버튼 클릭 시
-            button_diet_delete.setOnClickListener {
-                deleteDiet()
-                Toast.makeText(this, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
-                var intent : Intent = Intent(this, DietActivity::class.java)
-                finish()
-                startActivity(intent)
-            }*/
+        // 이미지 그림 클릭 시
+        image_diet.setOnClickListener{
+            selectGallery()
         }
-    }
 
-    /*
-    fun onClick(v : View?) {
-        when(v?.id) {
-            R.id.text_diet_time -> { // 시간 텍스트 클릭 시
-                var view = findViewById<TextView>(R.id.text_diet_time)
-                val cal = Calendar.getInstance()
-                TimePickerDialog(this, TimePickerDialog.OnTimeSetListener { timePicker, h, m ->
-                    view.text = "${h}시 ${m}분"
-                }, cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), true).show()
-            }
-            R.id.button_diet_save -> { // 저장 버튼 클릭 시
+        // 저장 버튼 클릭 시
+        button_diet_save.setOnClickListener {
+            saveDiet()
+            Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
+            /*if(ids.size == 0) {
                 saveDiet()
                 Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-                /*if(ids.size == 0) {
-                    saveDiet()
-                    Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-                } else {
-                    updateDiet()
-                    Toast.makeText(this, "수정되었습니다.", Toast.LENGTH_SHORT).show()
-                }*/
-            }
-            R.id.button_diet_delete -> { // 삭제 버튼 클릭 시
-                deleteDiet()
-                Toast.makeText(this, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
-                var intent : Intent = Intent(this, DietActivity::class.java)
-                finish()
-                startActivity(intent)
-            }
-            R.id.image_diet -> {
-                selectGallery()
-            }
-        }
-    }
-*/
-    // 하단 메뉴 선택 시 작동
-    private val bottomNavItemSelectedListener =
-        BottomNavigationView.OnNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                // 운동 메뉴 선택 시
-                R.id.navigation_exercise -> {
-                    return@OnNavigationItemSelectedListener true
-                }
+            } else {
+                updateDiet()
+                Toast.makeText(this, "수정되었습니다.", Toast.LENGTH_SHORT).show()
+            }*/
 
-                // 식단 메뉴 선택 시
-                R.id.navigation_diet -> {
-                    var intent: Intent = Intent(this, DietActivity::class.java)
-                    startActivity(intent)
-                    return@OnNavigationItemSelectedListener true
-                }
-
-                // 신체 메뉴 선택 시
-                R.id.navigation_body -> {
-                    return@OnNavigationItemSelectedListener true
-                }
-
-                // 상태 메뉴 선택 시
-                R.id.navigation_stats -> {
-                    return@OnNavigationItemSelectedListener true
-                }
-
-                // 펫 선택 시
-                R.id.navigation_pet -> {
-                    return@OnNavigationItemSelectedListener true
-                }
-
-                // 그 외
-                else -> false
-            }
         }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu, menu)
-        return true
-    }
+        // 취소 버튼 클릭 시
+        button_diet_cancel.setOnClickListener{
 
-    // 상단 메뉴
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item?.itemId) {
-            R.id.menu_settings -> {
-                replaceFragment(SettingsFragment())
-                return true
-            }
         }
-        return super.onOptionsItemSelected(item)
     }
 
-    // 프레그먼트 변경
-    fun replaceFragment(fragment: Fragment) {
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.content_layout, fragment)
-        fragmentTransaction.commit()
-    }
-}
-/*
     // 사진 첨부 클릭 시 호출
     private fun selectGallery() {
         // 앨범 접근 권한
@@ -314,7 +155,7 @@ class DietActivity : AppCompatActivity() {
         var imgView = findViewById<ImageView>(R.id.image_diet)
         var memoView = findViewById<TextView>(R.id.diet_memo)
 
-        var diet_date : String = text_date.text.toString()
+        var diet_date : String = date
         var diet_time : String = timeview.text.toString()
         var image : Drawable = imgView.drawable
         var memo : String = memoView.text.toString()
@@ -342,19 +183,12 @@ class DietActivity : AppCompatActivity() {
         }
     }
 
-    // 삭제
-    private fun deleteDiet() {
-        sqldb = myDBHelper.writableDatabase
-        var id : Int = ids[0]
-        sqldb.execSQL("DELETE FROM diet_record WHERE id = $id")
-    }
-
     // 수정
     private fun updateDiet() {
         sqldb = myDBHelper.writableDatabase
 
         var id : Int = ids[0]
-        var diet_date : String = text_date.text.toString()
+        var diet_date : String = date
         var diet_time : String = text_time.text.toString()
         var image : Drawable = image_diet.drawable
         var memo : String = diet_memo.text.toString()
@@ -389,8 +223,8 @@ class DietActivity : AppCompatActivity() {
         text_time.text = "시간을 선택해주세요"
         image_diet.setImageResource(R.drawable.ic_baseline_image_24)
         diet_memo.setText("")
-        diet_memo.setHint("메모")
-
+        diet_memo.hint = "메모"
+/*
         sqldb = myDBHelper.readableDatabase
         var cursor : Cursor = sqldb.rawQuery("SELECT * FROM diet_record WHERE date = '${text_date.text.toString()}'", null)
 
@@ -412,16 +246,6 @@ class DietActivity : AppCompatActivity() {
             }
             // 메모 내용 가져오기
             diet_memo.setText(cursor.getString(cursor.getColumnIndex("memo")))
-        }
+        }*/
     }
-
-    // 식단 기록 부분 추가
-    private fun addDiet() {
-        var new_diet_layout : NewDiet = NewDiet(applicationContext)
-        diet_layout = findViewById(R.id.diet_layout)
-        diet_layout.addView(new_diet_layout)
-    }
-
 }
-
- */

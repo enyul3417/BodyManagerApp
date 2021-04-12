@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Design.NoActionBar">
-        <activity android:name=".menu.Diet.DietActivity"></activity>
+        <activity android:name=".menu.Diet.NewDietActivity"></activity>
+        <activity android:name=".menu.Diet.DietActivity" />
         <activity android:name=".menu.Exercise.ExerciseAddtionActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
