@@ -1,12 +1,14 @@
 package com.example.bodymanagerapp.menu.Diet
 
 import android.content.Context
+import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.view.*
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.myDBHelper
@@ -46,6 +48,14 @@ class DietRecyclerViewAdapter(var data:ArrayList<DietData>, val context: Context
                     sqldb.close()
 
                     return@setOnMenuItemClickListener true
+                }
+
+                update.setOnMenuItemClickListener {
+                    var intent = Intent(context, NewDietActivity::class.java)
+                    intent.putExtra("ID", id)
+                    context.startActivity(intent)
+                    return@setOnMenuItemClickListener true
+
                 }
             }
 

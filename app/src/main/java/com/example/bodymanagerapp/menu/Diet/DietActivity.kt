@@ -107,7 +107,7 @@ class DietActivity : AppCompatActivity() {
             }
             else {
                 var intent : Intent = Intent(this, NewDietActivity::class.java)
-                intent.putExtra("date", date)
+                intent.putExtra("DATE", date)
                 startActivity(intent)
                 //rvAdapter.notifyDataSetChanged()
             }
