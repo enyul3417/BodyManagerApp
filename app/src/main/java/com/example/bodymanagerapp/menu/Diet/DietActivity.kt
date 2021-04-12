@@ -20,6 +20,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
@@ -53,16 +54,9 @@ class DietActivity : AppCompatActivity() {
 
     //식단 관련 변수
     lateinit var text_date: TextView // 날짜
-    lateinit var button_diet_update: Button // 수정 버튼
-    lateinit var button_diet_delete: Button // 삭제 버튼
-
     lateinit var button_diet_add: Button // 식단 추가 버튼
+    lateinit var button_diet_refresh : ImageButton
     var date : String = ""
-
-    lateinit var diet_layout: LinearLayout // 식단이 추가되는 부분
-    lateinit var inflater: LayoutInflater
-
-    var currenturi: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,7 +70,7 @@ class DietActivity : AppCompatActivity() {
 
         text_date = findViewById(R.id.date_text) // 날짜
         button_diet_add = findViewById(R.id.button_diet_add) // 식단 추가 버튼
-        diet_layout = findViewById(R.id.diet_layout)
+        button_diet_refresh = findViewById(R.id.button_diet_refresh)
 
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
         setSupportActionBar(toolbar)
@@ -88,6 +82,7 @@ class DietActivity : AppCompatActivity() {
             DatePickerDialog(this, DatePickerDialog.OnDateSetListener { datePicker, y, m, d ->
                 date = "${y}년 ${m + 1}월 ${d}일"
                 text_date.text = date
+                // 해당 날짜에 저장된 식단들 불러오기
                 data.addAll(loadDiet())
                 rvAdapter = DietRecyclerViewAdapter(data, this, rv) {
                     data, num ->
@@ -97,6 +92,7 @@ class DietActivity : AppCompatActivity() {
                 }
                 rv.adapter = rvAdapter
                 rv.layoutManager = LinearLayoutManager(this)
+                rv.visibility = View.VISIBLE
             }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE)).show()
         }
 
@@ -111,6 +107,10 @@ class DietActivity : AppCompatActivity() {
                 startActivity(intent)
                 //rvAdapter.notifyDataSetChanged()
             }
+        }
+
+        button_diet_refresh.setOnClickListener {
+            rvAdapter.notifyDataSetChanged()
         }
     }
 

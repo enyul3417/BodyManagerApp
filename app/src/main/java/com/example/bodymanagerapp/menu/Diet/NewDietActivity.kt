@@ -49,7 +49,7 @@ class NewDietActivity : AppCompatActivity() {
 
     var currenturi: Uri?=null // 사진 uri
 
-    lateinit var rvAdapter: DietRecyclerViewAdapter
+    val dietActivity = DietActivity()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,12 +92,12 @@ class NewDietActivity : AppCompatActivity() {
                 Toast.makeText(this, "수정되었습니다.", Toast.LENGTH_SHORT).show()
             }
             finish()
-
+            //dietActivity.rvAdapter.notifyDataSetChanged()
         }
 
         // 취소 버튼 클릭 시
         button_diet_cancel.setOnClickListener{
-
+            finish()
         }
     }
 

@@ -39,8 +39,6 @@ class DietRecyclerViewAdapter(var data:ArrayList<DietData>, val context: Context
             view.setOnCreateContextMenuListener{ menu, v, menuinfo->
                 delete = menu.add("삭제")
                 update = menu.add("수정")
-                //delete.setOnMenuItemClickListener(onMenuItemClickListener())
-                //update.setOnMenuItemClickListener(onMenuItemClickListener())
 
                 delete.setOnMenuItemClickListener {
                     sqldb = myDBHelper.writableDatabase
@@ -60,36 +58,21 @@ class DietRecyclerViewAdapter(var data:ArrayList<DietData>, val context: Context
             }
 
         }
-        /*private fun onMenuItemClickListener() : MenuItem.OnMenuItemClickListener {
-            fun onMenuItemClick(menuItem: MenuItem) : Boolean {
-                when (menuItem) {
-                    delete -> {
-                        return true
-
-                    }
-                    update -> {
-                        return true
-                    }
-                    else -> false
-                }
-            }
-            return false
-        }*/
 
         var time = view.findViewById<TextView>(R.id.text_diet_time_item)
         var image = view.findViewById<ImageView>(R.id.image_diet_item)
-        var memo = view.findViewById<EditText>(R.id.diet_memo_item)
+        var memo = view.findViewById<TextView>(R.id.diet_memo_item)
 
         //onBindViewHolder에서 호출할 bind 함수
         fun bind(data: DietData, num: Int) {
             time.text = data.time
-            memo.setText(data.memo)
+            memo.text = data.memo
 
             if (data.image != null){ // 등록된 이미지가 있다면
                 image.setImageBitmap(data.image)
 
             } else { // 등록된 이미지가 없다면
-                image.setImageResource(R.drawable.ic_baseline_image_24)
+                image.visibility = View.GONE
             }
 
             itemView.setOnClickListener {

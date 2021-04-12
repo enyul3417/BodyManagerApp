@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_margin="10dp"
-    android:theme="@style/Theme.AppCompat">
+    android:theme="@style/Theme.AppCompat"
+    android:background="@drawable/border">
 
     <TextView
         android:id="@+id/text_diet_time_item"
@@ -14,7 +15,7 @@
         android:text="시간을 선택해주세요"
         android:textSize="18sp"
         android:layout_gravity="center"
-        android:layout_marginLeft="10dp"
+        android:layout_margin="10dp"
         android:layout_weight="1"/>
 
     <ImageView
@@ -23,13 +24,14 @@
         android:layout_height="300dp"
         android:src="@drawable/ic_baseline_image_24"
         android:layout_gravity="center"
-        android:layout_margin="15dp"/>
+        android:layout_margin="10dp"/>
 
-    <EditText
+    <TextView
         android:id="@+id/diet_memo_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="메모"
-        android:layout_marginHorizontal="20dp"/>
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="10dp"/>
 
 </LinearLayout>
