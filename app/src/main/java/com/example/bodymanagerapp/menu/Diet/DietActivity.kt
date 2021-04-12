@@ -25,6 +25,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.menu.SettingsFragment
 import com.example.bodymanagerapp.myDBHelper
@@ -42,21 +44,18 @@ class DietActivity : AppCompatActivity() {
     // DB
     lateinit var myDBHelper: myDBHelper
     lateinit var sqldb: SQLiteDatabase
-    lateinit var ids: ArrayList<Int>
+    lateinit var cursor : Cursor
+    var data = ArrayList<DietData>()
 
-    // 권한 관련 변수
-    private val REQUEST_READ_EXTERNAL_STORAGE: Int = 2000
-    private val REQUEST_CODE = 0
+    // View
+    lateinit var rv : RecyclerView
+    lateinit var rvAdapter: DietRecyclerViewAdapter
 
     //식단 관련 변수
     lateinit var text_date: TextView // 날짜
-    lateinit var button_diet_save: Button // 저장 버튼
+    lateinit var button_diet_update: Button // 수정 버튼
+    lateinit var button_diet_delete: Button // 삭제 버튼
 
-    /*
-    lateinit var button_diet_delete : Button // 삭제 버튼
-    lateinit var text_time : TextView // 시간
-    lateinit var image_diet : ImageView // 식단 사진
-    lateinit var diet_memo : EditText // 메모*/
     lateinit var button_diet_add: Button // 식단 추가 버튼
     var date : String = ""
 
@@ -73,33 +72,30 @@ class DietActivity : AppCompatActivity() {
         toolbar = findViewById(R.id.toolbar)
 
         myDBHelper = myDBHelper(this)
+        rv = findViewById(R.id.recycler_diet)
 
         text_date = findViewById(R.id.date_text) // 날짜
         button_diet_add = findViewById(R.id.button_diet_add) // 식단 추가 버튼
         diet_layout = findViewById(R.id.diet_layout)
-/*
-        val inflater : LayoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        inflater.inflate(R.layout.new_diet, diet_layout, true)
 
-        button_diet_save = findViewById(R.id.button_diet_save) // 저장 버튼
-        button_diet_delete = findViewById(R.id.button_diet_delete) // 삭제 버튼
-        text_time = findViewById(R.id.text_diet_time) // 시간
-        image_diet = findViewById(R.id.image_diet) // 식단 사진
-        diet_memo = findViewById(R.id.diet_memo) // 식단 메모
-*/
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
         setSupportActionBar(toolbar)
 
         // 날짜 텍스트 클릭 시
         text_date.setOnClickListener {
-
             val cal = Calendar.getInstance()
             DatePickerDialog(this, DatePickerDialog.OnDateSetListener { datePicker, y, m, d ->
                 date = "${y}년 ${m + 1}월 ${d}일"
                 text_date.text = date
-                //addDiet()
-
-                //loadDiet()
+                data.addAll(loadDiet())
+                rvAdapter = DietRecyclerViewAdapter(data, this, rv) {
+                    data, num ->
+                    var intent = Intent(this, NewDietActivity::class.java)
+                    intent.putExtra("ID", data.id)
+                    startActivity(intent)
+                }
+                rv.adapter = rvAdapter
+                rv.layoutManager = LinearLayoutManager(this)
             }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE)).show()
         }
 
@@ -113,88 +109,9 @@ class DietActivity : AppCompatActivity() {
                 intent.putExtra("date", date)
                 startActivity(intent)
             }
-
-            //addDiet()
-            //val inflater : LayoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            //inflater.inflate(R.layout.new_diet, diet_layout, true)
-
-/*
-            button_diet_save = diet_layout.findViewById(R.id.button_diet_save) // 저장 버튼
-            button_diet_delete = diet_layout.findViewById(R.id.button_diet_delete) // 삭제 버튼
-            text_time = diet_layout.findViewById(R.id.text_diet_time) // 시간
-            image_diet = diet_layout.findViewById(R.id.image_diet) // 식단 사진
-            diet_memo = diet_layout.findViewById(R.id.diet_memo) // 식단 메모
-
-            // 시간 텍스트 클릭 시
-            text_time.setOnClickListener {
-                val cal = Calendar.getInstance()
-                TimePickerDialog(this, TimePickerDialog.OnTimeSetListener { timePicker, h, m ->
-                    text_time.text = "${h}시 ${m}분"
-                }, cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), true).show()
-            }
-
-            // 이미지 그림 클릭 시
-            image_diet.setOnClickListener{
-                selectGallery()
-            }
-
-            // 저장 버튼 클릭 시
-            button_diet_save.setOnClickListener {
-                if(ids.size == 0) {
-                    saveDiet()
-                    Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-                } else {
-                    updateDiet()
-                    Toast.makeText(this, "수정되었습니다.", Toast.LENGTH_SHORT).show()
-                }
-
-            }
-
-            // 삭제 버튼 클릭 시
-            button_diet_delete.setOnClickListener {
-                deleteDiet()
-                Toast.makeText(this, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
-                var intent : Intent = Intent(this, DietActivity::class.java)
-                finish()
-                startActivity(intent)
-            }*/
         }
     }
 
-    /*
-    fun onClick(v : View?) {
-        when(v?.id) {
-            R.id.text_diet_time -> { // 시간 텍스트 클릭 시
-                var view = findViewById<TextView>(R.id.text_diet_time)
-                val cal = Calendar.getInstance()
-                TimePickerDialog(this, TimePickerDialog.OnTimeSetListener { timePicker, h, m ->
-                    view.text = "${h}시 ${m}분"
-                }, cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), true).show()
-            }
-            R.id.button_diet_save -> { // 저장 버튼 클릭 시
-                saveDiet()
-                Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-                /*if(ids.size == 0) {
-                    saveDiet()
-                    Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-                } else {
-                    updateDiet()
-                    Toast.makeText(this, "수정되었습니다.", Toast.LENGTH_SHORT).show()
-                }*/
-            }
-            R.id.button_diet_delete -> { // 삭제 버튼 클릭 시
-                deleteDiet()
-                Toast.makeText(this, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
-                var intent : Intent = Intent(this, DietActivity::class.java)
-                finish()
-                startActivity(intent)
-            }
-            R.id.image_diet -> {
-                selectGallery()
-            }
-        }
-    }
-*/
     // 하단 메뉴 선택 시 작동
     private val bottomNavItemSelectedListener =
         BottomNavigationView.OnNavigationItemSelectedListener { item ->
@@ -253,175 +170,58 @@ class DietActivity : AppCompatActivity() {
         fragmentTransaction.replace(R.id.content_layout, fragment)
         fragmentTransaction.commit()
     }
-}
-/*
-    // 사진 첨부 클릭 시 호출
-    private fun selectGallery() {
-        // 앨범 접근 권한
-        var readPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-
-        //Log.d("mainActivity", "$mainActivity: ")
-        if(readPermission != PackageManager.PERMISSION_GRANTED) {
-            // 권한이 허용되지 않음
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                // 이전에 이미 권한이 거부되었을 때 설명
-                var dig = AlertDialog.Builder(this)
-                dig.setTitle("권한이 필요한 이유")
-                dig.setMessage("사진 정보를 얻기 위해서는 외부 저장소 권한이 필수로 필요합니다.")
-                dig.setPositiveButton("확인") { dialog, which ->
-                    ActivityCompat.requestPermissions(this,
-                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_READ_EXTERNAL_STORAGE)
-                }
-                dig.setNegativeButton("취소", null)
-                dig.show()
-            } else {
-                // 처음 권한 요청
-                ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_READ_EXTERNAL_STORAGE)
-            }
-        } else {
-            // 권한이 이미 허용됨
-            val intent = Intent()
-            intent.type = "image/*"
-            intent.action = Intent.ACTION_GET_CONTENT
-            startActivityForResult(intent, REQUEST_CODE)
-        }
-    }
-
-    // 갤러리에서 사진 가져오기
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
-
-                data?.data?.let { uri ->
-                    var view = findViewById<ImageView>(R.id.image_diet)
-                    view.setImageURI(uri)
-                    currenturi = uri
-                }!!
-            } else if (resultCode == Activity.RESULT_CANCELED) {
-                Toast.makeText(this, "사진 선택 취소", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
-
-    // 저장
-    private fun saveDiet() {
-        sqldb = myDBHelper.writableDatabase
-
-        var timeview = findViewById<TextView>(R.id.text_diet_time)
-        var imgView = findViewById<ImageView>(R.id.image_diet)
-        var memoView = findViewById<TextView>(R.id.diet_memo)
-
-        var diet_date : String = text_date.text.toString()
-        var diet_time : String = timeview.text.toString()
-        var image : Drawable = imgView.drawable
-        var memo : String = memoView.text.toString()
-        var byteArray : ByteArray ?= null
-
-        try {
-            // 이미지 파일을 Bitmap 파일로, Bitmap 파일을 byteArray로 변환시켜서 BLOB 형으로 DB에 저장
-            val bitmapDrawable = image as BitmapDrawable?
-            val bitmap = bitmapDrawable?.bitmap
-            val stream = ByteArrayOutputStream()
-            bitmap?.compress(Bitmap.CompressFormat.JPEG, 70, stream)
-            byteArray = stream.toByteArray()
-        } catch (cce: ClassCastException) { // 사진을 따로 저장안할 경우
-            Log.d("image null", "이미지 저장 안함")
-        }
-
-        if(byteArray == null) { // 저장하려는 사진이 없을 경우
-            sqldb.execSQL("INSERT INTO diet_record VALUES (null,'$diet_date','$diet_time', null,'$memo')")
-        } else { // 저장하려는 사진이 있는 경우
-            var insQuery : String = "INSERT INTO diet_record (id, date, time, diet_photo, memo) " +
-                    "VALUES (null, '$diet_date', '$diet_time', ?, '$memo')"
-            var stmt : SQLiteStatement = sqldb.compileStatement(insQuery)
-            stmt.bindBlob(1, byteArray)
-            stmt.execute()
-        }
-    }
 
     // 삭제
-    private fun deleteDiet() {
+    private fun deleteDiet(id : Int) {
         sqldb = myDBHelper.writableDatabase
-        var id : Int = ids[0]
         sqldb.execSQL("DELETE FROM diet_record WHERE id = $id")
+        sqldb.close()
     }
 
-    // 수정
-    private fun updateDiet() {
-        sqldb = myDBHelper.writableDatabase
-
-        var id : Int = ids[0]
-        var diet_date : String = text_date.text.toString()
-        var diet_time : String = text_time.text.toString()
-        var image : Drawable = image_diet.drawable
-        var memo : String = diet_memo.text.toString()
-        var byteArray : ByteArray ?= null
-
-        try {
-            // 이미지 파일을 Bitmap 파일로, Bitmap 파일을 byteArray로 변환시켜서 BLOB 형으로 DB에 저장
-            val bitmapDrawable = image as BitmapDrawable?
-            val bitmap = bitmapDrawable?.bitmap
-            val stream = ByteArrayOutputStream()
-            bitmap?.compress(Bitmap.CompressFormat.JPEG, 70, stream)
-            byteArray = stream.toByteArray()
-        } catch (cce: ClassCastException) { // 사진을 따로 저장안할 경우
-            Log.d("image null", "이미지 저장 안함")
-        }
-
-        if(byteArray == null) { // 저장하려는 사진이 없을 경우
-            sqldb.execSQL("UPDATE diet_record SET date = '$diet_date', " +
-                    "time = '$diet_time', diet_photo = null, memo = '$memo' WHERE id = $id")
-        } else { // 저장하려는 사진이 있는 경우
-            var udtQuery : String = "UPDATE diet_record SET date = '$diet_date', "+
-                    "time = '$diet_time', diet_photo = ?, memo = '$memo' WHERE id = $id"
-            var stmt : SQLiteStatement = sqldb.compileStatement(udtQuery)
-            stmt.bindBlob(1, byteArray)
-            stmt.execute()
-        }
-    }
 
     // 불러오기
-    private fun loadDiet() {
-        ids = ArrayList<Int>()
-        text_time.text = "시간을 선택해주세요"
-        image_diet.setImageResource(R.drawable.ic_baseline_image_24)
-        diet_memo.setText("")
-        diet_memo.setHint("메모")
-
+    private fun loadDiet() : ArrayList<DietData> {
+        var dietData = ArrayList<DietData>()
         sqldb = myDBHelper.readableDatabase
-        var cursor : Cursor = sqldb.rawQuery("SELECT * FROM diet_record WHERE date = '${text_date.text.toString()}'", null)
+        cursor = sqldb.rawQuery("SELECT * FROM diet_record WHERE date = '${date}'", null)
 
-        // 해당 날짜에 저장된 식단들 가져오기
-        if(cursor.moveToFirst()) {
-            // id 값 가져오기
-            var i : Int = 0
-            ids.add(cursor.getInt(cursor.getColumnIndex("id")))
-            i++
-            // 시간 값 가져오기
-            text_time.text = cursor.getString(cursor.getColumnIndex("time"))
-            // 사진 가져오기
-            try {
-                val image = cursor.getBlob(cursor.getColumnIndex("diet_photo")) ?: null
-                val bitmap = BitmapFactory.decodeByteArray(image, 0, image!!.size)
-                image_diet.setImageBitmap(bitmap)
-            } catch (knpe : KotlinNullPointerException) {
-                Toast.makeText(this, "저장된 사진이 없습니다.", Toast.LENGTH_SHORT).show()
-            }
-            // 메모 내용 가져오기
-            diet_memo.setText(cursor.getString(cursor.getColumnIndex("memo")))
+        if(cursor.moveToFirst()) { // 저장된 글이 있으면
+            var id : Int = 0
+            var time : String = ""
+            var bitmap : Bitmap ?= null
+            var memo : String = ""
+
+            do{
+                try {
+                    id = cursor.getInt(cursor.getColumnIndex("id"))
+                    time = cursor.getString(cursor.getColumnIndex("time"))
+                    memo = cursor.getString(cursor.getColumnIndex("memo"))
+                    val image : ByteArray ?= cursor.getBlob(cursor.getColumnIndex("diet_photo"))
+                    bitmap = BitmapFactory.decodeByteArray(image, 0, image!!.size)
+                }
+                catch (rte: RuntimeException) { // null 값이 있을 경우 exception
+                    bitmap = null
+                }
+                if (bitmap != null ) { // 등록한 이미지가 있다면
+                    dietData.add (DietData( id, date, time, bitmap, memo))
+                } else { // 등록한 이미지가 없다면
+                    dietData.add (DietData( id, date, time, null, memo))
+                }
+            } while (cursor.moveToNext())
+            sqldb.close()
+        } else { // 저장된 글이 없으면
+            Toast.makeText(this, "저장된 식단이 없습니다.", Toast.LENGTH_SHORT).show()
         }
+        return dietData
     }
 
-    // 식단 기록 부분 추가
-    private fun addDiet() {
-        var new_diet_layout : NewDiet = NewDiet(applicationContext)
-        diet_layout = findViewById(R.id.diet_layout)
-        diet_layout.addView(new_diet_layout)
-    }
+    private fun refresh() { // 새로 고침
+        var intent = Intent(this, this::class.java)
+        //intent.putExtra("date", date)
+        finish()
+        startActivity(intent)
 
+        //var gintent : Intent = getIntent()
+        //date = gintent.getStringExtra("date").toString()
+    }
 }
-
- */
