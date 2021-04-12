@@ -1,6 +1,7 @@
 package com.example.bodymanagerapp.menu.Diet
 
 import android.content.Context
+import android.database.sqlite.SQLiteDatabase
 import android.view.*
 import android.widget.EditText
 import android.widget.ImageView
@@ -8,10 +9,14 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bodymanagerapp.R
+import com.example.bodymanagerapp.myDBHelper
 
 class DietRecyclerViewAdapter(var data:ArrayList<DietData>, val context: Context, var item: RecyclerView,
                                   var itemClick:(DietData, Int)->Unit):
     RecyclerView.Adapter<DietRecyclerViewAdapter.ItemViewHolder>() {
+
+    var myDBHelper: myDBHelper = myDBHelper(context)
+    lateinit var sqldb: SQLiteDatabase
 
     var pos:Int = -1
     var id:Int = 0
@@ -34,11 +39,20 @@ class DietRecyclerViewAdapter(var data:ArrayList<DietData>, val context: Context
                 update = menu.add("수정")
                 //delete.setOnMenuItemClickListener(onMenuItemClickListener())
                 //update.setOnMenuItemClickListener(onMenuItemClickListener())
+
+                delete.setOnMenuItemClickListener {
+                    sqldb = myDBHelper.writableDatabase
+                    sqldb.execSQL("DELETE FROM diet_record WHERE id = $id")
+                    sqldb.close()
+
+                    return@setOnMenuItemClickListener true
+                }
             }
+
         }
         /*private fun onMenuItemClickListener() : MenuItem.OnMenuItemClickListener {
             fun onMenuItemClick(menuItem: MenuItem) : Boolean {
-                return when (menuItem) {
+                when (menuItem) {
                     delete -> {
                         return true
 
@@ -49,6 +63,7 @@ class DietRecyclerViewAdapter(var data:ArrayList<DietData>, val context: Context
                     else -> false
                 }
             }
+            return false
         }*/
 
         var time = view.findViewById<TextView>(R.id.text_diet_time_item)

@@ -84,6 +84,7 @@ class DietActivity : AppCompatActivity() {
         // 날짜 텍스트 클릭 시
         text_date.setOnClickListener {
             val cal = Calendar.getInstance()
+            data.clear()
             DatePickerDialog(this, DatePickerDialog.OnDateSetListener { datePicker, y, m, d ->
                 date = "${y}년 ${m + 1}월 ${d}일"
                 text_date.text = date
@@ -108,6 +109,7 @@ class DietActivity : AppCompatActivity() {
                 var intent : Intent = Intent(this, NewDietActivity::class.java)
                 intent.putExtra("date", date)
                 startActivity(intent)
+                //rvAdapter.notifyDataSetChanged()
             }
         }
     }

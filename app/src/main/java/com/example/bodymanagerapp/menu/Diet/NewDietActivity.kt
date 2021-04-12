@@ -48,6 +48,8 @@ class NewDietActivity : AppCompatActivity() {
 
     var currenturi: Uri?=null // 사진 uri
 
+    lateinit var rvAdapter: DietRecyclerViewAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_diet)
@@ -80,6 +82,8 @@ class NewDietActivity : AppCompatActivity() {
         button_diet_save.setOnClickListener {
             saveDiet()
             Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
+
+            finish()
             /*if(ids.size == 0) {
                 saveDiet()
                 Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
