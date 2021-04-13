@@ -106,7 +106,6 @@ class NewDietActivity : AppCompatActivity() {
         // 앨범 접근 권한
         var readPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
 
-        //Log.d("mainActivity", "$mainActivity: ")
         if(readPermission != PackageManager.PERMISSION_GRANTED) {
             // 권한이 허용되지 않음
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {

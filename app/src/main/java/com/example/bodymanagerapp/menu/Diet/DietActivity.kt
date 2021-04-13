@@ -29,6 +29,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bodymanagerapp.R
+import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
 import com.example.bodymanagerapp.menu.SettingsFragment
 import com.example.bodymanagerapp.myDBHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -120,6 +121,8 @@ class DietActivity : AppCompatActivity() {
             when (item.itemId) {
                 // 운동 메뉴 선택 시
                 R.id.navigation_exercise -> {
+                    var intent: Intent = Intent(this, ExerciseActivity::class.java)
+                    startActivity(intent)
                     return@OnNavigationItemSelectedListener true
                 }
 
@@ -172,14 +175,6 @@ class DietActivity : AppCompatActivity() {
         fragmentTransaction.replace(R.id.content_layout, fragment)
         fragmentTransaction.commit()
     }
-
-    // 삭제
-    private fun deleteDiet(id : Int) {
-        sqldb = myDBHelper.writableDatabase
-        sqldb.execSQL("DELETE FROM diet_record WHERE id = $id")
-        sqldb.close()
-    }
-
 
     // 불러오기
     private fun loadDiet() : ArrayList<DietData> {
