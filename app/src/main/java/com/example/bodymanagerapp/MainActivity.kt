@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import com.example.bodymanagerapp.menu.*
 import com.example.bodymanagerapp.menu.Diet.DietActivity
 import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
-import com.example.bodymanagerapp.menu.Exercise.ExerciseFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -32,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         bottom_nav_view = findViewById(R.id.bottom_nav_view)
         toolbar = findViewById(R.id.toolbar)
 
-        replaceFragment(ExerciseFragment())
+        //replaceFragment(ExerciseFragment())
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
         setSupportActionBar(toolbar)
     }

@@ -18,18 +18,26 @@ class myDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
 
         // 운동 기록 테이블 생성
         db?.execSQL("CREATE TABLE exercise_record (" +
-                "date INTEGER, " +
+                "EId INTEGER, " +
+                "date TEXT, " +
+                "total_time INTEGER, " +
+                "steps INTEGER, " +
+                "PRIMARY KEY(id AUTOINCREMENT);")
+
+        // 운동 카운터 테이블 생성
+        db?.execSQL("CREATE TABLE exercise_counter (" +
+                "EId INTEGER, " +
                 "exercise_name TEXT, " +
                 "set_num INTEGER, " +
                 "weight INTEGER, " +
                 "exercise_count INTEGER, " +
                 "time INTEGER, " +
                 "is_complete INTEGER, " +
-                "PRIMARY KEY(date, exercise_name, set_num));")
+                "PRIMARY KEY(id AUTOINCREMENT));")
 
         // 식단 기록 테이블 생성
         db?.execSQL("CREATE TABLE diet_record (" +
-                "id INTEGER, " +
+                "DId INTEGER, " +
                 "date TEXT, " +
                 "time TEXT, " +
                 "diet_photo BLOB, " +
@@ -50,10 +58,9 @@ class myDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
         db?.execSQL("DROP TABLE IF EXISTS exercise_info")
         db?.execSQL("DROP TABLE IF EXISTS routine_info")
         db?.execSQL("DROP TABLE IF EXISTS exercise_record")
+        db?.execSQL("DROP TABLE IF EXISTS exercise_counter")
         db?.execSQL("DROP TABLE IF EXISTS diet_record")
         db?.execSQL("DROP TABLE IF EXISTS body_record")
         onCreate(db)
     }
-
-
 }

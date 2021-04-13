@@ -123,6 +123,7 @@ class DietActivity : AppCompatActivity() {
                 R.id.navigation_exercise -> {
                     var intent: Intent = Intent(this, ExerciseActivity::class.java)
                     startActivity(intent)
+                    finish()
                     return@OnNavigationItemSelectedListener true
                 }
 
@@ -130,6 +131,7 @@ class DietActivity : AppCompatActivity() {
                 R.id.navigation_diet -> {
                     var intent: Intent = Intent(this, DietActivity::class.java)
                     startActivity(intent)
+                    finish()
                     return@OnNavigationItemSelectedListener true
                 }
 

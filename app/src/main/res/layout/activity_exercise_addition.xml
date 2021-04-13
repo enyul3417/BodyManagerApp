@@ -5,8 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".menu.Exercise.ExerciseAddtionActivity">
+    tools:context=".menu.Exercise.ExerciseAdditionActivity">
 
+    <!-- 검색 -->
     <SearchView
         android:id="@+id/search_exercise"
         android:layout_width="match_parent"
@@ -23,6 +24,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- 운동 이름, 세트수 입력 -->
             <TableLayout
                 android:stretchColumns="*"
                 android:layout_width="match_parent"
@@ -56,6 +58,7 @@
 
             </TableLayout>
 
+            <!-- 버튼 -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -66,13 +69,13 @@
                     android:id="@+id/button_weight_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="무게, 개수" />
+                    android:text="무게, 횟수" />
 
                 <Button
                     android:id="@+id/button_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="개수"/>
+                    android:text="횟수"/>
 
                 <Button
                     android:id="@+id/button_time"
@@ -83,28 +86,11 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/table_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:stretchColumns="*">
-                <!--<TableLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TableRow>
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        <EditText
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-                        <EditText
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-                        <EditText
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-                    </TableRow>
-                </TableLayout>-->
+                <!-- 무게, 개수 테이블 -->
                 <TableLayout
                     android:id="@+id/table_weight_num"
                     android:stretchColumns="*"
@@ -135,7 +121,7 @@
                             android:gravity="center"/>
                     </TableRow>
                 </TableLayout>
-
+                <!-- 개수 테이블 -->
                 <TableLayout
                     android:id="@+id/table_num"
                     android:stretchColumns="*"
@@ -160,7 +146,7 @@
                             android:gravity="center"/>
                     </TableRow>
                 </TableLayout>
-
+                <!-- 시간 테이블 -->
                 <TableLayout
                     android:id="@+id/table_time"
                     android:stretchColumns="*"
@@ -196,6 +182,31 @@
                             android:textSize="15sp"
                             android:gravity="center"/>
                     </TableRow>
+                </TableLayout>
+                <!-- 운동 항목 테이블 -->
+                <TableLayout
+                    android:id="@+id/table_exercise_count"
+                    android:stretchColumns="*"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible">
+                    <!--
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <EditText
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="dd"/>
+                        <EditText
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <EditText
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </TableRow>
+                    -->
                 </TableLayout>
             </LinearLayout>
 

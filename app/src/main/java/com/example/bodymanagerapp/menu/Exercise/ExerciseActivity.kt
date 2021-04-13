@@ -77,6 +77,9 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         // 운동
         button_exercise_add = findViewById(R.id.button_exercise_add)
 
+        bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
+        setSupportActionBar(toolbar)
+
         // 만보기 사용을 위한 센서 접근 권한
         var sensorPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)
 
@@ -126,7 +129,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         }
 
         button_exercise_add.setOnClickListener {
-            val intent : Intent = Intent(this, ExerciseAddtionActivity::class.java)
+            val intent : Intent = Intent(this, ExerciseAdditionActivity::class.java)
             startActivity(intent)
         }
     }
@@ -139,6 +142,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
                     R.id.navigation_exercise -> {
                         var intent: Intent = Intent(this, ExerciseActivity::class.java)
                         startActivity(intent)
+                        finish()
                         return@OnNavigationItemSelectedListener true
                     }
 
@@ -146,6 +150,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
                     R.id.navigation_diet -> {
                         var intent: Intent = Intent(this, DietActivity::class.java)
                         startActivity(intent)
+                        finish()
                         return@OnNavigationItemSelectedListener true
                     }
 
