@@ -158,13 +158,13 @@
                     android:text="루틴 불러오기" />
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/table_exercise"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-            </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_exercise"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/exericse_items" />
 
             <Button
                 android:id="@+id/button_exercise_add"
@@ -173,6 +173,11 @@
                 android:layout_gravity="center"
                 android:layout_margin="10dp"
                 android:text="운동 추가" />
+
+            <FrameLayout
+                android:id="@+id/exercise_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
             <EditText
                 android:id="@+id/exercise_memo"

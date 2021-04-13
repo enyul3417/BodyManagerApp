@@ -22,18 +22,17 @@ class myDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
                 "date TEXT, " +
                 "total_time INTEGER, " +
                 "steps INTEGER, " +
-                "PRIMARY KEY(id AUTOINCREMENT);")
+                "PRIMARY KEY(EId AUTOINCREMENT));")
 
         // 운동 카운터 테이블 생성
         db?.execSQL("CREATE TABLE exercise_counter (" +
-                "EId INTEGER, " +
+                "date TEXT, " +
                 "exercise_name TEXT, " +
                 "set_num INTEGER, " +
                 "weight INTEGER, " +
                 "exercise_count INTEGER, " +
-                "time INTEGER, " +
-                "is_complete INTEGER, " +
-                "PRIMARY KEY(id AUTOINCREMENT));")
+                "time TEXT, " +
+                "is_complete INTEGER);")
 
         // 식단 기록 테이블 생성
         db?.execSQL("CREATE TABLE diet_record (" +
@@ -42,7 +41,7 @@ class myDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
                 "time TEXT, " +
                 "diet_photo BLOB, " +
                 "memo TEXT," +
-                "PRIMARY KEY(id AUTOINCREMENT));")
+                "PRIMARY KEY(DId AUTOINCREMENT));")
 
         // 신체 기록 테이블 생성
         db?.execSQL("CREATE TABLE body_record (" +

@@ -1,38 +1,56 @@
 package com.example.bodymanagerapp.menu.Exercise
 
 import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.sqlite.SQLiteDatabase
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
+import android.view.View
+import android.view.ViewGroup
+import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.bodymanagerapp.MainActivity
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.menu.Diet.DietActivity
+import com.example.bodymanagerapp.menu.Diet.NewDietActivity
 import com.example.bodymanagerapp.menu.SettingsFragment
+import com.example.bodymanagerapp.myDBHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.concurrent.timer
 
 class ExerciseActivity : AppCompatActivity(), SensorEventListener {
     lateinit var bottom_nav_view : BottomNavigationView
     lateinit var toolbar: Toolbar
 
+    // DB
+    lateinit var myDBHelper: myDBHelper
+    lateinit var sqldb: SQLiteDatabase
+    var exerciseData = ArrayList<ExerciseData>()
+
+    // View
+    lateinit var rv : RecyclerView
+    lateinit var rvAdapter: ExerciseRecyclerViewAdapter
+
     // 권한 변수
     private val REQUEST_ACTIVITY_RECOGNITION = 1000
+    private val REQUEST_CODE_ADD_EXERCISE = 100
 
     private var time = 0 // 총 시간
     private var isRunning = false
@@ -53,9 +71,10 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
     private var steps : Int = 0 // 현재 발걸음 수
     private var counterSteps : Int = 0 // 리스너 등록 후의 발걸음 수
 
-
     // 운동
     lateinit var button_exercise_add :Button
+    private var date : String = ""
+    private var name : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +82,9 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
 
         bottom_nav_view = findViewById(R.id.bottom_nav_view)
         toolbar = findViewById(R.id.toolbar)
+
+        myDBHelper = myDBHelper(this)
+        rv = findViewById(R.id.recycler_exercise)
 
         // 운동 타이머
         timer_hour = findViewById(R.id.timer_hour)
@@ -130,7 +152,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
 
         button_exercise_add.setOnClickListener {
             val intent : Intent = Intent(this, ExerciseAdditionActivity::class.java)
-            startActivity(intent)
+            startActivityForResult(intent, REQUEST_CODE_ADD_EXERCISE)
         }
     }
 
@@ -257,5 +279,59 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
             steps = event.values[0].toInt() - counterSteps
             stepsTextView.text = steps.toString()
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode == Activity.RESULT_OK) {
+            when(requestCode) {
+                100 -> {
+                    date = data?.getStringExtra("DATE").toString()
+                    name = data?.getStringExtra("NAME").toString()
+                    exerciseData.clear()
+                    exerciseData.addAll(loadExercise())
+                    rvAdapter = ExerciseRecyclerViewAdapter(exerciseData, this, rv)
+                    rv.adapter = rvAdapter
+                    rv.layoutManager = LinearLayoutManager(this)
+                    rv.visibility = View.VISIBLE
+                }
+            }
+        }
+    }
+
+    fun loadExercise() : ArrayList<ExerciseData>{
+        Log.d("exercise", "신호 수신")
+/*
+        val nameTV = TextView(this)
+        nameTV.layoutParams = TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT)
+        nameTV.text = name
+        nameTV.textSize = 15f // 글자 크기
+        nameTV.gravity = 17 // 중앙 정렬
+        rv.addView(nameTV)*/
+
+        var data = ArrayList<ExerciseData>()
+        sqldb = myDBHelper.readableDatabase
+
+        var cursor = sqldb.rawQuery("SELECT * FROM exercise_counter WHERE date = '${date}' AND exercise_name = '${name}';", null)
+
+        if(cursor.moveToFirst()) {
+            var set : Int = 0
+            var weight : Int ?= 0
+            var num : Int ?= 0
+            var time : String ?= ""
+
+            do {
+                set = cursor.getInt(cursor.getColumnIndex("set_num"))
+                weight = cursor.getInt(cursor.getColumnIndex("weight"))
+                num = cursor.getInt(cursor.getColumnIndex("exercise_count"))
+                time = cursor.getString(cursor.getColumnIndex("time"))
+
+                data.add(ExerciseData(name, set, num, weight, time))
+            } while (cursor.moveToNext())
+            sqldb.close()
+        }
+
+        return data
     }
 }

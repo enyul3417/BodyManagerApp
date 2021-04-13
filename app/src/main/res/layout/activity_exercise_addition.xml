@@ -7,6 +7,32 @@
     android:orientation="vertical"
     tools:context=".menu.Exercise.ExerciseAdditionActivity">
 
+    <!-- 앱 상단 -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- 테마는 추후 수정 예정 -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/Theme.AppCompat">
+
+            <TextView
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="BodyManager"
+                android:textStyle="bold"
+                android:textColor="#ffffff"
+                android:textSize="30dp" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
     <!-- 검색 -->
     <SearchView
         android:id="@+id/search_exercise"
@@ -166,19 +192,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="시간"
-                            android:textSize="15sp"
-                            android:gravity="center"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="분"
-                            android:textSize="15sp"
-                            android:gravity="center"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="초"
+                            android:text="시간(시:분:초)"
                             android:textSize="15sp"
                             android:gravity="center"/>
                     </TableRow>
