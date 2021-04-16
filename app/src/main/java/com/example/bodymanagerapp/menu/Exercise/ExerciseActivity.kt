@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bodymanagerapp.MainActivity
 import com.example.bodymanagerapp.R
+import com.example.bodymanagerapp.menu.Body.BodyActivity
 import com.example.bodymanagerapp.menu.Diet.DietActivity
 import com.example.bodymanagerapp.menu.Diet.NewDietActivity
 import com.example.bodymanagerapp.menu.SettingsFragment
@@ -178,6 +179,9 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
 
                     // 신체 메뉴 선택 시
                     R.id.navigation_body -> {
+                        var intent: Intent = Intent(this, BodyActivity::class.java)
+                        startActivity(intent)
+                        finish()
                         return@OnNavigationItemSelectedListener true
                     }
 

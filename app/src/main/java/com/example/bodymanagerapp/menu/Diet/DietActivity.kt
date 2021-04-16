@@ -1,39 +1,27 @@
 package com.example.bodymanagerapp.menu.Diet
 
-import android.Manifest
-import android.app.Activity
-import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteStatement
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bodymanagerapp.R
+import com.example.bodymanagerapp.menu.Body.BodyActivity
 import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
 import com.example.bodymanagerapp.menu.SettingsFragment
 import com.example.bodymanagerapp.myDBHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import java.io.ByteArrayOutputStream
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -69,7 +57,7 @@ class DietActivity : AppCompatActivity() {
         myDBHelper = myDBHelper(this)
         rv = findViewById(R.id.recycler_diet)
 
-        text_date = findViewById(R.id.date_text) // 날짜
+        text_date = findViewById(R.id.text_diet_date) // 날짜
         button_diet_add = findViewById(R.id.button_diet_add) // 식단 추가 버튼
         button_diet_refresh = findViewById(R.id.button_diet_refresh)
 
@@ -137,6 +125,9 @@ class DietActivity : AppCompatActivity() {
 
                 // 신체 메뉴 선택 시
                 R.id.navigation_body -> {
+                    var intent: Intent = Intent(this, BodyActivity::class.java)
+                    startActivity(intent)
+                    finish()
                     return@OnNavigationItemSelectedListener true
                 }
 

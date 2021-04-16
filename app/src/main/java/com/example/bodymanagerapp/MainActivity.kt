@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.example.bodymanagerapp.menu.*
+import com.example.bodymanagerapp.menu.Body.BodyActivity
 import com.example.bodymanagerapp.menu.Diet.DietActivity
 import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -55,7 +56,8 @@ class MainActivity : AppCompatActivity() {
 
             // 신체 메뉴 선택 시
             R.id.navigation_body -> {
-                replaceFragment(BodyFragment())
+                var intent : Intent = Intent(this, BodyActivity::class.java)
+                startActivity(intent)
                 return@OnNavigationItemSelectedListener true
             }
 
