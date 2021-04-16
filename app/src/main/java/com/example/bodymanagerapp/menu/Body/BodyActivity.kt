@@ -6,9 +6,13 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -16,6 +20,7 @@ import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.menu.Diet.DietActivity
@@ -23,6 +28,11 @@ import com.example.bodymanagerapp.menu.Diet.DietRecyclerViewAdapter
 import com.example.bodymanagerapp.menu.Diet.NewDietActivity
 import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.gun0912.tedpermission.PermissionListener
+import com.gun0912.tedpermission.TedPermission
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
 import java.util.*
 
 class BodyActivity : AppCompatActivity() {
@@ -30,7 +40,8 @@ class BodyActivity : AppCompatActivity() {
     private val REQUEST_READ_EXTERNAL_STORAGE : Int = 2000
     private val REQUEST_WRITE_EXTERNAL_STORAGE : Int = 3000
     private val REQUSET_CAMERA : Int = 4000
-    private val REQUEST_CODE = 0
+    private val REQUEST_CODE_GALLERY = 0
+    private val REQUEST_CODE_CAMERA = 1
 
 
     // 상하단
@@ -51,6 +62,7 @@ class BodyActivity : AppCompatActivity() {
     lateinit var body_image : ImageView // 눈바디
 
     var currenturi : Uri ?= null
+    var imguri : String ?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,12 +98,13 @@ class BodyActivity : AppCompatActivity() {
 
         // 카메라로 사진 찍기
         button_camera.setOnClickListener {
-
+            cameraPermission()
+            startCapture()
         }
 
         // 갤러리에서 사진 가져오기
         button_gallery.setOnClickListener {
-            selectGallery()
+            galleryPermission()
         }
 
     }
@@ -156,7 +169,7 @@ class BodyActivity : AppCompatActivity() {
     }
 
     // 사진 첨부 클릭 시 호출 + 사진 관련 권한 요청
-    private fun selectGallery() {
+    private fun galleryPermission() {
         // 앨범 접근 권한
         var readPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
 
@@ -183,7 +196,7 @@ class BodyActivity : AppCompatActivity() {
             val intent = Intent()
             intent.type = "image/*"
             intent.action = Intent.ACTION_GET_CONTENT
-            startActivityForResult(intent, REQUEST_CODE)
+            startActivityForResult(intent, REQUEST_CODE_GALLERY)
         }
     }
 
@@ -191,50 +204,87 @@ class BodyActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
-
-                data?.data?.let { uri ->
-                    var view = findViewById<ImageView>(R.id.image_diet)
-                    view.setImageURI(uri)
-                    currenturi = uri
-                }!!
-            } else if (resultCode == Activity.RESULT_CANCELED) {
-                Toast.makeText(this, "사진 선택 취소", Toast.LENGTH_LONG).show()
+        when(requestCode) {
+            REQUEST_CODE_GALLERY -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    data?.data?.let { uri ->
+                        var view = findViewById<ImageView>(R.id.image_diet)
+                        view.setImageURI(uri)
+                        currenturi = uri
+                    }!!
+                } else if (resultCode == Activity.RESULT_CANCELED) {
+                    Toast.makeText(this, "사진 선택 취소", Toast.LENGTH_LONG).show()
+                }
+            }
+            REQUEST_CODE_CAMERA -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    val file = File(imguri)
+                    if(Build.VERSION.SDK_INT < 28) {
+                        val bitmap = MediaStore.Images.Media
+                            .getBitmap(contentResolver, Uri.fromFile(file))
+                        body_image.setImageBitmap(bitmap)
+                    } else {
+                        val decode = ImageDecoder.createSource(this.contentResolver, Uri.fromFile(file))
+                        val bitmap = ImageDecoder.decodeBitmap(decode)
+                        body_image.setImageBitmap(bitmap)
+                    }
+                }
             }
         }
+
     }
 
     // 카메라 권한 요청
     private fun cameraPermission() {
-        // 앨범 접근 권한
-        var writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        var cameraPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-
-        if(writePermission != PackageManager.PERMISSION_GRANTED) {
-            // 권한이 허용되지 않음
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                // 이전에 이미 권한이 거부되었을 때 설명
-                var dig = AlertDialog.Builder(this)
-                dig.setTitle("권한이 필요한 이유")
-                dig.setMessage("사진 정보를 얻기 위해서는 외부 저장소 권한이 필수로 필요합니다.")
-                dig.setPositiveButton("확인") { dialog, which ->
-                    ActivityCompat.requestPermissions(this,
-                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_READ_EXTERNAL_STORAGE)
-                }
-                dig.setNegativeButton("취소", null)
-                dig.show()
-            } else {
-                // 처음 권한 요청
-                ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_READ_EXTERNAL_STORAGE)
+        var camPer = object : PermissionListener {
+            override fun onPermissionGranted() {
+                Toast.makeText(this@BodyActivity, "권한에 동의하셨습니다.", Toast.LENGTH_SHORT).show()
             }
-        } else {
-            // 권한이 이미 허용됨
-            val intent = Intent()
-            intent.type = "image/*"
-            intent.action = Intent.ACTION_GET_CONTENT
-            startActivityForResult(intent, REQUEST_CODE)
+
+            override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
+                Toast.makeText(this@BodyActivity, "권한을 거부하셨습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+        TedPermission.with(this)
+            .setPermissionListener(camPer)
+            .setRationaleMessage("카메라 사진 권한 필요")
+            .setDeniedMessage("카메라 권한 요청 거부")
+            .setPermissions(
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                android.Manifest.permission.CAMERA)
+            .check()
+    }
+
+    private fun createImageFile() : File {
+        val timeStamp : String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir : File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            "BODY_${timeStamp}_",
+            ".jpg",
+            storageDir
+        ).apply {
+            imguri = absolutePath
+        }
+    }
+
+    fun startCapture() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            takePictureIntent.resolveActivity(packageManager)?.also {
+                val photoFile : File? = try {
+                    createImageFile()
+                } catch (ioe : IOException) {
+                    null
+                }
+                photoFile?.also {
+                    val  photoURI : Uri = FileProvider.getUriForFile(
+                        this,
+                        "com.example.bodymanagerapp.fileprovider",
+                        it
+                    )
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    startActivityForResult(takePictureIntent, REQUEST_CODE_CAMERA)
+                }
+            }
         }
     }
 }
