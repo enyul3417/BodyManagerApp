@@ -42,7 +42,7 @@ class DietRecyclerViewAdapter(var data:ArrayList<DietData>, val context: Context
 
                 delete.setOnMenuItemClickListener {
                     sqldb = myDBHelper.writableDatabase
-                    sqldb.execSQL("DELETE FROM diet_record WHERE id = $id")
+                    sqldb.execSQL("DELETE FROM diet_record WHERE DId = $id")
                     sqldb.close()
 
                     return@setOnMenuItemClickListener true

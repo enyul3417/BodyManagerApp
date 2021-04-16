@@ -192,7 +192,7 @@ class DietActivity : AppCompatActivity() {
 
             do{
                 try {
-                    id = cursor.getInt(cursor.getColumnIndex("id"))
+                    id = cursor.getInt(cursor.getColumnIndex("DId"))
                     time = cursor.getString(cursor.getColumnIndex("time"))
                     memo = cursor.getString(cursor.getColumnIndex("memo"))
                     val image : ByteArray ?= cursor.getBlob(cursor.getColumnIndex("diet_photo"))

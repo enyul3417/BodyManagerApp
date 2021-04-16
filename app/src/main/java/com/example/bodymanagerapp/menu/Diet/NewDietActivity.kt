@@ -179,7 +179,7 @@ class NewDietActivity : AppCompatActivity() {
         if(byteArray == null) { // 저장하려는 사진이 없을 경우
             sqldb.execSQL("INSERT INTO diet_record VALUES (null,'$diet_date','$diet_time', null,'$memo')")
         } else { // 저장하려는 사진이 있는 경우
-            var insQuery : String = "INSERT INTO diet_record (id, date, time, diet_photo, memo) " +
+            var insQuery : String = "INSERT INTO diet_record (DId, date, time, diet_photo, memo) " +
                     "VALUES (null, '$diet_date', '$diet_time', ?, '$memo')"
             var stmt : SQLiteStatement = sqldb.compileStatement(insQuery)
             stmt.bindBlob(1, byteArray)
@@ -210,10 +210,10 @@ class NewDietActivity : AppCompatActivity() {
 
         if(byteArray == null) { // 저장하려는 사진이 없을 경우
             sqldb.execSQL("UPDATE diet_record SET " +
-                    "time = '$diet_time', diet_photo = null, memo = '$memo' WHERE id = $id")
+                    "time = '$diet_time', diet_photo = null, memo = '$memo' WHERE DId = $id")
         } else { // 저장하려는 사진이 있는 경우
             var udtQuery : String = "UPDATE diet_record SET "+
-                    "time = '$diet_time', diet_photo = ?, memo = '$memo' WHERE id = $id"
+                    "time = '$diet_time', diet_photo = ?, memo = '$memo' WHERE DId = $id"
             var stmt : SQLiteStatement = sqldb.compileStatement(udtQuery)
             stmt.bindBlob(1, byteArray)
             stmt.execute()
@@ -223,7 +223,7 @@ class NewDietActivity : AppCompatActivity() {
     // 불러오기
     private fun loadDiet() {
         sqldb = myDBHelper.readableDatabase
-        var cursor : Cursor = sqldb.rawQuery("SELECT * FROM diet_record WHERE id = '${id}'", null)
+        var cursor : Cursor = sqldb.rawQuery("SELECT * FROM diet_record WHERE DId = '${id}'", null)
 
         // 해당 날짜에 저장된 식단들 가져오기
         if(cursor.moveToFirst()) {
