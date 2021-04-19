@@ -49,8 +49,6 @@ class NewDietActivity : AppCompatActivity() {
 
     var currenturi: Uri?=null // 사진 uri
 
-    val dietActivity = DietActivity()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_diet)
@@ -79,7 +77,7 @@ class NewDietActivity : AppCompatActivity() {
 
         // 이미지 그림 클릭 시
         image_diet.setOnClickListener{
-            selectGallery()
+            galleryPermission()
         }
 
         // 저장 버튼 클릭 시
@@ -102,7 +100,7 @@ class NewDietActivity : AppCompatActivity() {
     }
 
     // 사진 첨부 클릭 시 호출
-    private fun selectGallery() {
+    private fun galleryPermission() {
         // 앨범 접근 권한
         var readPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
 
@@ -218,6 +216,7 @@ class NewDietActivity : AppCompatActivity() {
             stmt.bindBlob(1, byteArray)
             stmt.execute()
         }
+        sqldb.close()
     }
 
     // 불러오기

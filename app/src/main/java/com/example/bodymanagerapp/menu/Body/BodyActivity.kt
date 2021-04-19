@@ -6,13 +6,20 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteStatement
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -24,25 +31,30 @@ import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.menu.Diet.DietActivity
+import com.example.bodymanagerapp.menu.Diet.DietData
 import com.example.bodymanagerapp.menu.Diet.DietRecyclerViewAdapter
 import com.example.bodymanagerapp.menu.Diet.NewDietActivity
 import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
+import com.example.bodymanagerapp.myDBHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
 class BodyActivity : AppCompatActivity() {
+    // DB
+    lateinit var myDBHelper: myDBHelper
+    lateinit var sqldb : SQLiteDatabase
+
     // 권한 관련 변수
     private val REQUEST_READ_EXTERNAL_STORAGE : Int = 2000
-    private val REQUEST_WRITE_EXTERNAL_STORAGE : Int = 3000
-    private val REQUSET_CAMERA : Int = 4000
     private val REQUEST_CODE_GALLERY = 0
     private val REQUEST_CODE_CAMERA = 1
-
+    private val REQUEST_CODE_DELETE = 2
 
     // 상하단
     lateinit var bottom_nav_view: BottomNavigationView
@@ -63,10 +75,13 @@ class BodyActivity : AppCompatActivity() {
 
     var currenturi : Uri ?= null
     var imguri : String ?= null
+    var isLoaded : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_body)
+
+        myDBHelper = myDBHelper(this)
 
         //메뉴
         bottom_nav_view = findViewById(R.id.bottom_nav_view)
@@ -93,6 +108,7 @@ class BodyActivity : AppCompatActivity() {
             DatePickerDialog(this, DatePickerDialog.OnDateSetListener { datePicker, y, m, d ->
                 date = "${y}년 ${m + 1}월 ${d}일"
                 text_date.text = date
+                loadBody()
             }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE)).show()
         }
 
@@ -105,6 +121,29 @@ class BodyActivity : AppCompatActivity() {
         // 갤러리에서 사진 가져오기
         button_gallery.setOnClickListener {
             galleryPermission()
+        }
+
+        button_save.setOnClickListener {
+            if (date == "")
+                Toast.makeText(this, "날짜를 선택하세요.", Toast.LENGTH_SHORT).show()
+            else {
+                if(isLoaded) updateBody() // 저장된 내용이 있으면 수정하기
+                else saveBody() // 없으면 새로운 레코드 추가
+                Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+        button_delete.setOnClickListener {
+            if(isLoaded) {
+                deleteBody()
+                var intent = Intent(this, BodyActivity::class.java)
+                intent.putExtra("DATE", date)
+                Toast.makeText(this, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                startActivity(intent)
+                finish()
+            }
+            else {
+                Toast.makeText(this, "저장된 데이터가 없습니다..", Toast.LENGTH_SHORT).show()
+            }
         }
 
     }
@@ -200,35 +239,39 @@ class BodyActivity : AppCompatActivity() {
         }
     }
 
-    // 갤러리에서 사진 가져오기
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         when(requestCode) {
-            REQUEST_CODE_GALLERY -> {
+            REQUEST_CODE_GALLERY -> { // 갤러리에서 가져온 사진 넣기
                 if (resultCode == Activity.RESULT_OK) {
                     data?.data?.let { uri ->
-                        var view = findViewById<ImageView>(R.id.image_diet)
+                        var view = findViewById<ImageView>(R.id.image_body)
                         view.setImageURI(uri)
                         currenturi = uri
+                        view.visibility = View.VISIBLE
                     }!!
                 } else if (resultCode == Activity.RESULT_CANCELED) {
                     Toast.makeText(this, "사진 선택 취소", Toast.LENGTH_LONG).show()
                 }
             }
-            REQUEST_CODE_CAMERA -> {
+            REQUEST_CODE_CAMERA -> { // 촬영한 사진 넣기
                 if (resultCode == Activity.RESULT_OK) {
+                    galleryAddPic()
                     val file = File(imguri)
                     if(Build.VERSION.SDK_INT < 28) {
                         val bitmap = MediaStore.Images.Media
                             .getBitmap(contentResolver, Uri.fromFile(file))
                         body_image.setImageBitmap(bitmap)
+                        body_image.visibility = View.VISIBLE
                     } else {
                         val decode = ImageDecoder.createSource(this.contentResolver, Uri.fromFile(file))
                         val bitmap = ImageDecoder.decodeBitmap(decode)
                         body_image.setImageBitmap(bitmap)
+                        body_image.visibility = View.VISIBLE
                     }
-                }
+                } else if (resultCode == Activity.RESULT_CANCELED)
+                    Toast.makeText(this, "사진 찍기 취소", Toast.LENGTH_LONG).show()
             }
         }
 
@@ -238,11 +281,11 @@ class BodyActivity : AppCompatActivity() {
     private fun cameraPermission() {
         var camPer = object : PermissionListener {
             override fun onPermissionGranted() {
-                Toast.makeText(this@BodyActivity, "권한에 동의하셨습니다.", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(this@BodyActivity, "카메라 권한에 동의하셨습니다.", Toast.LENGTH_SHORT).show()
             }
 
             override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
-                Toast.makeText(this@BodyActivity, "권한을 거부하셨습니다.", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(this@BodyActivity, "카메라 권한을 거부하셨습니다.", Toast.LENGTH_SHORT).show()
             }
         }
         TedPermission.with(this)
@@ -267,7 +310,7 @@ class BodyActivity : AppCompatActivity() {
         }
     }
 
-    fun startCapture() {
+    private fun startCapture() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             takePictureIntent.resolveActivity(packageManager)?.also {
                 val photoFile : File? = try {
@@ -286,5 +329,130 @@ class BodyActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun galleryAddPic() {
+        Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE).also { mediaScanIntent ->
+            val f = File(imguri)
+            mediaScanIntent.data = Uri.fromFile(f)
+            sendBroadcast(mediaScanIntent)
+        }
+    }
+
+    // 저장하기
+    private fun saveBody() {
+        sqldb = myDBHelper.writableDatabase
+
+        var height : Float = et_height.text.toString().toFloat()
+        var weight : Float = et_weight.text.toString().toFloat()
+        var muscle : Float = et_muscle.text.toString().toFloat()
+        var fat : Float = et_fat.text.toString().toFloat()
+        var image : Drawable = body_image.drawable
+        var byteArray : ByteArray ?= null
+        
+        try {
+            // 이미지 파일을 Bitmap 파일로, Bitmap 파일을 byteArray로 변환시켜서 BLOB 형으로 DB에 저장
+            val bitmapDrawable = image as BitmapDrawable?
+            val bitmap = bitmapDrawable?.bitmap
+            val stream = ByteArrayOutputStream()
+            bitmap?.compress(Bitmap.CompressFormat.JPEG, 70, stream)
+            byteArray = stream.toByteArray()
+        } catch (cce: ClassCastException) { // 사진을 따로 저장안할 경우
+            Log.d("image null", "이미지 저장 안함")
+        }
+
+        if(byteArray == null) { // 저장하려는 사진이 없을 경우
+            sqldb.execSQL("INSERT INTO body_record VALUES ('$date', $height, $weight, $muscle, $fat, null)")
+        } else { // 저장하려는 사진이 있는 경우
+            var insQuery : String = "INSERT INTO body_record (date, height, weight, muscle_mass, fat_mass, body_photo) " +
+                    "VALUES ('$date', $height, $weight, $muscle, $fat, ?)"
+            var stmt : SQLiteStatement = sqldb.compileStatement(insQuery)
+            stmt.bindBlob(1, byteArray)
+            stmt.execute()
+        }
+    }
+
+    // 불러오기
+    private fun loadBody() {
+        et_height.text = null
+        et_weight.text = null
+        et_muscle.text = null
+        et_fat.text = null
+        body_image.setImageBitmap(null)
+        body_image.visibility = View.GONE
+
+        sqldb = myDBHelper.readableDatabase
+        val cursor = sqldb.rawQuery("SELECT * FROM body_record WHERE date = '${date}'", null)
+
+        if(cursor.moveToFirst()) { // 저장된 글이 있으면
+            var bitmap : Bitmap ?= null
+
+            var height = cursor.getFloat(cursor.getColumnIndex("height"))
+            var weight = cursor.getFloat(cursor.getColumnIndex("weight"))
+            var muscle = cursor.getFloat(cursor.getColumnIndex("muscle_mass"))
+            var fat = cursor.getFloat(cursor.getColumnIndex("fat_mass"))
+            bitmap = try {
+                val image : ByteArray ?= cursor.getBlob(cursor.getColumnIndex("body_photo"))
+                BitmapFactory.decodeByteArray(image, 0, image!!.size)
+            } catch (rte: RuntimeException) { // 이미지가 없을 경우
+                null
+            }
+
+            et_height.setText(height.toString())
+            et_weight.setText(weight.toString())
+            et_muscle.setText(muscle.toString())
+            et_fat.setText(fat.toString())
+            body_image.setImageBitmap(bitmap)
+            if (bitmap != null ) { // 등록한 이미지가 있다면
+                body_image.visibility = View.VISIBLE
+            } else { // 등록한 이미지가 없다면
+                body_image.visibility = View.GONE
+
+            }
+            isLoaded = true
+            sqldb.close()
+        }
+    }
+
+    private fun updateBody() {
+        sqldb = myDBHelper.writableDatabase
+
+        var height : Float = et_height.text.toString().toFloat()
+        var weight : Float = et_weight.text.toString().toFloat()
+        var muscle : Float = et_muscle.text.toString().toFloat()
+        var fat : Float = et_fat.text.toString().toFloat()
+        var image : Drawable = body_image.drawable
+        var byteArray : ByteArray ?= null
+
+        try {
+            // 이미지 파일을 Bitmap 파일로, Bitmap 파일을 byteArray로 변환시켜서 BLOB 형으로 DB에 저장
+            val bitmapDrawable = image as BitmapDrawable?
+            val bitmap = bitmapDrawable?.bitmap
+            val stream = ByteArrayOutputStream()
+            bitmap?.compress(Bitmap.CompressFormat.JPEG, 70, stream)
+            byteArray = stream.toByteArray()
+        } catch (cce: ClassCastException) { // 사진을 따로 저장안할 경우
+            Log.d("image null", "이미지 저장 안함")
+        }
+
+        if(byteArray == null) { // 저장하려는 사진이 없을 경우
+            sqldb.execSQL("UPDATE body_record SET " +
+                    "height = $height, weight = $weight, muscle_mass = $muscle, fat_mass = $fat, body_photo = null" +
+                    "where date = $date")
+        } else { // 저장하려는 사진이 있는 경우
+            var udtQuery : String = "UPDATE body_record SET " +
+                    "height = $height, weight = $weight, muscle_mass = $muscle, fat_mass = $fat, body_photo = ?" +
+                    "where date = '$date'"
+            var stmt : SQLiteStatement = sqldb.compileStatement(udtQuery)
+            stmt.bindBlob(1, byteArray)
+            stmt.execute()
+        }
+        sqldb.close()
+    }
+
+    private fun deleteBody() {
+        sqldb = myDBHelper.writableDatabase
+        sqldb.execSQL("DELETE FROM body_record WHERE date = '$date'")
+        sqldb.close()
     }
 }

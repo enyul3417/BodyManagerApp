@@ -45,11 +45,11 @@ class myDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
 
         // 신체 기록 테이블 생성
         db?.execSQL("CREATE TABLE body_record (" +
-                "date INTEGER PRIMARY KEY, " +
-                "height INTEGER, " +
-                "weight INTEGER, " +
-                "muscle_mass INTEGER, " +
-                "fat_mass INTEGER, " +
+                "date TEXT PRIMARY KEY, " +
+                "height REAL, " +
+                "weight REAL, " +
+                "muscle_mass REAL, " +
+                "fat_mass REAL, " +
                 "body_photo BLOB);")
     }
 

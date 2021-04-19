@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,8 +9,12 @@
 
     <!-- 앱 상단 -->
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout3"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <!-- 테마는 추후 수정 예정 -->
         <androidx.appcompat.widget.Toolbar
@@ -21,13 +25,13 @@
             android:theme="@style/Theme.AppCompat">
 
             <TextView
-                android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:gravity="center"
                 android:text="BodyManager"
-                android:textStyle="bold"
                 android:textColor="#ffffff"
-                android:textSize="30dp" />
+                android:textSize="30dp"
+                android:textStyle="bold" />
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -35,9 +39,13 @@
 
     <!-- 타이머-->
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center">
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout3">
 
         <TextView
             android:id="@+id/timer_hour"
@@ -45,50 +53,54 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:inputType="number"
+            android:maxLength="2"
             android:text="0"
-            android:textSize="50sp"
-            android:maxLength="2"/>
+            android:textSize="50sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:text=":"
-            android:textSize="50sp"
-            android:layout_marginTop="10dp"/>
+            android:textSize="50sp" />
 
         <TextView
             android:id="@+id/timer_minute"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="number"
-            android:text="00"
-            android:textSize="50sp"
             android:layout_marginTop="10dp"
-            android:maxLength="2"/>
+            android:inputType="number"
+            android:maxLength="2"
+            android:text="00"
+            android:textSize="50sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:text=":"
-            android:textSize="50sp"
-            android:layout_marginTop="10dp"/>
+            android:textSize="50sp" />
 
         <TextView
             android:id="@+id/timer_second"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="number"
-            android:text="00"
-            android:textSize="50sp"
             android:layout_marginTop="10dp"
-            android:maxLength="2"/>
+            android:inputType="number"
+            android:maxLength="2"
+            android:text="00"
+            android:textSize="50sp" />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
         <Button
             android:id="@+id/button_startnpause"
@@ -107,7 +119,11 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="429dp">
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_nav_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -177,7 +193,7 @@
             <FrameLayout
                 android:id="@+id/exercise_content"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
 
             <EditText
                 android:id="@+id/exercise_memo"
@@ -197,6 +213,9 @@
         android:background="@color/black"
         app:itemIconTint="@color/white"
         app:itemTextColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_nav" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

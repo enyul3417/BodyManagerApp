@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,8 +9,12 @@
 
     <!-- 앱 상단 -->
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <!-- 테마는 추후 수정 예정 -->
         <androidx.appcompat.widget.Toolbar
@@ -21,21 +25,28 @@
             android:theme="@style/Theme.AppCompat">
 
             <TextView
-                android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:gravity="center"
                 android:text="BodyManager"
-                android:textStyle="bold"
                 android:textColor="#ffffff"
-                android:textSize="30dp" />
+                android:textSize="30dp"
+                android:textStyle="bold" />
 
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 
+
+    <!-- bottom navigation view 배치 -->
     <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="match_parent"
-        android:layout_height="550dp">
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_nav_view"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -45,110 +56,124 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <TextView
                     android:id="@+id/text_body_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:layout_marginTop="10dp"
                     android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
                     android:layout_weight="5"
+                    android:gravity="center"
                     android:text="날짜를 선택해주세요"
                     android:textSize="18sp" />
+
                 <ImageButton
                     android:id="@+id/button_body_save"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_baseline_check_24"
-                    android:layout_marginHorizontal="10dp"/>
+                    android:layout_marginHorizontal="10dp"
+                    android:src="@drawable/ic_baseline_check_24" />
+
                 <ImageButton
                     android:id="@+id/button_body_delete"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_baseline_delete_forever_24"
-                    android:layout_marginRight="20dp"/>
+                    android:layout_marginRight="20dp"
+                    android:src="@drawable/ic_baseline_delete_forever_24" />
             </LinearLayout>
 
             <TableLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:stretchColumns="*"
-                android:background="@drawable/border"
                 android:layout_marginHorizontal="20dp"
-                android:layout_marginVertical="10dp">
+                android:layout_marginVertical="10dp"
+                android:background="@drawable/border"
+                android:stretchColumns="*">
+
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="center"
                         android:text="키 (cm)"
-                        android:textSize="15sp"
-                        android:gravity="center"/>
+                        android:textSize="15sp" />
 
                     <EditText
                         android:id="@+id/edit_text_body_height"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:textSize="15sp"
-                        android:inputType="number"/>
+                        android:inputType="numberDecimal"
+                        android:textSize="15sp" />
 
                 </TableRow>
+
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/border">
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="center"
                         android:text="체중 (kg)"
-                        android:textSize="15sp"
-                        android:gravity="center"/>
+                        android:textSize="15sp" />
+
                     <EditText
                         android:id="@+id/edit_text_body_weight"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="15sp"
                         android:gravity="center"
-                        android:inputType="number"/>
+                        android:inputType="numberDecimal"
+                        android:textSize="15sp" />
 
                 </TableRow>
+
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="center"
                         android:text="체지방량 (kg)"
-                        android:textSize="15sp"
-                        android:gravity="center"/>
+                        android:textSize="15sp" />
+
                     <EditText
                         android:id="@+id/edit_text_body_fat"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="15sp"
                         android:gravity="center"
-                        android:inputType="number"/>
+                        android:inputType="numberDecimal"
+                        android:textSize="15sp" />
 
                 </TableRow>
+
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/border">
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="center"
                         android:text="골격근량 (kg)"
-                        android:textSize="15sp"
-                        android:gravity="center"/>
+                        android:textSize="15sp" />
+
                     <EditText
                         android:id="@+id/edit_text_body_muscle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="15sp"
                         android:gravity="center"
-                        android:inputType="number"/>
+                        android:inputType="numberDecimal"
+                        android:textSize="15sp" />
 
                 </TableRow>
             </TableLayout>
@@ -157,42 +182,41 @@
                 android:id="@+id/button_read_inbody"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="인바디 읽어오기"
-                android:layout_marginHorizontal="20dp"/>
+                android:layout_marginHorizontal="20dp"
+                android:text="인바디 읽어오기" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp">
+
                 <ImageButton
                     android:id="@+id/button_body_camera"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:src="@drawable/ic_baseline_photo_camera_24"/>
+                    android:src="@drawable/ic_baseline_photo_camera_24" />
+
                 <ImageButton
                     android:id="@+id/button_body_image"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:src="@drawable/ic_baseline_image_24"/>
+                    android:src="@drawable/ic_baseline_image_24" />
             </LinearLayout>
 
             <ImageView
                 android:id="@+id/image_body"
-                android:layout_marginHorizontal="20dp"
                 android:layout_width="200dp"
                 android:layout_height="300dp"
                 android:layout_gravity="center"
+                android:layout_marginHorizontal="20dp"
                 android:src="@drawable/ic_baseline_image_24"
-                android:visibility="gone"/>
+                android:visibility="gone" />
         </LinearLayout>
 
     </ScrollView>
 
-
-
-    <!-- bottom navigation view 배치 -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav_view"
         android:layout_width="match_parent"
@@ -200,6 +224,9 @@
         android:background="@color/black"
         app:itemIconTint="@color/white"
         app:itemTextColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_nav" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
