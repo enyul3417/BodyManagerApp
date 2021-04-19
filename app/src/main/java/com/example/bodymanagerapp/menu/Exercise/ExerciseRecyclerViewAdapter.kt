@@ -33,94 +33,98 @@ class ExerciseRecyclerViewAdapter(var data : ArrayList<ExerciseData>, val contex
             //countTable.removeAllViews()
             name.text = data.name
 
-            if(data.time == "null" ) {
-                if(data.weight == 0) { // 세트와 횟수만
+            if(data.time!![0] == "null" ) {
+                if(data.weight!![0] == 0) { // 세트와 횟수만
                    weightNumTable.visibility = View.GONE
                     numTable.visibility = View.VISIBLE
                     timeTable.visibility = View.GONE
 
-                    val tableRow = TableRow(context)
-                    tableRow.layoutParams = TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT)
-                    numTable.addView(tableRow)
+                    for(i in 1..(data.set.size)) {
+                        val tableRow = TableRow(context)
+                        tableRow.layoutParams = TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT)
+                        numTable.addView(tableRow)
 
-                    // 세트 수
-                    val setTV = TextView(context)
-                    setTV.textSize = 15f // 글자 크기
-                    setTV.text = data.set.toString()
-                    setTV.gravity = 17 // 중앙 정렬
-                    tableRow.addView(setTV)
-                    // 횟수
-                    val numTV = TextView(context)
-                    numTV.textSize = 15f // 글자 크기
-                    numTV.text = data.num.toString()
-                    numTV.gravity = 17 // 중앙 정렬
-                    tableRow.addView(numTV)
+                        // 세트 수
+                        val setTV = TextView(context)
+                        setTV.textSize = 15f // 글자 크기
+                        setTV.text = data.set[i-1].toString()
+                        setTV.gravity = 17 // 중앙 정렬
+                        tableRow.addView(setTV)
+                        // 횟수
+                        val numTV = TextView(context)
+                        numTV.textSize = 15f // 글자 크기
+                        numTV.text = data.num?.get(i-1).toString()
+                        numTV.gravity = 17 // 중앙 정렬
+                        tableRow.addView(numTV)
 
-                    val checkBox = CheckBox(context)
-                    checkBox.gravity = 5 // 중앙 정렬
-                    tableRow.addView(checkBox)
-
+                        val checkBox = CheckBox(context)
+                        checkBox.gravity = 17 // 중앙 정렬
+                        tableRow.addView(checkBox)
+                    }
                 } else { // 세트, 횟수, 무게
                     weightNumTable.visibility = View.VISIBLE
                     numTable.visibility = View.GONE
                     timeTable.visibility = View.GONE
 
-                    val tableRow = TableRow(context)
-                    tableRow.layoutParams = TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT)
-                    weightNumTable.addView(tableRow)
+                    for(i in 1..(data.set.size)) {
+                        val tableRow = TableRow(context)
+                        tableRow.layoutParams = TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT)
+                        weightNumTable.addView(tableRow)
 
-                    // 세트 수
-                    val setTV = TextView(context)
-                    setTV.textSize = 15f // 글자 크기
-                    setTV.text = data.set.toString()
-                    setTV.gravity = 17 // 중앙 정렬
-                    tableRow.addView(setTV)
-                    // 무게
-                    val weightTV = TextView(context)
-                    weightTV.textSize = 15f // 글자 크기
-                    weightTV.text = data.weight.toString()
-                    weightTV.gravity = 17 // 중앙 정렬
-                    tableRow.addView(weightTV)
-                    // 횟수
-                    val numTV = TextView(context)
-                    numTV.textSize = 15f // 글자 크기
-                    numTV.text = data.num.toString()
-                    numTV.gravity = 17 // 중앙 정렬
-                    tableRow.addView(numTV)
+                        // 세트 수
+                        val setTV = TextView(context)
+                        setTV.textSize = 15f // 글자 크기
+                        setTV.text = data.set[i-1].toString()
+                        setTV.gravity = 17 // 중앙 정렬
+                        tableRow.addView(setTV)
+                        // 무게
+                        val weightTV = TextView(context)
+                        weightTV.textSize = 15f // 글자 크기
+                        weightTV.text = data.weight?.get(i-1).toString()
+                        weightTV.gravity = 17 // 중앙 정렬
+                        tableRow.addView(weightTV)
+                        // 횟수
+                        val numTV = TextView(context)
+                        numTV.textSize = 15f // 글자 크기
+                        numTV.text = data.num?.get(i-1).toString()
+                        numTV.gravity = 17 // 중앙 정렬
+                        tableRow.addView(numTV)
 
-                    val checkBox = CheckBox(context)
-                    checkBox.gravity = 5 // 중앙 정렬
-                    tableRow.addView(checkBox)
-
+                        val checkBox = CheckBox(context)
+                        checkBox.gravity = 17 // 중앙 정렬
+                        tableRow.addView(checkBox)
+                    }
                 }
             } else { // 세트, 시간
                 weightNumTable.visibility = View.GONE
                 numTable.visibility = View.GONE
                 timeTable.visibility = View.VISIBLE
 
-                val tableRow = TableRow(context)
-                tableRow.layoutParams = TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT)
-                timeTable.addView(tableRow)
+                for(i in 1..(data.set.size)) {
+                    val tableRow = TableRow(context)
+                    tableRow.layoutParams = TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT)
+                    timeTable.addView(tableRow)
 
-                // 세트 수
-                val setTV = TextView(context)
-                setTV.textSize = 15f // 글자 크기
-                setTV.text = data.set.toString()
-                setTV.gravity = 17 // 중앙 정렬
-                tableRow.addView(setTV)
-                // 시간
-                val timeTV = TextView(context)
-                timeTV.textSize = 15f // 글자 크기
-                timeTV.text = data.time.toString()
-                timeTV.gravity = 17 // 중앙 정렬
-                tableRow.addView(timeTV)
+                    // 세트 수
+                    val setTV = TextView(context)
+                    setTV.textSize = 15f // 글자 크기
+                    setTV.text = data.set[i-1].toString()
+                    setTV.gravity = 17 // 중앙 정렬
+                    tableRow.addView(setTV)
+                    // 시간
+                    val timeTV = TextView(context)
+                    timeTV.textSize = 15f // 글자 크기
+                    timeTV.text = data.time?.get(i-1).toString()
+                    timeTV.gravity = 17 // 중앙 정렬
+                    tableRow.addView(timeTV)
 
-                val checkBox = CheckBox(context)
-                checkBox.gravity = 5 // 중앙 정렬
-                tableRow.addView(checkBox)
+                    val checkBox = CheckBox(context)
+                    checkBox.gravity = 17 // 중앙 정렬
+                    tableRow.addView(checkBox)
+                }
             }
         }
     }

@@ -11,6 +11,8 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.icu.util.LocaleData
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -19,6 +21,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -32,6 +35,8 @@ import com.example.bodymanagerapp.menu.Diet.NewDietActivity
 import com.example.bodymanagerapp.menu.SettingsFragment
 import com.example.bodymanagerapp.myDBHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.timer
@@ -77,6 +82,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
     private var date : String = ""
     private var name : String = ""
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_exercise)
@@ -102,6 +108,9 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
 
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
         setSupportActionBar(toolbar)
+
+        var now = LocalDate.now()
+        date = now.format(DateTimeFormatter.ofPattern("yyyy년MM월dd일"))
 
         // 만보기 사용을 위한 센서 접근 권한
         var sensorPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)
@@ -138,6 +147,17 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
             Toast.makeText(this, "걸음 센서가 없습니다", Toast.LENGTH_SHORT).show()
         }
 
+        // 오늘 입력해둔 운동 불러오기
+        exerciseData.clear()
+        exerciseData.addAll(loadExercise())
+        if (exerciseData.size > 0) {
+            rvAdapter = ExerciseRecyclerViewAdapter(exerciseData, this, rv)
+            rv.adapter = rvAdapter
+            rv.layoutManager = LinearLayoutManager(this)
+            rv.visibility = View.VISIBLE
+        }
+
+
         button_start.setOnClickListener {
             isRunning = !isRunning
 
@@ -153,6 +173,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
 
         button_exercise_add.setOnClickListener {
             val intent : Intent = Intent(this, ExerciseAdditionActivity::class.java)
+            intent.putExtra("DATE", date)
             startActivityForResult(intent, REQUEST_CODE_ADD_EXERCISE)
         }
     }
@@ -290,10 +311,10 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         if(resultCode == Activity.RESULT_OK) {
             when(requestCode) {
                 100 -> {
-                    date = data?.getStringExtra("DATE").toString()
+                    //date = data?.getStringExtra("DATE").toString()
                     name = data?.getStringExtra("NAME").toString()
-                    exerciseData.clear()
-                    exerciseData.addAll(loadExercise())
+                    //exerciseData.clear()
+                    exerciseData.addAll(addExercise())
                     rvAdapter = ExerciseRecyclerViewAdapter(exerciseData, this, rv)
                     rv.adapter = rvAdapter
                     rv.layoutManager = LinearLayoutManager(this)
@@ -305,14 +326,43 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
 
     fun loadExercise() : ArrayList<ExerciseData>{
         Log.d("exercise", "신호 수신")
-/*
-        val nameTV = TextView(this)
-        nameTV.layoutParams = TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT)
-        nameTV.text = name
-        nameTV.textSize = 15f // 글자 크기
-        nameTV.gravity = 17 // 중앙 정렬
-        rv.addView(nameTV)*/
+
+        var data = ArrayList<ExerciseData>()
+        sqldb = myDBHelper.readableDatabase
+
+        // 중복 없이 운동명 가져오기
+        var nameCursor = sqldb.rawQuery("SELECT DISTINCT exercise_name FROM exercise_counter WHERE date = '${date}';", null)
+
+        if(nameCursor.moveToFirst()) { // 저장된 운동이 있으면
+            var name : String = ""
+
+            do{
+                name = nameCursor.getString(nameCursor.getColumnIndex("exercise_name")) // 이름 값 받기
+
+                // 이름에 해당하는 데이터 검색해서 추가하기
+                var cursor = sqldb.rawQuery("SELECT * FROM exercise_counter WHERE date = '${date}' AND exercise_name = '$name';", null)
+                if (cursor.moveToFirst()) {
+                    var set = ArrayList<Int>()
+                    var weight = ArrayList<Int>()
+                    var num = ArrayList<Int>()
+                    var time = ArrayList<String>()
+
+                    do {
+                        set.add(cursor.getInt(cursor.getColumnIndex("set_num")))
+                        weight.add(cursor.getInt(cursor.getColumnIndex("weight")))
+                        num.add(cursor.getInt(cursor.getColumnIndex("exercise_count")))
+                        time.add(cursor.getString(cursor.getColumnIndex("time")))
+                    } while (cursor.moveToNext())
+                    data.add(ExerciseData(name, set, num, weight, time))
+                }
+            } while (nameCursor.moveToNext())
+        }
+        sqldb.close()
+        return data
+    }
+
+    private fun addExercise() : ArrayList<ExerciseData> {
+        Log.d("exercise", "신호 수신")
 
         var data = ArrayList<ExerciseData>()
         sqldb = myDBHelper.readableDatabase
@@ -320,19 +370,19 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         var cursor = sqldb.rawQuery("SELECT * FROM exercise_counter WHERE date = '${date}' AND exercise_name = '${name}';", null)
 
         if(cursor.moveToFirst()) {
-            var set : Int = 0
-            var weight : Int ?= 0
-            var num : Int ?= 0
-            var time : String ?= ""
+            var set = ArrayList<Int>()
+            var weight = ArrayList<Int>()
+            var num = ArrayList<Int>()
+            var time = ArrayList<String>()
 
             do {
-                set = cursor.getInt(cursor.getColumnIndex("set_num"))
-                weight = cursor.getInt(cursor.getColumnIndex("weight"))
-                num = cursor.getInt(cursor.getColumnIndex("exercise_count"))
-                time = cursor.getString(cursor.getColumnIndex("time"))
-
-                data.add(ExerciseData(name, set, num, weight, time))
+                set.add(cursor.getInt(cursor.getColumnIndex("set_num")))
+                weight.add(cursor.getInt(cursor.getColumnIndex("weight")))
+                num.add(cursor.getInt(cursor.getColumnIndex("exercise_count")))
+                time.add(cursor.getString(cursor.getColumnIndex("time")))
             } while (cursor.moveToNext())
+
+            data.add(ExerciseData(name, set, num, weight, time))
             sqldb.close()
         }
 

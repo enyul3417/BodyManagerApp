@@ -70,8 +70,10 @@ class ExerciseAdditionActivity : AppCompatActivity() {
 
         button_exercise_add_done = findViewById(R.id.button_exercise_add_done)
 
-        var now = LocalDate.now() // 현재 날짜 가져오기
-        date = now.format(DateTimeFormatter.ofPattern("yyyy년MM월dd일"))
+//        var now = LocalDate.now() // 현재 날짜 가져오기
+//        date = now.format(DateTimeFormatter.ofPattern("yyyy년MM월dd일"))
+
+        date = intent.getStringExtra("DATE").toString()
 
         // 무게, 횟수 버튼 클릭 시
         button_weight_number.setOnClickListener{
@@ -191,10 +193,11 @@ class ExerciseAdditionActivity : AppCompatActivity() {
                 table_exercise_count.visibility = View.VISIBLE
             }
         }
+        // 운동 추가 완료
         button_exercise_add_done.setOnClickListener {
             addExercise()
             val intent = Intent(this, ExerciseActivity::class.java)
-            intent.putExtra("DATE", date)
+            //intent.putExtra("DATE", date)
             intent.putExtra("NAME", exercise_name.text.toString())
             setResult(Activity.RESULT_OK, intent)
             Toast.makeText(this, "추가되었습니다.", Toast.LENGTH_SHORT).show()
