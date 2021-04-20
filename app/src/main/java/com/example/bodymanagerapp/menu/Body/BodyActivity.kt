@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.sqlite.SQLiteDatabase
@@ -134,12 +135,20 @@ class BodyActivity : AppCompatActivity() {
         }
         button_delete.setOnClickListener {
             if(isLoaded) {
-                deleteBody()
-                var intent = Intent(this, BodyActivity::class.java)
-                intent.putExtra("DATE", date)
-                Toast.makeText(this, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
-                startActivity(intent)
-                finish()
+                var dig = AlertDialog.Builder(this) // 대화상자
+                dig.setTitle("삭제 확인") // 제목
+                dig.setMessage("삭제하시겠습니까?")
+                dig.setPositiveButton("확인") { dialog, which ->
+                    deleteBody()
+                    var intent = Intent(this, BodyActivity::class.java)
+                    intent.putExtra("DATE", date)
+                    Toast.makeText(this, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                    startActivity(intent)
+                    finish()
+                }
+
+                dig.setNegativeButton("취소", null)
+                dig.show()
             }
             else {
                 Toast.makeText(this, "저장된 데이터가 없습니다..", Toast.LENGTH_SHORT).show()
@@ -380,6 +389,7 @@ class BodyActivity : AppCompatActivity() {
         et_fat.text = null
         body_image.setImageBitmap(null)
         body_image.visibility = View.GONE
+        isLoaded = false
 
         sqldb = myDBHelper.readableDatabase
         val cursor = sqldb.rawQuery("SELECT * FROM body_record WHERE date = '${date}'", null)
