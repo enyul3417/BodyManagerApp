@@ -4,6 +4,8 @@ package com.example.bodymanagerapp.menu.Exercise
 import android.app.Activity
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -13,6 +15,7 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
 import com.example.bodymanagerapp.R
+import com.example.bodymanagerapp.menu.Diet.DietData
 import com.example.bodymanagerapp.myDBHelper
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -20,33 +23,35 @@ import kotlin.math.min
 
 class ExerciseAdditionActivity : AppCompatActivity() {
     lateinit var toolbar: Toolbar
+
     // DB
     lateinit var myDBHelper: myDBHelper
-    lateinit var sqldb : SQLiteDatabase
+    lateinit var sqldb: SQLiteDatabase
 
-    lateinit var exercise_name : EditText // 운동 이름
-    lateinit var set_num : EditText // 세트 수
+    lateinit var exercise_name: EditText // 운동 이름
+    lateinit var set_num: EditText // 세트 수
 
-    lateinit var button_weight_number : Button // 무게, 횟수
-    lateinit var button_number : Button // 횟수
-    lateinit var button_time : Button // 시간
+    lateinit var button_weight_number: Button // 무게, 횟수
+    lateinit var button_number: Button // 횟수
+    lateinit var button_time: Button // 시간
 
-    lateinit var table_weight_num : TableLayout // 무게, 횟수 테이블
-    lateinit var table_num : TableLayout // 횟수 테이블
-    lateinit var table_time : TableLayout // 시간 테이블
-    lateinit var table_exercise_count : TableLayout // 각각 값 입력 받는 곳
+    lateinit var table_weight_num: TableLayout // 무게, 횟수 테이블
+    lateinit var table_num: TableLayout // 횟수 테이블
+    lateinit var table_time: TableLayout // 시간 테이블
+    lateinit var table_exercise_count: TableLayout // 각각 값 입력 받는 곳
 
-    private var snum : Int = 0 // 세트 수
+    private var snum: Int = 0 // 세트 수
 
     // id 값에 사용
     //private val SET_ID : Int = 100 // 세트
-    private val NUM_ID : Int = 200 // 횟수
-    private val WEIGHT_ID : Int = 300 // 무게
-    private val TIME_ID : Int = 400 // 시
+    private val NUM_ID: Int = 200 // 횟수
+    private val WEIGHT_ID: Int = 300 // 무게
+    private val TIME_ID: Int = 400 // 시
 
-    lateinit var button_exercise_add_done : Button // 운동 추가 버튼
+    lateinit var button_exercise_add_done: Button // 운동 추가 버튼
 
-    lateinit var date : String // 현재 날짜
+    var date: String = "" // 현재 날짜
+    var name: String = "" // 운동 이름
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,130 +79,26 @@ class ExerciseAdditionActivity : AppCompatActivity() {
 //        date = now.format(DateTimeFormatter.ofPattern("yyyy년MM월dd일"))
 
         date = intent.getStringExtra("DATE").toString()
+        name = intent.getStringExtra("NAME").toString()
+
+        loadExercise()
 
         // 무게, 횟수 버튼 클릭 시
-        button_weight_number.setOnClickListener{
-            table_weight_num.visibility = View.VISIBLE
-            table_num.visibility = View.GONE
-            table_time.visibility = View.GONE
-
-            table_exercise_count.removeAllViews() // 기존에 만들어진 것들 다 없애기
-
-            try {
-                snum = Integer.parseInt(set_num.text.toString()) // 입력 없을시 에러 발생, 익셉션 처리 필요
-            }
-            catch (nfe : NumberFormatException) {
-                snum = 1;
-            }
-                for(i in 1..snum) {
-                    val tableRow = TableRow(this)
-                    tableRow.layoutParams = TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT)
-                    table_exercise_count.addView(tableRow)
-                    // 세트 수
-                    val setTV = TextView(this)
-                    //setTV.id = SET_ID+i // 아이디 값
-                    setTV.textSize = 15f // 글자 크기
-                    setTV.text = "$i"
-                    setTV.gravity = 17 // 중앙 정렬
-                    tableRow.addView(setTV)
-                    // 무게
-                    val weightET = EditText(this)
-                    weightET.id = WEIGHT_ID+i // 아이디 값
-                    weightET.textSize = 15f // 글자 크기
-                    weightET.gravity = 17 // 중앙 정렬
-                    weightET.inputType = 2 // 숫자 키패트
-                    tableRow.addView(weightET)
-                    // 횟수
-                    val numET = EditText(this)
-                    numET.id = NUM_ID+i // 아이디 값
-                    numET.textSize = 15f // 글자 크기
-                    numET.gravity = 17 // 중앙 정렬
-                    numET.inputType = 2 // 숫자 키패트
-                    tableRow.addView(numET)
-
-                    table_exercise_count.visibility = View.VISIBLE
-                }
+        button_weight_number.setOnClickListener {
+            setWeightNumMode()
         }
         // 횟수 버튼 클릭 시
         button_number.setOnClickListener {
-            table_weight_num.visibility = View.GONE
-            table_num.visibility = View.VISIBLE
-            table_time.visibility = View.GONE
-
-            table_exercise_count.removeAllViews() // 기존에 만들어진 것들 다 없애기
-
-            try {
-                snum = Integer.parseInt(set_num.text.toString()) // 입력 없을시 에러 발생, 익셉션 처리 필요
-            }
-            catch (nfe : NumberFormatException) {
-                snum = 1;
-            }
-            for(i in 1..snum) {
-                val tableRow = TableRow(this)
-                tableRow.layoutParams = TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT)
-                table_exercise_count.addView(tableRow)
-                // 세트 수
-                val setTV = TextView(this)
-                //setTV.id = SET_ID+i // 아이디 값
-                setTV.textSize = 15f // 글자 크기
-                setTV.text = "$i"
-                setTV.gravity = 17 // 중앙 정렬
-                tableRow.addView(setTV)
-                // 횟수
-                val numET = EditText(this)
-                numET.id = NUM_ID+i // 아이디 값
-                numET.textSize = 15f // 글자 크기
-                numET.gravity = 17 // 중앙 정렬
-                numET.inputType = 2 // 숫자 키패트
-                tableRow.addView(numET)
-
-                table_exercise_count.visibility = View.VISIBLE
-            }
+            setNumMode()
         }
         // 시간 버튼 클릭 시
         button_time.setOnClickListener {
-            table_weight_num.visibility = View.GONE
-            table_num.visibility = View.GONE
-            table_time.visibility = View.VISIBLE
-
-            table_exercise_count.removeAllViews() // 기존에 만들어진 것들 다 없애기
-
-            try {
-                snum = Integer.parseInt(set_num.text.toString()) // 입력 없을시 에러 발생, 익셉션 처리 필요
-            }
-            catch (nfe : NumberFormatException) {
-                snum = 1;
-            }
-            for(i in 1..snum) {
-                val tableRow = TableRow(this)
-                tableRow.layoutParams = TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT)
-                table_exercise_count.addView(tableRow)
-                // 세트 수
-                val setTV = TextView(this)
-                //setTV.id = SET_ID+i // 아이디 값
-                setTV.textSize = 15f // 글자 크기
-                setTV.text = "$i"
-                setTV.gravity = 17 // 중앙 정렬
-                tableRow.addView(setTV)
-                // 시간
-                val hourET = EditText(this)
-                hourET.id = TIME_ID+i // 아이디 값
-                hourET.textSize = 15f // 글자 크기
-                hourET.gravity = 17 // 중앙 정렬
-                hourET.inputType = 4 // 숫자 키패트
-                tableRow.addView(hourET)
-
-                table_exercise_count.visibility = View.VISIBLE
-            }
+            setTimeMode()
         }
         // 운동 추가 완료
         button_exercise_add_done.setOnClickListener {
             addExercise()
             val intent = Intent(this, ExerciseActivity::class.java)
-            //intent.putExtra("DATE", date)
             intent.putExtra("NAME", exercise_name.text.toString())
             setResult(Activity.RESULT_OK, intent)
             Toast.makeText(this, "추가되었습니다.", Toast.LENGTH_SHORT).show()
@@ -250,6 +151,143 @@ class ExerciseAdditionActivity : AppCompatActivity() {
         for(i in 1..snum) {
             sqldb.execSQL("INSERT INTO exercise_counter VALUES ('$date','${exercise_name.text.toString()}', " +
                     "$i, ${weightArray?.get(i-1)}, ${numArray?.get(i-1)}, '${timeArray?.get(i-1)}', 0);")
+        }
+    }
+
+    private fun loadExercise() {
+        sqldb = myDBHelper.readableDatabase
+        var cursor = sqldb.rawQuery("SELECT * FROM exercise_counter WHERE date = '${date}' AND exercise_name = '$name';", null)
+        if(cursor.moveToFirst()) { // 저장된 글이 있으면
+            set_num.setText(cursor.count.toString())
+            exercise_name.setText(name)
+
+            var weight : Int = 0
+            var num : Int = 0
+            var time : String = ""
+
+            do{
+                weight = cursor.getInt(cursor.getColumnIndex("weight"))
+                weight = cursor.getInt(cursor.getColumnIndex("exercise_count"))
+                time = cursor.getString(cursor.getColumnIndex("time"))
+
+            } while (cursor.moveToNext())
+            sqldb.close()
+        } else { // 저장된 글이 없으면
+            Toast.makeText(this, "저장된 식단이 없습니다.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun setWeightNumMode() {
+        table_weight_num.visibility = View.VISIBLE
+        table_num.visibility = View.GONE
+        table_time.visibility = View.GONE
+
+        table_exercise_count.removeAllViews() // 기존에 만들어진 것들 다 없애기
+
+        try {
+            snum = Integer.parseInt(set_num.text.toString()) // 입력 없을시 에러 발생, 익셉션 처리 필요
+        } catch (nfe: NumberFormatException) {
+            snum = 1;
+        }
+        for (i in 1..snum) {
+            val tableRow = TableRow(this)
+            tableRow.layoutParams = TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT)
+            table_exercise_count.addView(tableRow)
+            // 세트 수
+            val setTV = TextView(this)
+            //setTV.id = SET_ID+i // 아이디 값
+            setTV.textSize = 15f // 글자 크기
+            setTV.text = "$i"
+            setTV.gravity = 17 // 중앙 정렬
+            tableRow.addView(setTV)
+            // 무게
+            val weightET = EditText(this)
+            weightET.id = WEIGHT_ID + i // 아이디 값
+            weightET.textSize = 15f // 글자 크기
+            weightET.gravity = 17 // 중앙 정렬
+            weightET.inputType = 2 // 숫자 키패트
+            tableRow.addView(weightET)
+            // 횟수
+            val numET = EditText(this)
+            numET.id = NUM_ID + i // 아이디 값
+            numET.textSize = 15f // 글자 크기
+            numET.gravity = 17 // 중앙 정렬
+            numET.inputType = 2 // 숫자 키패트
+            tableRow.addView(numET)
+
+            table_exercise_count.visibility = View.VISIBLE
+        }
+    }
+
+    private fun setNumMode() {
+        table_weight_num.visibility = View.GONE
+        table_num.visibility = View.VISIBLE
+        table_time.visibility = View.GONE
+
+        table_exercise_count.removeAllViews() // 기존에 만들어진 것들 다 없애기
+
+        try {
+            snum = Integer.parseInt(set_num.text.toString()) // 입력 없을시 에러 발생, 익셉션 처리 필요
+        } catch (nfe: NumberFormatException) {
+            snum = 1;
+        }
+        for (i in 1..snum) {
+            val tableRow = TableRow(this)
+            tableRow.layoutParams = TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT)
+            table_exercise_count.addView(tableRow)
+            // 세트 수
+            val setTV = TextView(this)
+            //setTV.id = SET_ID+i // 아이디 값
+            setTV.textSize = 15f // 글자 크기
+            setTV.text = "$i"
+            setTV.gravity = 17 // 중앙 정렬
+            tableRow.addView(setTV)
+            // 횟수
+            val numET = EditText(this)
+            numET.id = NUM_ID + i // 아이디 값
+            numET.textSize = 15f // 글자 크기
+            numET.gravity = 17 // 중앙 정렬
+            numET.inputType = 2 // 숫자 키패트
+            tableRow.addView(numET)
+
+            table_exercise_count.visibility = View.VISIBLE
+        }
+    }
+    private fun setTimeMode() {
+        table_weight_num.visibility = View.GONE
+        table_num.visibility = View.GONE
+        table_time.visibility = View.VISIBLE
+
+        table_exercise_count.removeAllViews() // 기존에 만들어진 것들 다 없애기
+
+        try {
+            snum = Integer.parseInt(set_num.text.toString()) // 입력 없을시 에러 발생, 익셉션 처리 필요
+        } catch (nfe: NumberFormatException) {
+            snum = 1;
+        }
+        for (i in 1..snum) {
+            val tableRow = TableRow(this)
+            tableRow.layoutParams = TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT)
+            table_exercise_count.addView(tableRow)
+            // 세트 수
+            val setTV = TextView(this)
+            //setTV.id = SET_ID+i // 아이디 값
+            setTV.textSize = 15f // 글자 크기
+            setTV.text = "$i"
+            setTV.gravity = 17 // 중앙 정렬
+            tableRow.addView(setTV)
+            // 시간
+            val hourET = EditText(this)
+            hourET.id = TIME_ID + i // 아이디 값
+            hourET.textSize = 15f // 글자 크기
+            hourET.gravity = 17 // 중앙 정렬
+            hourET.inputType = 4 // 숫자 키패트
+            tableRow.addView(hourET)
+
+            table_exercise_count.visibility = View.VISIBLE
         }
     }
 }

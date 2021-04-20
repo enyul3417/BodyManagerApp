@@ -310,10 +310,8 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode == Activity.RESULT_OK) {
             when(requestCode) {
-                100 -> {
-                    //date = data?.getStringExtra("DATE").toString()
+                REQUEST_CODE_ADD_EXERCISE -> {
                     name = data?.getStringExtra("NAME").toString()
-                    //exerciseData.clear()
                     exerciseData.addAll(addExercise())
                     rvAdapter = ExerciseRecyclerViewAdapter(exerciseData, this, rv)
                     rv.adapter = rvAdapter
@@ -353,7 +351,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
                         num.add(cursor.getInt(cursor.getColumnIndex("exercise_count")))
                         time.add(cursor.getString(cursor.getColumnIndex("time")))
                     } while (cursor.moveToNext())
-                    data.add(ExerciseData(name, set, num, weight, time))
+                    data.add(ExerciseData(date, name, set, num, weight, time))
                 }
             } while (nameCursor.moveToNext())
         }
@@ -382,7 +380,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
                 time.add(cursor.getString(cursor.getColumnIndex("time")))
             } while (cursor.moveToNext())
 
-            data.add(ExerciseData(name, set, num, weight, time))
+            data.add(ExerciseData(date, name, set, num, weight, time))
             sqldb.close()
         }
 

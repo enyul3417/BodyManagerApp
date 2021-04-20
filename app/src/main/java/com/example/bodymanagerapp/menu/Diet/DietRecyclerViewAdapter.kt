@@ -20,8 +20,8 @@ class DietRecyclerViewAdapter(var data:ArrayList<DietData>, val context: Context
     var myDBHelper: myDBHelper = myDBHelper(context)
     lateinit var sqldb: SQLiteDatabase
 
-    var pos:Int = -1
-    var id:Int = 0
+    var pos : Int = -1
+    var id : Int = 0
 
     lateinit var delete : MenuItem
     lateinit var update : MenuItem
@@ -42,7 +42,7 @@ class DietRecyclerViewAdapter(var data:ArrayList<DietData>, val context: Context
 
                 delete.setOnMenuItemClickListener {
                     sqldb = myDBHelper.writableDatabase
-                    sqldb.execSQL("DELETE FROM diet_record WHERE DId = $id")
+                    sqldb.execSQL("DELETE FROM diet_record WHERE DId = $id;")
                     sqldb.close()
 
                     return@setOnMenuItemClickListener true
