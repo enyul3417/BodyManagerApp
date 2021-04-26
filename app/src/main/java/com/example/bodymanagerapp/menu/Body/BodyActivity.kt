@@ -36,6 +36,7 @@ import com.example.bodymanagerapp.menu.Diet.DietData
 import com.example.bodymanagerapp.menu.Diet.DietRecyclerViewAdapter
 import com.example.bodymanagerapp.menu.Diet.NewDietActivity
 import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
+import com.example.bodymanagerapp.menu.Stats.StatsActivity
 import com.example.bodymanagerapp.myDBHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.gun0912.tedpermission.PermissionListener
@@ -187,6 +188,8 @@ class BodyActivity : AppCompatActivity() {
 
                 // 상태 메뉴 선택 시
                 R.id.navigation_stats -> {
+                    var intent : Intent = Intent(this, StatsActivity::class.java)
+                    startActivity(intent)
                     return@OnNavigationItemSelectedListener true
                 }
 

@@ -33,6 +33,7 @@ import com.example.bodymanagerapp.menu.Body.BodyActivity
 import com.example.bodymanagerapp.menu.Diet.DietActivity
 import com.example.bodymanagerapp.menu.Diet.NewDietActivity
 import com.example.bodymanagerapp.menu.SettingsFragment
+import com.example.bodymanagerapp.menu.Stats.StatsActivity
 import com.example.bodymanagerapp.myDBHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.time.LocalDate
@@ -208,6 +209,8 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
 
                     // 상태 메뉴 선택 시
                     R.id.navigation_stats -> {
+                        var intent : Intent = Intent(this, StatsActivity::class.java)
+                        startActivity(intent)
                         return@OnNavigationItemSelectedListener true
                     }
 

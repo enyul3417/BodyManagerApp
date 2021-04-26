@@ -1,39 +1,33 @@
-package com.example.bodymanagerapp
+package com.example.bodymanagerapp.menu.Stats
 
 import android.content.Intent
-import android.database.sqlite.SQLiteDatabase
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import com.example.bodymanagerapp.menu.*
+import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.menu.Body.BodyActivity
 import com.example.bodymanagerapp.menu.Diet.DietActivity
 import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
-import com.example.bodymanagerapp.menu.Stats.BodyStatsFragment
+import com.example.bodymanagerapp.menu.PetFragment
+import com.example.bodymanagerapp.menu.SettingsFragment
+import com.example.bodymanagerapp.menu.StatsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class MainActivity : AppCompatActivity() {
+class StatsActivity : AppCompatActivity() {
     // BottomNavigationView
     lateinit var bottom_nav_view : BottomNavigationView
     lateinit var toolbar: Toolbar
 
-    // DB
-    lateinit var myDBHelper: myDBHelper
-    lateinit var sqldb : SQLiteDatabase
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        myDBHelper = myDBHelper(this)
-        sqldb = myDBHelper.writableDatabase
+        setContentView(R.layout.activity_stats)
 
         bottom_nav_view = findViewById(R.id.bottom_nav_view)
         toolbar = findViewById(R.id.toolbar)
 
-        replaceFragment(BodyStatsFragment())
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
         setSupportActionBar(toolbar)
     }
@@ -43,31 +37,35 @@ class MainActivity : AppCompatActivity() {
         when(item.itemId) {
             // 운동 메뉴 선택 시
             R.id.navigation_exercise -> {
-                //replaceFragment(ExerciseFragment())
+                var intent : Intent = Intent(this, ExerciseActivity::class.java)
+                startActivity(intent)
                 return@OnNavigationItemSelectedListener true
             }
 
             // 식단 메뉴 선택 시
             R.id.navigation_diet -> {
-                //replaceFragment(DietFragment())
+                var intent : Intent = Intent(this, DietActivity::class.java)
+                startActivity(intent)
                 return@OnNavigationItemSelectedListener true
             }
 
             // 신체 메뉴 선택 시
             R.id.navigation_body -> {
-                //replaceFragment(BodyFragment())
+                var intent : Intent = Intent(this, BodyActivity::class.java)
+                startActivity(intent)
                 return@OnNavigationItemSelectedListener true
             }
 
             // 상태 메뉴 선택 시
             R.id.navigation_stats -> {
-                //replaceFragment(StatsFragment())
+                var intent : Intent = Intent(this, StatsActivity::class.java)
+                startActivity(intent)
                 return@OnNavigationItemSelectedListener true
             }
 
             // 펫 선택 시
             R.id.navigation_pet -> {
-                //replaceFragment(PetFragment())
+
                 return@OnNavigationItemSelectedListener true
             }
 
@@ -79,7 +77,7 @@ class MainActivity : AppCompatActivity() {
     // 하단 메뉴 선택 시 fragment 변경 기능
     fun replaceFragment(fragment : Fragment) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.content_layout, fragment)
+        fragmentTransaction.replace(R.id.frame_stats, fragment)
         fragmentTransaction.commit()
     }
 
@@ -92,7 +90,7 @@ class MainActivity : AppCompatActivity() {
         when(item?.itemId)
         {
             R.id.menu_settings -> {
-                replaceFragment(SettingsFragment())
+
                 return true
             }
         }

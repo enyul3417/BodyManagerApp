@@ -2,14 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.bodymanagerapp">
     <!-- 만보기 사용을 위한 권한 설정 -->
-    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
-    <!-- 저장 권한 설정 -->
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" /> <!-- 저장 권한 설정 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <!-- 카메라 권한 설정 -->
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <!-- 카메라 기능이 꼭 필요하지 않을 경우-->
-    <uses-feature android:name="android.hardware.camera" android:required="false"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 카메라 권한 설정 -->
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- 카메라 기능이 꼭 필요하지 않을 경우 -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -18,7 +17,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Design.NoActionBar">
-        <activity android:name=".menu.Body.BodyActivity"></activity>
+        <activity android:name=".menu.Stats.StatsActivity"></activity>
+        <activity android:name=".menu.Body.BodyActivity" />
         <activity android:name=".menu.Exercise.ExerciseActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,17 +29,17 @@
         <activity android:name=".menu.Diet.NewDietActivity" />
         <activity android:name=".menu.Diet.DietActivity" />
         <activity android:name=".menu.Exercise.ExerciseAdditionActivity" />
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity" />
+
         <provider
-            android:authorities="com.example.bodymanagerapp.fileprovider"
             android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.bodymanagerapp.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
-
     </application>
 
 </manifest>
