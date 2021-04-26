@@ -15,10 +15,7 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
 import com.example.bodymanagerapp.R
-import com.example.bodymanagerapp.menu.Diet.DietData
 import com.example.bodymanagerapp.myDBHelper
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import kotlin.math.min
 
 class ExerciseAdditionActivity : AppCompatActivity() {
@@ -50,7 +47,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
 
     lateinit var button_exercise_add_done: Button // 운동 추가 버튼
 
-    var date: String = "" // 현재 날짜
+    var date: Int = 0 // 현재 날짜
     var name: String = "" // 운동 이름
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -75,10 +72,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
 
         button_exercise_add_done = findViewById(R.id.button_exercise_add_done)
 
-//        var now = LocalDate.now() // 현재 날짜 가져오기
-//        date = now.format(DateTimeFormatter.ofPattern("yyyy년MM월dd일"))
-
-        date = intent.getStringExtra("DATE").toString()
+        date = intent.getIntExtra("DATE", 0)
         name = intent.getStringExtra("NAME").toString()
 
         loadExercise()
@@ -149,14 +143,14 @@ class ExerciseAdditionActivity : AppCompatActivity() {
 
         // db에 저장하기
         for(i in 1..snum) {
-            sqldb.execSQL("INSERT INTO exercise_counter VALUES ('$date','${exercise_name.text.toString()}', " +
+            sqldb.execSQL("INSERT INTO exercise_counter VALUES ($date,'${exercise_name.text}', " +
                     "$i, ${weightArray?.get(i-1)}, ${numArray?.get(i-1)}, '${timeArray?.get(i-1)}', 0);")
         }
     }
 
     private fun loadExercise() {
         sqldb = myDBHelper.readableDatabase
-        var cursor = sqldb.rawQuery("SELECT * FROM exercise_counter WHERE date = '${date}' AND exercise_name = '$name';", null)
+        var cursor = sqldb.rawQuery("SELECT * FROM exercise_counter WHERE date = $date AND exercise_name = '$name';", null)
         if(cursor.moveToFirst()) { // 저장된 글이 있으면
             set_num.setText(cursor.count.toString())
             exercise_name.setText(name)

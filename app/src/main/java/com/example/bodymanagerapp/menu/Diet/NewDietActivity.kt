@@ -44,7 +44,7 @@ class NewDietActivity : AppCompatActivity() {
     lateinit var image_diet : ImageView // 식단 사진
     lateinit var diet_memo : EditText // 메모
 
-    var date : String = ""
+    var date : Int = 0
     var id : Int = 0
 
     var currenturi: Uri?=null // 사진 uri
@@ -56,7 +56,7 @@ class NewDietActivity : AppCompatActivity() {
         myDBHelper = myDBHelper(this)
 
         var intent : Intent = getIntent()
-        date = intent.getStringExtra("DATE").toString()
+        date = intent.getIntExtra("DATE", 0)
         id = intent.getIntExtra("ID", 0)
 
         button_diet_save = findViewById(R.id.button_diet_save) // 저장 버튼
@@ -157,7 +157,6 @@ class NewDietActivity : AppCompatActivity() {
         var imgView = findViewById<ImageView>(R.id.image_diet)
         var memoView = findViewById<TextView>(R.id.diet_memo)
 
-        var diet_date : String = date
         var diet_time : String = timeview.text.toString()
         var image : Drawable = imgView.drawable
         var memo : String = memoView.text.toString()
@@ -175,10 +174,10 @@ class NewDietActivity : AppCompatActivity() {
         }
 
         if(byteArray == null) { // 저장하려는 사진이 없을 경우
-            sqldb.execSQL("INSERT INTO diet_record VALUES (null,'$diet_date','$diet_time', null,'$memo')")
+            sqldb.execSQL("INSERT INTO diet_record VALUES (null, $date,'$diet_time', null,'$memo')")
         } else { // 저장하려는 사진이 있는 경우
             var insQuery : String = "INSERT INTO diet_record (DId, date, time, diet_photo, memo) " +
-                    "VALUES (null, '$diet_date', '$diet_time', ?, '$memo')"
+                    "VALUES (null, '$date', '$diet_time', ?, '$memo')"
             var stmt : SQLiteStatement = sqldb.compileStatement(insQuery)
             stmt.bindBlob(1, byteArray)
             stmt.execute()

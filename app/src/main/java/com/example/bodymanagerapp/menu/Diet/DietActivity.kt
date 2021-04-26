@@ -46,7 +46,7 @@ class DietActivity : AppCompatActivity() {
     lateinit var text_date: TextView // 날짜
     lateinit var button_diet_add: Button // 식단 추가 버튼
     lateinit var button_diet_refresh : ImageButton
-    var date : String = ""
+    var date : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,8 +70,16 @@ class DietActivity : AppCompatActivity() {
             val cal = Calendar.getInstance()
             data.clear()
             DatePickerDialog(this, DatePickerDialog.OnDateSetListener { datePicker, y, m, d ->
-                date = "${y}년 ${m}월 ${d}일"
-                text_date.text = date
+                var ymd = "$y"
+
+                ymd += if(m < 10)
+                    "0$m"
+                else "$m"
+                ymd += if(d < 10)
+                    "0$d"
+                else "$d"
+                date = ymd.toInt()
+                text_date.text = "${y}년 ${m}월 ${d}일"
                 // 해당 날짜에 저장된 식단들 불러오기
                 data.addAll(loadDiet())
                 rvAdapter = DietRecyclerViewAdapter(data, this, rv) {
@@ -88,7 +96,7 @@ class DietActivity : AppCompatActivity() {
 
         // 식단 추가 버튼 클릭 시
         button_diet_add.setOnClickListener {
-            if(date == "") {
+            if(date == 0) {
                 Toast.makeText(this, "날짜를 선택해주세요.", Toast.LENGTH_SHORT).show()
             }
             else {
@@ -176,7 +184,7 @@ class DietActivity : AppCompatActivity() {
     private fun loadDiet() : ArrayList<DietData> {
         var dietData = ArrayList<DietData>()
         sqldb = myDBHelper.readableDatabase
-        cursor = sqldb.rawQuery("SELECT * FROM diet_record WHERE date = '${date}'", null)
+        cursor = sqldb.rawQuery("SELECT * FROM diet_record WHERE date = $date", null)
 
         if(cursor.moveToFirst()) { // 저장된 글이 있으면
             var id : Int = 0

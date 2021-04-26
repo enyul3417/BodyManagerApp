@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,6 +19,7 @@ import androidx.fragment.app.Fragment
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.myDBHelper
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
@@ -78,13 +80,6 @@ class BodyStatsFragment : Fragment() {
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH) + 1
         val date = calendar.get(Calendar.DATE)
-        /*var ymd = "$year"
-        ymd += if(month < 10)
-            "0${month+1}"
-        else "${month+1}"
-        ymd += if(date < 10)
-            "0$date"
-        else "$date"*/
         now_date = dateToInt(year, month, date)
 
         tv_start_date = view.findViewById(R.id.tv_sb_start_date)
@@ -144,22 +139,22 @@ class BodyStatsFragment : Fragment() {
 
         btn_height.setOnClickListener {
             loadData("height")
-            lineChartGraph(view, data_list, date_list)
+            lineChartGraph(view, data_list, date_list, "키")
         }
 
         btn_weight.setOnClickListener {
             loadData("weight")
-            lineChartGraph(view, data_list, date_list)
+            lineChartGraph(view, data_list, date_list, "몸무게")
         }
 
         btn_muscle.setOnClickListener {
             loadData("muscle_mass")
-            lineChartGraph(view, data_list, date_list)
+            lineChartGraph(view, data_list, date_list, "골격근량")
         }
 
         btn_fat.setOnClickListener {
             loadData("fat_mass")
-            lineChartGraph(view, data_list, date_list)
+            lineChartGraph(view, data_list, date_list, "체지방량")
         }
 
         btn_body_img.setOnClickListener {
@@ -209,29 +204,49 @@ class BodyStatsFragment : Fragment() {
     }
 
     // 이미지를 제외한 값들의 그래프
-    private fun lineChartGraph(view : View,  data_list : ArrayList<Float>, date_list : ArrayList<Int> ) {
+    private fun lineChartGraph(view : View, data_list : ArrayList<Float>, date_list : ArrayList<Int>, str : String ) {
         var lineChart : LineChart = view.findViewById(R.id.sb_chart)
 
-        var entries : ArrayList<Entry> = ArrayList()
+        var entries : ArrayList<Entry> = ArrayList() // 그래프에서 표현하려는 데이터 리스트
         for(i in 0 until data_list.size) {
             entries.add(Entry(data_list[i], i))
         }
 
-        var depenses : LineDataSet = LineDataSet(entries, "# of Calls")
+        val xAxis : XAxis = lineChart.xAxis // x축 가져오기
+        xAxis.apply {
+            position = XAxis.XAxisPosition.BOTTOM // x축 데이터의 위치를 아래로
+            textSize = 10f // 텍스트 크기 지정
+            setDrawGridLines(false) // 배경 그리드 라인
+            //xAxis.setAxisMaxValue(end_date.toFloat())
+            //xAxis.setAxisMinValue(start_date.toFloat())
+        }
+
+        lineChart.apply { // 라인차트 세팅
+            axisRight.isEnabled = false // y축의 오른쪽 데이터 비활성화
+            axisLeft.textColor = Color.BLACK // y축 왼쪽 데이터 글자 색
+            setBackgroundColor(Color.WHITE) // 배경 색상
+            setDescription("날짜") // description 글자
+            setDescriptionTextSize(12f) // description 글자 크기
+        }
+
+        var depenses : LineDataSet = LineDataSet(entries, "$str")
         depenses.axisDependency = YAxis.AxisDependency.LEFT
 
         var dates : ArrayList<String> = ArrayList()
         for(i in 0 until date_list.size) {
-            dates.add(date_list[i].toString())
+            val year = date_list[i] / 10000
+            val month = (date_list[i] % 10000) / 100
+            val date = date_list[i] % 100
+            dates.add("${year}년 ${month}월 ${date}일")
         }
 
         var data_sets : ArrayList<ILineDataSet> = ArrayList()
         data_sets.add(depenses)
         var data : LineData = LineData(dates, data_sets)
-        depenses.setColors(ColorTemplate.COLORFUL_COLORS)
+        depenses.color = Color.BLACK
+        depenses.setCircleColor(Color.BLACK)
 
         lineChart.data = data
-        lineChart.animateXY(1000, 1000)
         lineChart.invalidate()
     }
 

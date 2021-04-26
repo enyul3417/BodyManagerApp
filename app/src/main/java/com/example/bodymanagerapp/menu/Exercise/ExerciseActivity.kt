@@ -80,7 +80,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
 
     // 운동
     lateinit var button_exercise_add :Button
-    private var date : String = ""
+    private var date_format : String = ""
     private var name : String = ""
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -111,7 +111,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         setSupportActionBar(toolbar)
 
         var now = LocalDate.now()
-        date = now.format(DateTimeFormatter.ofPattern("yyyy년MM월dd일"))
+        date_format = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
 
         // 만보기 사용을 위한 센서 접근 권한
         var sensorPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)
@@ -174,7 +174,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
 
         button_exercise_add.setOnClickListener {
             val intent : Intent = Intent(this, ExerciseAdditionActivity::class.java)
-            intent.putExtra("DATE", date)
+            intent.putExtra("DATE", date_format)
             startActivityForResult(intent, REQUEST_CODE_ADD_EXERCISE)
         }
     }
@@ -332,7 +332,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         sqldb = myDBHelper.readableDatabase
 
         // 중복 없이 운동명 가져오기
-        var nameCursor = sqldb.rawQuery("SELECT DISTINCT exercise_name FROM exercise_counter WHERE date = '${date}';", null)
+        var nameCursor = sqldb.rawQuery("SELECT DISTINCT exercise_name FROM exercise_counter WHERE date = ${date_format.toInt()};", null)
 
         if(nameCursor.moveToFirst()) { // 저장된 운동이 있으면
             var name : String = ""
@@ -341,7 +341,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
                 name = nameCursor.getString(nameCursor.getColumnIndex("exercise_name")) // 이름 값 받기
 
                 // 이름에 해당하는 데이터 검색해서 추가하기
-                var cursor = sqldb.rawQuery("SELECT * FROM exercise_counter WHERE date = '${date}' AND exercise_name = '$name';", null)
+                var cursor = sqldb.rawQuery("SELECT * FROM exercise_counter WHERE date = ${date_format.toInt()} AND exercise_name = '$name';", null)
                 if (cursor.moveToFirst()) {
                     var set = ArrayList<Int>()
                     var weight = ArrayList<Int>()
@@ -354,7 +354,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
                         num.add(cursor.getInt(cursor.getColumnIndex("exercise_count")))
                         time.add(cursor.getString(cursor.getColumnIndex("time")))
                     } while (cursor.moveToNext())
-                    data.add(ExerciseData(date, name, set, num, weight, time))
+                    data.add(ExerciseData(date_format.toInt(), name, set, num, weight, time))
                 }
             } while (nameCursor.moveToNext())
         }
@@ -368,7 +368,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         var data = ArrayList<ExerciseData>()
         sqldb = myDBHelper.readableDatabase
 
-        var cursor = sqldb.rawQuery("SELECT * FROM exercise_counter WHERE date = '${date}' AND exercise_name = '${name}';", null)
+        var cursor = sqldb.rawQuery("SELECT * FROM exercise_counter WHERE date = ${date_format.toInt()} AND exercise_name = '${name}';", null)
 
         if(cursor.moveToFirst()) {
             var set = ArrayList<Int>()
@@ -383,7 +383,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
                 time.add(cursor.getString(cursor.getColumnIndex("time")))
             } while (cursor.moveToNext())
 
-            data.add(ExerciseData(date, name, set, num, weight, time))
+            data.add(ExerciseData(date_format.toInt(), name, set, num, weight, time))
             sqldb.close()
         }
 
