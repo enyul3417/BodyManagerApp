@@ -70,7 +70,7 @@ class DietActivity : AppCompatActivity() {
             val cal = Calendar.getInstance()
             data.clear()
             DatePickerDialog(this, DatePickerDialog.OnDateSetListener { datePicker, y, m, d ->
-                date = "${y}년 ${m + 1}월 ${d}일"
+                date = "${y}년 ${m}월 ${d}일"
                 text_date.text = date
                 // 해당 날짜에 저장된 식단들 불러오기
                 data.addAll(loadDiet())
@@ -83,7 +83,7 @@ class DietActivity : AppCompatActivity() {
                 rv.adapter = rvAdapter
                 rv.layoutManager = LinearLayoutManager(this)
                 rv.visibility = View.VISIBLE
-            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE)).show()
+            }, cal.get(Calendar.YEAR), (cal.get(Calendar.MONTH) + 1), cal.get(Calendar.DATE)).show()
         }
 
         // 식단 추가 버튼 클릭 시

@@ -8,6 +8,5 @@
     <string name="settings">환경설정</string>
 
     <string name="text_date">날짜를 선택해주세요.</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

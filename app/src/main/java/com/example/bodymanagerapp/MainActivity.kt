@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         bottom_nav_view = findViewById(R.id.bottom_nav_view)
         toolbar = findViewById(R.id.toolbar)
 
-        replaceFragment(BodyStatsFragment())
+        //replaceFragment(ExerciseFragment())
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
         setSupportActionBar(toolbar)
     }

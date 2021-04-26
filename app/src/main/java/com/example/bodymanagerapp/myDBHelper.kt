@@ -19,14 +19,14 @@ class myDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
         // 운동 기록 테이블 생성
         db?.execSQL("CREATE TABLE exercise_record (" +
                 "EId INTEGER, " +
-                "date TEXT, " +
+                "date INTEGER, " +
                 "total_time INTEGER, " +
                 "steps INTEGER, " +
                 "PRIMARY KEY(EId AUTOINCREMENT));")
 
         // 운동 카운터 테이블 생성
         db?.execSQL("CREATE TABLE exercise_counter (" +
-                "date TEXT, " +
+                "date INTEGER, " +
                 "exercise_name TEXT, " +
                 "set_num INTEGER, " +
                 "weight INTEGER, " +
@@ -37,7 +37,7 @@ class myDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
         // 식단 기록 테이블 생성
         db?.execSQL("CREATE TABLE diet_record (" +
                 "DId INTEGER, " +
-                "date TEXT, " +
+                "date INTEGER, " +
                 "time TEXT, " +
                 "diet_photo BLOB, " +
                 "memo TEXT," +
@@ -45,7 +45,7 @@ class myDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
 
         // 신체 기록 테이블 생성
         db?.execSQL("CREATE TABLE body_record (" +
-                "date TEXT PRIMARY KEY, " +
+                "date INTEGER PRIMARY KEY, " +
                 "height REAL, " +
                 "weight REAL, " +
                 "muscle_mass REAL, " +

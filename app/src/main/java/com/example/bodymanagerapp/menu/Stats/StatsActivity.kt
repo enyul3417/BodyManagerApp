@@ -5,21 +5,22 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Button
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.menu.Body.BodyActivity
 import com.example.bodymanagerapp.menu.Diet.DietActivity
 import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
-import com.example.bodymanagerapp.menu.PetFragment
-import com.example.bodymanagerapp.menu.SettingsFragment
-import com.example.bodymanagerapp.menu.StatsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class StatsActivity : AppCompatActivity() {
     // BottomNavigationView
     lateinit var bottom_nav_view : BottomNavigationView
     lateinit var toolbar: Toolbar
+
+    lateinit var btn_exercise : Button
+    lateinit var btn_body : Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,8 +29,20 @@ class StatsActivity : AppCompatActivity() {
         bottom_nav_view = findViewById(R.id.bottom_nav_view)
         toolbar = findViewById(R.id.toolbar)
 
+        btn_exercise = findViewById(R.id.button_exercise_stats)
+        btn_body = findViewById(R.id.button_body_stats)
+
+        replaceFragment(ExericseStatsFragment())
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
         setSupportActionBar(toolbar)
+
+        btn_exercise.setOnClickListener {
+            replaceFragment(ExericseStatsFragment())
+        }
+
+        btn_body.setOnClickListener {
+            replaceFragment(BodyStatsFragment())
+        }
     }
 
     // 하단 메뉴 선택 시 작동

@@ -47,6 +47,10 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
+// 수정해야할 것
+// 삭제 후 해당 날짜로 새로고침 넣기
+// 사진 사이즈 조절하기
+
 class BodyActivity : AppCompatActivity() {
     // DB
     lateinit var myDBHelper: myDBHelper
@@ -63,7 +67,8 @@ class BodyActivity : AppCompatActivity() {
     lateinit var toolbar: Toolbar
 
     lateinit var text_date : TextView // 날짜 텍스트
-    var date : String = "" // 날짜 값 받는 곳
+    var date : Int = 0 // 날짜 값 받는 곳
+    lateinit var date_format : SimpleDateFormat
     lateinit var button_save : ImageButton // 저장 버튼
     lateinit var button_delete : ImageButton // 삭제 버튼
     lateinit var et_height : EditText // 키
@@ -78,6 +83,7 @@ class BodyActivity : AppCompatActivity() {
     var currenturi : Uri ?= null
     var imguri : String ?= null
     var isLoaded : Boolean = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,6 +107,8 @@ class BodyActivity : AppCompatActivity() {
         button_gallery = findViewById(R.id.button_body_image) // 갤러리
         body_image = findViewById(R.id.image_body) // 눈바디
 
+        date_format = SimpleDateFormat("yyyyMMdd")
+
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
         setSupportActionBar(toolbar)
 
@@ -108,8 +116,15 @@ class BodyActivity : AppCompatActivity() {
         text_date.setOnClickListener {
             val cal = Calendar.getInstance()
             DatePickerDialog(this, DatePickerDialog.OnDateSetListener { datePicker, y, m, d ->
-                date = "${y}년 ${m + 1}월 ${d}일"
-                text_date.text = date
+                var ymd = "$y"
+                ymd += if(m < 10)
+                    "0${m+1}"
+                else "${m+1}"
+                ymd += if(d < 10)
+                    "0$d"
+                else "$d"
+                date = ymd.toInt()
+                text_date.text = "${y}년 ${m+1}월 ${d}일"
                 loadBody()
             }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE)).show()
         }
@@ -126,7 +141,7 @@ class BodyActivity : AppCompatActivity() {
         }
 
         button_save.setOnClickListener {
-            if (date == "")
+            if (date == 0)
                 Toast.makeText(this, "날짜를 선택하세요.", Toast.LENGTH_SHORT).show()
             else {
                 if(isLoaded) updateBody() // 저장된 내용이 있으면 수정하기
@@ -374,10 +389,10 @@ class BodyActivity : AppCompatActivity() {
         }
 
         if(byteArray == null) { // 저장하려는 사진이 없을 경우
-            sqldb.execSQL("INSERT INTO body_record VALUES ('$date', $height, $weight, $muscle, $fat, null)")
+            sqldb.execSQL("INSERT INTO body_record VALUES ($date, $height, $weight, $muscle, $fat, null)")
         } else { // 저장하려는 사진이 있는 경우
             var insQuery : String = "INSERT INTO body_record (date, height, weight, muscle_mass, fat_mass, body_photo) " +
-                    "VALUES ('$date', $height, $weight, $muscle, $fat, ?)"
+                    "VALUES ($date, $height, $weight, $muscle, $fat, ?)"
             var stmt : SQLiteStatement = sqldb.compileStatement(insQuery)
             stmt.bindBlob(1, byteArray)
             stmt.execute()
@@ -395,7 +410,7 @@ class BodyActivity : AppCompatActivity() {
         isLoaded = false
 
         sqldb = myDBHelper.readableDatabase
-        val cursor = sqldb.rawQuery("SELECT * FROM body_record WHERE date = '${date}'", null)
+        val cursor = sqldb.rawQuery("SELECT * FROM body_record WHERE date = $date", null)
 
         if(cursor.moveToFirst()) { // 저장된 글이 있으면
             var bitmap : Bitmap ?= null
@@ -455,7 +470,7 @@ class BodyActivity : AppCompatActivity() {
         } else { // 저장하려는 사진이 있는 경우
             var udtQuery : String = "UPDATE body_record SET " +
                     "height = $height, weight = $weight, muscle_mass = $muscle, fat_mass = $fat, body_photo = ?" +
-                    "where date = '$date'"
+                    "where date = $date"
             var stmt : SQLiteStatement = sqldb.compileStatement(udtQuery)
             stmt.bindBlob(1, byteArray)
             stmt.execute()
@@ -465,7 +480,7 @@ class BodyActivity : AppCompatActivity() {
 
     private fun deleteBody() {
         sqldb = myDBHelper.writableDatabase
-        sqldb.execSQL("DELETE FROM body_record WHERE date = '$date'")
+        sqldb.execSQL("DELETE FROM body_record WHERE date = $date")
         sqldb.close()
     }
 }
