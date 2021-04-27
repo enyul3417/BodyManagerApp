@@ -1,4 +1,4 @@
-package com.example.bodymanagerapp.menu.Stats
+package com.example.bodymanagerapp.menu.Stats.Body
 
 import android.app.DatePickerDialog
 import android.content.Context
@@ -31,7 +31,7 @@ import kotlin.collections.ArrayList
 
 // 수정해야할 것
 // 날짜 범위 조절 필요
-
+// 그래프 이쁘게 고치기
 
 class BodyStatsFragment : Fragment() {
     // DB

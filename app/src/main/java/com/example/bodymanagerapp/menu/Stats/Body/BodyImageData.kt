@@ -1,4 +1,4 @@
-package com.example.bodymanagerapp.menu.Stats
+package com.example.bodymanagerapp.menu.Stats.Body
 
 import android.graphics.Bitmap
 

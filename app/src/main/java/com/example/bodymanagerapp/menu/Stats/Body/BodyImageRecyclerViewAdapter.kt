@@ -1,4 +1,4 @@
-package com.example.bodymanagerapp.menu.Stats
+package com.example.bodymanagerapp.menu.Stats.Body
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -25,7 +25,7 @@ class BodyImageRecyclerViewAdapter(var data : ArrayList<BodyImageData>, val cont
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BodyImageRecyclerViewAdapter.ItemViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         var view = LayoutInflater.from(context).inflate(R.layout.body_img_items, parent, false)
         return ItemViewHolder(view)
     }
@@ -34,7 +34,7 @@ class BodyImageRecyclerViewAdapter(var data : ArrayList<BodyImageData>, val cont
         return data.size
     }
 
-    override fun onBindViewHolder(holder: BodyImageRecyclerViewAdapter.ItemViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         holder.bind(data[position], position)
     }
 }
