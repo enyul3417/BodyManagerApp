@@ -4,7 +4,6 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Build
@@ -16,6 +15,8 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.myDBHelper
 import com.github.mikephil.charting.charts.LineChart
@@ -25,7 +26,6 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
-import com.github.mikephil.charting.utils.ColorTemplate
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -38,6 +38,11 @@ class BodyStatsFragment : Fragment() {
     lateinit var myDBHelper: myDBHelper
     lateinit var sqldb: SQLiteDatabase
 
+    // recyclerView
+    lateinit var rv : RecyclerView
+    lateinit var rvAdapter: BodyImageRecyclerViewAdapter
+    var data = ArrayList<BodyImageData>()
+
     lateinit var tv_start_date : TextView // 시작 날짜
     lateinit var tv_end_date : TextView // 끝 날짜
     lateinit var btn_7days : Button // 최근 7일
@@ -49,6 +54,7 @@ class BodyStatsFragment : Fragment() {
     lateinit var btn_muscle : Button // 골격근량
     lateinit var btn_fat : Button // 체지방량
     lateinit var btn_body_img : Button // 눈바디
+    lateinit var lineChart : LineChart
 
     var start_date : Int= 0
     var end_date : Int= 0
@@ -57,7 +63,6 @@ class BodyStatsFragment : Fragment() {
     // 차트에 사용할 ArrayList
     var date_list = ArrayList<Int>()
     var data_list = ArrayList<Float>()
-    var img_list = ArrayList<Bitmap>()
 
     lateinit var ct : Context
 
@@ -75,6 +80,7 @@ class BodyStatsFragment : Fragment() {
         ct = container!!.context
 
         myDBHelper = myDBHelper(ct)
+        rv = view.findViewById(R.id.recycler_sb)
 
         var calendar : Calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
@@ -93,6 +99,7 @@ class BodyStatsFragment : Fragment() {
         btn_muscle = view.findViewById(R.id.button_sb_muscle)
         btn_fat = view.findViewById(R.id.button_sb_fat)
         btn_body_img = view.findViewById(R.id.button_sb_img)
+        lineChart = view.findViewById(R.id.sb_chart)
 
         // 시작 날짜 선택
         tv_start_date.setOnClickListener {
@@ -140,26 +147,39 @@ class BodyStatsFragment : Fragment() {
         btn_height.setOnClickListener {
             loadData("height")
             lineChartGraph(view, data_list, date_list, "키")
+            lineChart.visibility = View.VISIBLE
+            rv.visibility = View.GONE
         }
 
         btn_weight.setOnClickListener {
             loadData("weight")
             lineChartGraph(view, data_list, date_list, "몸무게")
+            lineChart.visibility = View.VISIBLE
+            rv.visibility = View.GONE
         }
 
         btn_muscle.setOnClickListener {
             loadData("muscle_mass")
             lineChartGraph(view, data_list, date_list, "골격근량")
+            lineChart.visibility = View.VISIBLE
+            rv.visibility = View.GONE
         }
 
         btn_fat.setOnClickListener {
             loadData("fat_mass")
             lineChartGraph(view, data_list, date_list, "체지방량")
+            lineChart.visibility = View.VISIBLE
+            rv.visibility = View.GONE
         }
 
         btn_body_img.setOnClickListener {
-            loadData("body_photo")
-
+            data.clear()
+            data.addAll(loadImage())
+            rvAdapter = BodyImageRecyclerViewAdapter(data, ct, rv)
+            rv.adapter = rvAdapter
+            rv.layoutManager = LinearLayoutManager(ct)
+            rv.visibility = View.VISIBLE
+            lineChart.visibility = View.GONE
         }
 
         return view
@@ -181,23 +201,13 @@ class BodyStatsFragment : Fragment() {
     private fun loadData(str : String) {
         data_list.clear()
         date_list.clear()
-        img_list.clear()
+
         sqldb = myDBHelper.readableDatabase
         var cursor : Cursor = sqldb.rawQuery("SELECT $str, date FROM body_record WHERE date >= $start_date AND date <= $end_date", null)
 
         if(cursor.moveToFirst()) {
             do {
-                if (str == "body_photo") {
-                    var bitmap = try {
-                        val image : ByteArray ?= cursor.getBlob(cursor.getColumnIndex(str))
-                        BitmapFactory.decodeByteArray(image, 0, image!!.size)
-                    } catch (rte: RuntimeException) { // 이미지가 없을 경우
-                        null
-                    }
-                    img_list.add(bitmap!!)
-                } else {
-                    data_list.add(cursor.getFloat(cursor.getColumnIndex("$str")))
-                }
+                data_list.add(cursor.getFloat(cursor.getColumnIndex("$str")))
                 date_list.add(cursor.getInt(cursor.getColumnIndex("date")))
             } while (cursor.moveToNext())
         }
@@ -205,7 +215,7 @@ class BodyStatsFragment : Fragment() {
 
     // 이미지를 제외한 값들의 그래프
     private fun lineChartGraph(view : View, data_list : ArrayList<Float>, date_list : ArrayList<Int>, str : String ) {
-        var lineChart : LineChart = view.findViewById(R.id.sb_chart)
+
 
         var entries : ArrayList<Entry> = ArrayList() // 그래프에서 표현하려는 데이터 리스트
         for(i in 0 until data_list.size) {
@@ -244,10 +254,34 @@ class BodyStatsFragment : Fragment() {
         data_sets.add(depenses)
         var data : LineData = LineData(dates, data_sets)
         depenses.color = Color.BLACK
+        depenses.valueTextSize = 10f
+        //depenses.valueFormatter = MyValueFormatter()
         depenses.setCircleColor(Color.BLACK)
 
         lineChart.data = data
         lineChart.invalidate()
+    }
+
+    private fun loadImage() : ArrayList<BodyImageData> {
+        var imgData = ArrayList<BodyImageData>()
+        sqldb = myDBHelper.readableDatabase
+        val cursor = sqldb.rawQuery("SELECT date, body_photo FROM body_record WHERE date >= $start_date AND date <= $end_date", null)
+
+        if(cursor.moveToFirst()) { // 저장된 글이 있으면
+            do {
+                val bodyImg = cursor.getBlob(cursor.getColumnIndex("body_photo"))
+                if(bodyImg.isNotEmpty()) { // 사진이 저장되어 있으면
+                    val bitmap = BitmapFactory.decodeByteArray(bodyImg, 0, bodyImg!!.size)
+                    val imgDate = cursor.getInt(cursor.getColumnIndex("date"))
+
+                    val y = imgDate / 10000
+                    val m = (imgDate % 10000) / 100
+                    val d = imgDate % 100
+                    imgData.add(BodyImageData("${y}년 ${m}월 ${d}일", bitmap)) // 데이터 추가
+                }
+            } while (cursor.moveToNext())
+        }
+        return imgData
     }
 
     companion object {

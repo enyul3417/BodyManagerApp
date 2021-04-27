@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.myDBHelper
 
-class DietRecyclerViewAdapter(var data:ArrayList<DietData>, val context: Context, var item: RecyclerView,
-                                  var itemClick:(DietData, Int)->Unit):
+class DietRecyclerViewAdapter(var data : ArrayList<DietData>, val context : Context, var item : RecyclerView,
+                                  var itemClick : (DietData, Int)->Unit):
     RecyclerView.Adapter<DietRecyclerViewAdapter.ItemViewHolder>() {
 
     var myDBHelper: myDBHelper = myDBHelper(context)

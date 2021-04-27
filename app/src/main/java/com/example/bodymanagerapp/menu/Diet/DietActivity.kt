@@ -36,11 +36,11 @@ class DietActivity : AppCompatActivity() {
     lateinit var myDBHelper: myDBHelper
     lateinit var sqldb: SQLiteDatabase
     lateinit var cursor : Cursor
-    var data = ArrayList<DietData>()
 
     // View
     lateinit var rv : RecyclerView
     lateinit var rvAdapter: DietRecyclerViewAdapter
+    var data = ArrayList<DietData>()
 
     //식단 관련 변수
     lateinit var text_date: TextView // 날짜
