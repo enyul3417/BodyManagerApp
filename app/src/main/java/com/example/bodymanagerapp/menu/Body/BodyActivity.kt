@@ -4,9 +4,11 @@ import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.AssetManager
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteStatement
 import android.graphics.Bitmap
@@ -39,11 +41,10 @@ import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
 import com.example.bodymanagerapp.menu.Stats.StatsActivity
 import com.example.bodymanagerapp.myDBHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.googlecode.tesseract.android.TessBaseAPI
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.IOException
+import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -55,6 +56,10 @@ class BodyActivity : AppCompatActivity() {
     // DB
     lateinit var myDBHelper: myDBHelper
     lateinit var sqldb : SQLiteDatabase
+
+    // Tesseract API
+    lateinit var tess : TessBaseAPI // Tesseract API 객체 생성
+    var dataPath : String = "" // 데이터 경로 변수 선언
 
     // 권한 관련 변수
     private val REQUEST_READ_EXTERNAL_STORAGE : Int = 2000
@@ -79,6 +84,8 @@ class BodyActivity : AppCompatActivity() {
     lateinit var button_camera : ImageButton // 카메라로 사진 찍는 버튼
     lateinit var button_gallery : ImageButton // 갤러리에서 사진 가져오는 버튼
     lateinit var body_image : ImageView // 눈바디
+
+    lateinit var test : TextView
 
     var currenturi : Uri ?= null
     var imguri : String ?= null
@@ -107,10 +114,21 @@ class BodyActivity : AppCompatActivity() {
         button_gallery = findViewById(R.id.button_body_image) // 갤러리
         body_image = findViewById(R.id.image_body) // 눈바디
 
+        test = findViewById(R.id.tv_test)
+
         date_format = SimpleDateFormat("yyyyMMdd")
 
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
         setSupportActionBar(toolbar)
+
+        dataPath = "${filesDir.toString()}/tesseract/"  // 언어 데이터의 경로 미리 지정
+
+        checkFile(File("${dataPath}tessdata/"), "kor") // 사용할 언어 파일의 이름 지정
+        checkFile(File("${dataPath}tessdata/"), "eng")
+
+        var str  : String = "kor+eng"
+        tess = TessBaseAPI() // API 준비
+        tess.init(dataPath, str) // 해당 사용할 언어데이터로 초기화
 
         // 날짜 텍스트 클릭 시 달력으로 날짜 선택
         text_date.setOnClickListener {
@@ -140,6 +158,7 @@ class BodyActivity : AppCompatActivity() {
             galleryPermission()
         }
 
+        // 저장 버튼 클릭 시
         button_save.setOnClickListener {
             if (date == 0)
                 Toast.makeText(this, "날짜를 선택하세요.", Toast.LENGTH_SHORT).show()
@@ -149,6 +168,8 @@ class BodyActivity : AppCompatActivity() {
                 Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             }
         }
+
+        // 삭제 버튼 클릭 시
         button_delete.setOnClickListener {
             if(isLoaded) {
                 var dig = AlertDialog.Builder(this) // 대화상자
@@ -171,6 +192,9 @@ class BodyActivity : AppCompatActivity() {
             }
         }
 
+        button_inbody.setOnClickListener {
+         processImage(BitmapFactory.decodeResource(resources, R.drawable.test))  // 이미지 가공 후 텍스트 뷰에 띄우기
+        }
     }
 
     // 하단 메뉴 선택 시 작동
@@ -442,6 +466,7 @@ class BodyActivity : AppCompatActivity() {
         }
     }
 
+    // 수정하기
     private fun updateBody() {
         sqldb = myDBHelper.writableDatabase
 
@@ -478,9 +503,66 @@ class BodyActivity : AppCompatActivity() {
         sqldb.close()
     }
 
+    // 삭제하기
     private fun deleteBody() {
         sqldb = myDBHelper.writableDatabase
         sqldb.execSQL("DELETE FROM body_record WHERE date = $date")
         sqldb.close()
+    }
+
+    // Assets 폴더의 언어 데이터를 사용하기 위해 내부 저장소로 이동시킴
+    private fun copyFile(str : String) {
+        try {
+            // 언어데이터파일의 위치
+            var filePath : String = "${dataPath}/tessdata/${str}.traineddata"
+            // AssetManager를 사용하기 위한 객체 생성
+            var assetManager : AssetManager = assets
+
+            // byte 스트림을 읽기 쓰기용으로 열기
+            var inputStream : InputStream = assetManager.open("tessdata/${str}.traineddata")
+            var outStream : OutputStream = FileOutputStream(filePath)
+
+            // 위에 적어둔 파일 경로쪽으로 해당 바이트코드 파일을 복사
+            var buffer : ByteArray = ByteArray(1024)
+
+            var read : Int = 0
+            read = inputStream.read(buffer)
+            while (read != -1) {
+                outStream.write(buffer, 0, read)
+                read = inputStream.read(buffer)
+            }
+
+            outStream.flush()
+            outStream.close()
+            inputStream.close()
+        } catch (fnfe : FileNotFoundException) {
+            Log.d("오류 발생", fnfe.toString())
+        } catch (ioe : IOException) {
+            Log.d("오류 발생", ioe.toString())
+        }
+    }
+
+    // 언어 데이터가 내부 저장소에 없으면 내부 저장소로 언어 데이터 복사함
+    private fun checkFile(dir : File, str : String) {
+        // 파일 존재 여부 확인 후 내부로 복사
+        if(!dir.exists() && dir.mkdirs()) {
+            copyFile(str)
+        }
+
+        if(dir.exists()) {
+            var dataFilePath : String = "${dataPath}/tessdata/${str}.traineddata"
+            var dataFile : File = File(dataFilePath)
+            if(!dataFile.exists()) {
+                copyFile(str)
+            }
+        }
+    }
+
+    private fun processImage(bitmap: Bitmap) {
+        Toast.makeText(this, "인바디 정보를 읽어옵니다.", Toast.LENGTH_SHORT).show()
+        var ocrResult : String ?= null
+        tess.setImage(bitmap)
+        ocrResult = tess.utF8Text
+        test.text = ocrResult
     }
 }

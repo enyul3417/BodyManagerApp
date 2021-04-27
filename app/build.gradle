@@ -51,5 +51,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.github.PhilJay:MPAndroidChart:v2.2.4'
-    implementation 'com.rmtheis:tee-two:6.3.0'
+    implementation 'com.rmtheis:tess-two:9.1.0'
 }
