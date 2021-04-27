@@ -80,7 +80,6 @@ class ExerciseRecyclerViewAdapter(var data : ArrayList<ExerciseData>, val contex
         var weightNumTable = view.findViewById<TableLayout>(R.id.item_table_weight_num)
         var numTable = view.findViewById<TableLayout>(R.id.item_table_num)
         var timeTable = view.findViewById<TableLayout>(R.id.item_table_time)
-        var countTable = view.findViewById<TableLayout>(R.id.item_table_exercise_count)
 
         //onBindViewHolder에서 호출할 bind 함수
         fun bind(data: ExerciseData, position: Int) {

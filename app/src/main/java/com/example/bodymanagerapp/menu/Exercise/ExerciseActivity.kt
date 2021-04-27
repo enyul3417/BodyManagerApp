@@ -174,7 +174,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
 
         button_exercise_add.setOnClickListener {
             val intent : Intent = Intent(this, ExerciseAdditionActivity::class.java)
-            intent.putExtra("DATE", date_format)
+            //intent.putExtra("DATE", date_format)
             startActivityForResult(intent, REQUEST_CODE_ADD_EXERCISE)
         }
     }
