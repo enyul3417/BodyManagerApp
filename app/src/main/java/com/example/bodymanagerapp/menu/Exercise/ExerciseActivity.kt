@@ -42,6 +42,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.timer
 
+// 운동 수정 후 새로 고침이 안됨
+
 class ExerciseActivity : AppCompatActivity(), SensorEventListener {
     lateinit var bottom_nav_view : BottomNavigationView
     lateinit var toolbar: Toolbar

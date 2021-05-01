@@ -13,6 +13,7 @@ import com.example.bodymanagerapp.menu.Body.BodyActivity
 import com.example.bodymanagerapp.menu.Diet.DietActivity
 import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
 import com.example.bodymanagerapp.menu.Stats.Body.BodyStatsFragment
+import com.example.bodymanagerapp.menu.Stats.Exercise.ExericseStatsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class StatsActivity : AppCompatActivity() {
