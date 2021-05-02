@@ -127,14 +127,14 @@ class ExerciseAdditionActivity : AppCompatActivity() {
     private fun addExercise() {
         sqldb = myDBHelper.writableDatabase
 
-        var weightArray : ArrayList<Int> ?= ArrayList() // 무게 배열
+        var weightArray : ArrayList<Float> ?= ArrayList() // 무게 배열
         var numArray : ArrayList<Int> ?= ArrayList() // 횟수 배열
         var timeArray : ArrayList<String> ?= ArrayList() // 시간 배열
 
         if(findViewById<EditText>(WEIGHT_ID+1) != null) { // 입력한 무게 값이 있으면
             for(i in 0 until snum) { // 사용자가 입력한 값 가져오기
                 var weight: EditText = findViewById(WEIGHT_ID + i)
-                weightArray?.add(Integer.parseInt(weight.text.toString()))
+                weightArray?.add(weight.text.toString().toFloat())
             }
         } else {
             for(i in 0 until snum) { // 사용자가 입력한 값 가져오기
@@ -182,19 +182,19 @@ class ExerciseAdditionActivity : AppCompatActivity() {
             set_num.setText(cursor.count.toString())
             exercise_name.setText(name)
 
-            var weight = ArrayList<Int>()
+            var weight = ArrayList<Float>()
             var num = ArrayList<Int>()
             var time = ArrayList<String>()
 
             do{
-                weight.add(cursor.getInt(cursor.getColumnIndex("weight")))
+                weight.add(cursor.getFloat(cursor.getColumnIndex("weight")))
                 num.add(cursor.getInt(cursor.getColumnIndex("exercise_count")))
                 time.add(cursor.getString(cursor.getColumnIndex("time")))
             } while (cursor.moveToNext())
             sqldb.close()
 
             if(time[0] == "null") {
-                if(weight[0] == 0) { // 세트와 횟수만
+                if(weight[0] == 0f) { // 세트와 횟수만
                     setNumMode(set_num.text.toString().toInt(), num)
                 }
                 else { // 세트, 횟수, 무게
@@ -208,7 +208,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
         }
     }
 
-    private fun setWeightNumMode(set : Int, weight : ArrayList<Int>?, num : ArrayList<Int>?) {
+    private fun setWeightNumMode(set : Int, weight : ArrayList<Float>?, num : ArrayList<Int>?) {
         table_weight_num.visibility = View.VISIBLE
         table_num.visibility = View.GONE
         table_time.visibility = View.GONE
@@ -231,7 +231,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
             weightET.id = WEIGHT_ID + i // 아이디 값
             weightET.textSize = 15f // 글자 크기
             weightET.gravity = 17 // 중앙 정렬
-            weightET.inputType = 2 // 숫자 키패트
+            weightET.inputType = 4096 // 실수 입력
             if(weight == null)
                 weightET.setText("")
             else weightET.setText(weight?.get(i).toString())

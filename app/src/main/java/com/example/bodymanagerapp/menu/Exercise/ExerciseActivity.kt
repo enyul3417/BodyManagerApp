@@ -346,13 +346,13 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
                 var cursor = sqldb.rawQuery("SELECT * FROM exercise_counter WHERE date = ${date_format.toInt()} AND exercise_name = '$name';", null)
                 if (cursor.moveToFirst()) {
                     var set = ArrayList<Int>()
-                    var weight = ArrayList<Int>()
+                    var weight = ArrayList<Float>()
                     var num = ArrayList<Int>()
                     var time = ArrayList<String>()
 
                     do {
                         set.add(cursor.getInt(cursor.getColumnIndex("set_num")))
-                        weight.add(cursor.getInt(cursor.getColumnIndex("weight")))
+                        weight.add(cursor.getFloat(cursor.getColumnIndex("weight")))
                         num.add(cursor.getInt(cursor.getColumnIndex("exercise_count")))
                         time.add(cursor.getString(cursor.getColumnIndex("time")))
                     } while (cursor.moveToNext())
@@ -374,13 +374,13 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
 
         if(cursor.moveToFirst()) {
             var set = ArrayList<Int>()
-            var weight = ArrayList<Int>()
+            var weight = ArrayList<Float>()
             var num = ArrayList<Int>()
             var time = ArrayList<String>()
 
             do {
                 set.add(cursor.getInt(cursor.getColumnIndex("set_num")))
-                weight.add(cursor.getInt(cursor.getColumnIndex("weight")))
+                weight.add(cursor.getFloat(cursor.getColumnIndex("weight")))
                 num.add(cursor.getInt(cursor.getColumnIndex("exercise_count")))
                 time.add(cursor.getString(cursor.getColumnIndex("time")))
             } while (cursor.moveToNext())

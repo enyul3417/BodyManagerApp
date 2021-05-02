@@ -14,7 +14,7 @@ class myDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
         db?.execSQL("CREATE TABLE exercise_info (exercise_name TEXT PRIMARY KEY, part TEXT);")
 
         // 루틴 정보 테이블 생성
-        db?.execSQL("CREATE TABLE routine_info (routine_name TEXT, Exercise_name TEXT);")
+        db?.execSQL("CREATE TABLE routine_info (routine_name TEXT, exercise_name TEXT);")
 
         // 운동 기록 테이블 생성
         db?.execSQL("CREATE TABLE exercise_record (" +
@@ -29,7 +29,7 @@ class myDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
                 "date INTEGER, " +
                 "exercise_name TEXT, " +
                 "set_num INTEGER, " +
-                "weight INTEGER, " +
+                "weight REAL, " +
                 "exercise_count INTEGER, " +
                 "time TEXT, " +
                 "is_complete INTEGER);")

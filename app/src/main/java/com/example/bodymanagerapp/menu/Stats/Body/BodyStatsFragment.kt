@@ -47,7 +47,7 @@ class BodyStatsFragment : Fragment() {
     lateinit var tv_end_date : TextView // 끝 날짜
     lateinit var btn_7days : Button // 최근 7일
     lateinit var btn_1month : Button // 최근 한 달
-    lateinit var btn_3month : Button // 최근 3개월
+    lateinit var btn_3months : Button // 최근 3개월
     lateinit var btn_1year : Button // 최근 1년
     lateinit var btn_height : Button // 키
     lateinit var btn_weight : Button // 몸무게
@@ -92,7 +92,7 @@ class BodyStatsFragment : Fragment() {
         tv_end_date = view.findViewById(R.id.tv_sb_end_date)
         btn_7days = view.findViewById(R.id.button_sb_7days)
         btn_1month = view.findViewById(R.id.button_sb_1month)
-        btn_3month = view.findViewById(R.id.button_sb_3months)
+        btn_3months = view.findViewById(R.id.button_sb_3months)
         btn_1year = view.findViewById(R.id.button_sb_1year)
         btn_height = view.findViewById(R.id.button_sb_height)
         btn_weight = view.findViewById(R.id.button_sb_weight)
@@ -109,6 +109,7 @@ class BodyStatsFragment : Fragment() {
             }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE)).show()
         }
 
+        // 끝 날짜 선택
         tv_end_date.setOnClickListener {
             DatePickerDialog(ct, DatePickerDialog.OnDateSetListener { datePicker, y, m, d ->
                 end_date = dateToInt(y, m, d)
@@ -116,34 +117,54 @@ class BodyStatsFragment : Fragment() {
             }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE)).show()
         }
 
+        // 7일 버튼 클릭 시
         btn_7days.setOnClickListener {
-            start_date = dateToInt(year, month, date - 7)
-            tv_start_date.text = "${year}년 ${month}월 ${(date - 7)}일"
+            if(date > 7) {
+                start_date = dateToInt(year, month, date - 7)
+                tv_start_date.text = "${year}년 ${month}월 ${date - 7}일"
+            } else {
+                var monthDate : Int = 31
+                if(month == 4 || month == 6 || month == 9 || month == 11)
+                    monthDate = 30
+                else if(month == 2) {
+                    if(year % 4 == 0 && year % 100 != 0 || year % 400 == 0)
+                        monthDate = 29
+                    else monthDate = 28
+                }
+
+                var i : Int = 7 - date
+                start_date = dateToInt(year, month - 1, monthDate - i)
+                tv_start_date.text = "${year}년 ${month - 1}월 ${monthDate - i}일"
+            }
             end_date = dateToInt(year, month, date)
             tv_end_date.text = "${year}년 ${month}월 ${date}일"
         }
 
+        // 1개월 버튼 클릭 시
         btn_1month.setOnClickListener {
-            start_date = dateToInt(year, month - 1, date + 1)
-            tv_start_date.text = "${year}년 ${month - 1}월 ${(date + 1)}일"
+            start_date = dateToInt(year, month - 1, date)
+            tv_start_date.text = "${year}년 ${month - 1}월 ${date}일"
             end_date = dateToInt(year, month, date)
             tv_end_date.text = "${year}년 ${month}월 ${date}일"
         }
 
-        btn_3month.setOnClickListener {
-            start_date = dateToInt(year, month - 3, date + 1)
-            tv_start_date.text = "${year}년 ${month - 3}월 ${(date + 1)}일"
+        // 3개월 버튼 클릭 시
+        btn_3months.setOnClickListener {
+            start_date = dateToInt(year, month - 3, date)
+            tv_start_date.text = "${year}년 ${month - 3}월 ${date}일"
             end_date = dateToInt(year, month, date)
             tv_end_date.text = "${year}년 ${month}월 ${date}일"
         }
 
+        // 1년 버튼 클릭 시
         btn_1year.setOnClickListener {
-            start_date = dateToInt(year - 1, month, date + 1)
-            tv_start_date.text = "${year - 1}년 ${month}월 ${(date + 1)}일"
+            start_date = dateToInt(year - 1, month, date)
+            tv_start_date.text = "${year - 1}년 ${month}월 ${date}일"
             end_date = dateToInt(year, month, date)
             tv_end_date.text = "${year}년 ${month}월 ${date}일"
         }
 
+        // 키 버튼 클릭 시
         btn_height.setOnClickListener {
             loadData("height")
             lineChartGraph(view, data_list, date_list, "키")
@@ -151,6 +172,7 @@ class BodyStatsFragment : Fragment() {
             rv.visibility = View.GONE
         }
 
+        // 몸무게 버튼 클릭 시
         btn_weight.setOnClickListener {
             loadData("weight")
             lineChartGraph(view, data_list, date_list, "몸무게")
@@ -158,6 +180,7 @@ class BodyStatsFragment : Fragment() {
             rv.visibility = View.GONE
         }
 
+        // 골격근량 버튼 클릭 시
         btn_muscle.setOnClickListener {
             loadData("muscle_mass")
             lineChartGraph(view, data_list, date_list, "골격근량")
@@ -165,13 +188,15 @@ class BodyStatsFragment : Fragment() {
             rv.visibility = View.GONE
         }
 
+        // 체지방량 버튼 클릭 시
         btn_fat.setOnClickListener {
             loadData("fat_mass")
             lineChartGraph(view, data_list, date_list, "체지방량")
             lineChart.visibility = View.VISIBLE
             rv.visibility = View.GONE
         }
-
+        
+        // 눈바디 버튼 클릭 시
         btn_body_img.setOnClickListener {
             data.clear()
             data.addAll(loadImage())
@@ -185,6 +210,7 @@ class BodyStatsFragment : Fragment() {
         return view
     }
 
+    // 날짜를 yyyyMMdd 형식의 Int로 바꾸어 저장
     private fun dateToInt(year : Int, month : Int, date : Int) : Int {
         var ymd = "$year"
 
@@ -198,6 +224,7 @@ class BodyStatsFragment : Fragment() {
         return ymd.toInt()
     }
 
+    // 데이터 불러오기
     private fun loadData(str : String) {
         data_list.clear()
         date_list.clear()
@@ -262,6 +289,7 @@ class BodyStatsFragment : Fragment() {
         lineChart.invalidate()
     }
 
+    // 저장된 이미지 불러오기
     private fun loadImage() : ArrayList<BodyImageData> {
         var imgData = ArrayList<BodyImageData>()
         sqldb = myDBHelper.readableDatabase

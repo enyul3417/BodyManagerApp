@@ -87,7 +87,7 @@ class ExerciseRecyclerViewAdapter(var data : ArrayList<ExerciseData>, val contex
             name.text = data.name
 
             if(data.time!![0] == "null" ) {
-                if(data.weight!![0] == 0) { // 세트와 횟수만
+                if(data.weight!![0] == 0f) { // 세트와 횟수만
                    weightNumTable.visibility = View.GONE
                     numTable.visibility = View.VISIBLE
                     timeTable.visibility = View.GONE
