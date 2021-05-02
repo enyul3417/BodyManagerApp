@@ -38,6 +38,7 @@ import com.example.bodymanagerapp.menu.Diet.DietData
 import com.example.bodymanagerapp.menu.Diet.DietRecyclerViewAdapter
 import com.example.bodymanagerapp.menu.Diet.NewDietActivity
 import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
+import com.example.bodymanagerapp.menu.Pet.PetActivity
 import com.example.bodymanagerapp.menu.Stats.StatsActivity
 import com.example.bodymanagerapp.myDBHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -225,15 +226,19 @@ class BodyActivity : AppCompatActivity() {
                     return@OnNavigationItemSelectedListener true
                 }
 
-                // 상태 메뉴 선택 시
+                // 통계 메뉴 선택 시
                 R.id.navigation_stats -> {
                     var intent : Intent = Intent(this, StatsActivity::class.java)
                     startActivity(intent)
+                    finish()
                     return@OnNavigationItemSelectedListener true
                 }
 
                 // 펫 선택 시
                 R.id.navigation_pet -> {
+                    var intent : Intent = Intent(this, PetActivity::class.java)
+                    startActivity(intent)
+                    finish()
                     return@OnNavigationItemSelectedListener true
                 }
 

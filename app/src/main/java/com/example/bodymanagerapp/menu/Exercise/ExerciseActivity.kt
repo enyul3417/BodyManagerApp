@@ -32,6 +32,7 @@ import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.menu.Body.BodyActivity
 import com.example.bodymanagerapp.menu.Diet.DietActivity
 import com.example.bodymanagerapp.menu.Diet.NewDietActivity
+import com.example.bodymanagerapp.menu.Pet.PetActivity
 import com.example.bodymanagerapp.menu.SettingsFragment
 import com.example.bodymanagerapp.menu.Stats.StatsActivity
 import com.example.bodymanagerapp.myDBHelper
@@ -209,15 +210,19 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
                         return@OnNavigationItemSelectedListener true
                     }
 
-                    // 상태 메뉴 선택 시
+                    // 통계 메뉴 선택 시
                     R.id.navigation_stats -> {
                         var intent : Intent = Intent(this, StatsActivity::class.java)
                         startActivity(intent)
+                        finish()
                         return@OnNavigationItemSelectedListener true
                     }
 
                     // 펫 선택 시
                     R.id.navigation_pet -> {
+                        var intent : Intent = Intent(this, PetActivity::class.java)
+                        startActivity(intent)
+                        finish()
                         return@OnNavigationItemSelectedListener true
                     }
 
