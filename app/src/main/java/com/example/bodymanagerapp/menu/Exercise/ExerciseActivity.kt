@@ -185,9 +185,10 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
             exerciseDone()
         }
 
+        // 루틴 저장 버튼 클릭 시
         button_save_routine.setOnClickListener {
             val intent : Intent = Intent(this, SavedRoutineActivity::class.java)
-            startActivityForResult(intent, REQUEST_CODE_SAVE_ROUTINE)
+            startActivity(intent)
         }
 
         // 루틴 불러오기 버튼 클릭 시
