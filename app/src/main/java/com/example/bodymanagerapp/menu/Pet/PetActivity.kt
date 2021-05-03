@@ -5,7 +5,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
+import com.example.bodymanagerapp.Preference.MyPreference
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.menu.Body.BodyActivity
 import com.example.bodymanagerapp.menu.Diet.DietActivity
@@ -18,6 +21,16 @@ class PetActivity : AppCompatActivity() {
     lateinit var bottom_nav_view: BottomNavigationView
     lateinit var toolbar: Toolbar
 
+    lateinit var tv_point : TextView
+    lateinit var tv_meal : TextView
+    lateinit var tv_health : TextView
+    lateinit var btn_feeding : Button
+    lateinit var btn_exercise : Button
+    lateinit var btn_snack : Button
+
+    var point : Int = MyPreference.prefs.getInt("point", 0) // 포인트 값 가져오기
+    var meal : Int = MyPreference.prefs.getInt("meal", 0) // 식사 값
+    var health : Int = MyPreference.prefs.getInt("health", 0) // 건강 값
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,8 +40,19 @@ class PetActivity : AppCompatActivity() {
         bottom_nav_view = findViewById(R.id.bottom_nav_view)
         toolbar = findViewById(R.id.toolbar)
 
+        tv_point = findViewById(R.id.tv_pet_point)
+        tv_meal = findViewById(R.id.tv_pet_meal)
+        tv_health = findViewById(R.id.tv_pet_health)
+        btn_feeding = findViewById(R.id.btn_pet_feeding)
+        btn_exercise = findViewById(R.id.btn_pet_exercise)
+        btn_snack = findViewById(R.id.btn_pet_snack)
+
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
         setSupportActionBar(toolbar)
+
+        tv_point.text = point.toString()
+        tv_meal.text = "${meal}%"
+        tv_health.text = "${health}%"
     }
 
     // 하단 메뉴 선택 시 작동

@@ -21,6 +21,7 @@ import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.bodymanagerapp.Preference.MyPreference
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.myDBHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -48,6 +49,9 @@ class NewDietActivity : AppCompatActivity() {
     var id : Int = 0
 
     var currenturi: Uri?=null // 사진 uri
+
+    // 포인트 값 가져오기
+    var point : Int = MyPreference.prefs.getInt("point", 0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +88,7 @@ class NewDietActivity : AppCompatActivity() {
         button_diet_save.setOnClickListener {
             if(id == 0) {
                 saveDiet()
+                MyPreference.prefs.setInt("point", (point + 100)) // 포인트 획득
                 Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             } else {
                 updateDiet()

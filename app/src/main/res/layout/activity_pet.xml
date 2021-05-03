@@ -47,10 +47,10 @@
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
 
         <ImageView
-            android:id="@+id/img_point"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_paid_24" />
+            android:src="@drawable/ic_baseline_paid_24"
+            android:layout_marginHorizontal="5dp"/>
 
         <TextView
             android:id="@+id/tv_pet_point"
@@ -60,10 +60,10 @@
             android:text="100" />
 
         <ImageView
-            android:id="@+id/img_meal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_restaurant_24" />
+            android:src="@drawable/ic_baseline_restaurant_24"
+            android:layout_marginHorizontal="5dp"/>
 
         <TextView
             android:id="@+id/tv_pet_meal"
@@ -72,7 +72,6 @@
             android:text="100%" />
 
         <ImageView
-            android:id="@+id/img_health"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
@@ -82,7 +81,8 @@
             android:id="@+id/tv_pet_health"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="100%" />
+            android:text="100%"
+            android:layout_marginHorizontal="5dp"/>
 
     </LinearLayout>
 
@@ -112,20 +112,20 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <Button
-            android:id="@+id/btn_feeding"
+            android:id="@+id/btn_pet_feeding"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="밥 주기"
             android:layout_marginRight="30dp"/>
 
         <Button
-            android:id="@+id/btn_exercise"
+            android:id="@+id/btn_pet_exercise"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="운동하기" />
 
         <Button
-            android:id="@+id/btn_snack"
+            android:id="@+id/btn_pet_snack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="간식주기"

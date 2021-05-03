@@ -32,6 +32,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.bodymanagerapp.Preference.MyPreference
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.menu.Diet.DietActivity
 import com.example.bodymanagerapp.menu.Diet.DietData
@@ -92,6 +93,8 @@ class BodyActivity : AppCompatActivity() {
     var imguri : String ?= null
     var isLoaded : Boolean = false
 
+    // 포인트 값 가져오기
+    var point : Int = MyPreference.prefs.getInt("point", 0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -165,7 +168,10 @@ class BodyActivity : AppCompatActivity() {
                 Toast.makeText(this, "날짜를 선택하세요.", Toast.LENGTH_SHORT).show()
             else {
                 if(isLoaded) updateBody() // 저장된 내용이 있으면 수정하기
-                else saveBody() // 없으면 새로운 레코드 추가
+                else { // 없으면 새로운 레코드 추가
+                    saveBody()
+                    MyPreference.prefs.setInt("point", (point + 100)) // 포인트 획득
+                }
                 Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             }
         }

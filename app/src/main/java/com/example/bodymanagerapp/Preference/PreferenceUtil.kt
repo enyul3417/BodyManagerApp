@@ -1,0 +1,17 @@
+package com.example.bodymanagerapp.Preference
+
+import android.content.Context
+import android.content.SharedPreferences
+
+class PreferenceUtil(context: Context) {
+    private val prefs : SharedPreferences =
+            context.getSharedPreferences("prefs_name", Context.MODE_PRIVATE)
+
+    fun getInt(key : String, defValue : Int) : Int {
+        return prefs.getInt(key, defValue)
+    }
+
+    fun setInt(key : String, i : Int) {
+        prefs.edit().putInt(key, i).apply()
+    }
+}
