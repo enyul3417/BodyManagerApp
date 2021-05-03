@@ -18,7 +18,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Design.NoActionBar">
-        <activity android:name=".menu.Pet.PetActivity"></activity>
+        <activity android:name=".menu.Exercise.Routine.LoadRoutineActivity"></activity>
+        <activity android:name=".menu.Exercise.Routine.SavedRoutineActivity" />
+        <activity android:name=".menu.Pet.PetActivity" />
         <activity android:name=".menu.Stats.StatsActivity" />
         <activity android:name=".menu.Body.BodyActivity" />
         <activity android:name=".menu.Exercise.ExerciseActivity">

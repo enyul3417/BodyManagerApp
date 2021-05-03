@@ -234,7 +234,7 @@ class ExericseStatsFragment : Fragment() {
     }
 
     // Spinner에 넣을 운동 이름 불러오기
-    fun loadExerciseName() {
+    private fun loadExerciseName() {
         nameList.clear()
 
         sqldb = myDBHelper.readableDatabase
@@ -251,7 +251,7 @@ class ExericseStatsFragment : Fragment() {
     }
 
     // 그래프에 사용될 데이터들 불러오기
-    fun loadData() : ArrayList<ExerciseStatsData> {
+    private fun loadData() : ArrayList<ExerciseStatsData> {
         var data = ArrayList<ExerciseStatsData>()
 
         sqldb = myDBHelper.readableDatabase

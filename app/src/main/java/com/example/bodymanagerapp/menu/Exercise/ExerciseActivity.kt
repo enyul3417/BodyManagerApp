@@ -11,7 +11,6 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.icu.util.LocaleData
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -19,7 +18,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
@@ -31,7 +29,8 @@ import com.example.bodymanagerapp.MainActivity
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.menu.Body.BodyActivity
 import com.example.bodymanagerapp.menu.Diet.DietActivity
-import com.example.bodymanagerapp.menu.Diet.NewDietActivity
+import com.example.bodymanagerapp.menu.Exercise.Routine.LoadRoutineActivity
+import com.example.bodymanagerapp.menu.Exercise.Routine.SavedRoutineActivity
 import com.example.bodymanagerapp.menu.Pet.PetActivity
 import com.example.bodymanagerapp.menu.SettingsFragment
 import com.example.bodymanagerapp.menu.Stats.StatsActivity
@@ -61,6 +60,8 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
     // 권한 변수
     private val REQUEST_ACTIVITY_RECOGNITION = 1000
     private val REQUEST_CODE_ADD_EXERCISE = 100
+    private val REQUEST_CODE_LOAD_ROUTINE = 200
+    private val REQUEST_CODE_SAVE_ROUTINE = 300
 
     private var time = 0 // 총 시간
     private var isRunning = false
@@ -86,6 +87,10 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
     private var date_format : String = ""
     private var name : String = ""
 
+    // 나만의 루틴
+    lateinit var button_load_routine : Button
+    lateinit var button_save_routine : Button
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,6 +114,10 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
 
         // 운동
         button_exercise_add = findViewById(R.id.button_exercise_add)
+
+        // 나만의 루틴
+        button_load_routine = findViewById(R.id.button_load_routine)
+        button_save_routine = findViewById(R.id.button_save_routine)
 
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
         setSupportActionBar(toolbar)
@@ -161,7 +170,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
             rv.visibility = View.VISIBLE
         }
 
-
+        // 운동 시작 버튼 클릭 시
         button_start.setOnClickListener {
             isRunning = !isRunning
 
@@ -171,10 +180,23 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
                 exerciseStop()
         }
 
+        // 운동 완료 버튼 클릭 시
         button_done.setOnClickListener {
             exerciseDone()
         }
 
+        button_save_routine.setOnClickListener {
+            val intent : Intent = Intent(this, SavedRoutineActivity::class.java)
+            startActivityForResult(intent, REQUEST_CODE_SAVE_ROUTINE)
+        }
+
+        // 루틴 불러오기 버튼 클릭 시
+        button_load_routine.setOnClickListener {
+            val intent : Intent = Intent(this, LoadRoutineActivity::class.java)
+            startActivityForResult(intent, REQUEST_CODE_LOAD_ROUTINE)
+        }
+
+        // 운동 추가 버튼 클릭 시
         button_exercise_add.setOnClickListener {
             val intent : Intent = Intent(this, ExerciseAdditionActivity::class.java)
             //intent.putExtra("DATE", date_format)
@@ -327,6 +349,9 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
                     rv.adapter = rvAdapter
                     rv.layoutManager = LinearLayoutManager(this)
                     rv.visibility = View.VISIBLE
+                }
+                REQUEST_CODE_LOAD_ROUTINE -> {
+
                 }
             }
         }
