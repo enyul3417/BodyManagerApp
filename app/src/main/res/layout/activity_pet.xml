@@ -36,6 +36,104 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <LinearLayout
+        android:id="@+id/linearLayout10"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
+
+        <ImageView
+            android:id="@+id/img_point"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_paid_24" />
+
+        <TextView
+            android:id="@+id/tv_pet_point"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="30dp"
+            android:text="100" />
+
+        <ImageView
+            android:id="@+id/img_meal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_restaurant_24" />
+
+        <TextView
+            android:id="@+id/tv_pet_meal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="100%" />
+
+        <ImageView
+            android:id="@+id/img_health"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:src="@drawable/ic_baseline_sports_basketball_24" />
+
+        <TextView
+            android:id="@+id/tv_pet_health"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="100%" />
+
+    </LinearLayout>
+
+    <GridLayout
+        android:id="@+id/gridLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout11"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout10">
+
+        <ImageView
+            android:id="@+id/img_pet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </GridLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout11"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_nav_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/btn_feeding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="밥 주기"
+            android:layout_marginRight="30dp"/>
+
+        <Button
+            android:id="@+id/btn_exercise"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="운동하기" />
+
+        <Button
+            android:id="@+id/btn_snack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="간식주기"
+            android:layout_marginLeft="30dp"/>
+
+
+    </LinearLayout>
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav_view"
         android:layout_width="match_parent"
