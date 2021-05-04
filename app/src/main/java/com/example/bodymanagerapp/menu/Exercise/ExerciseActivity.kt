@@ -379,13 +379,13 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
                     var set = ArrayList<Int>()
                     var weight = ArrayList<Float>()
                     var num = ArrayList<Int>()
-                    var time = ArrayList<String>()
+                    var time = ArrayList<Int>()
 
                     do {
                         set.add(cursor.getInt(cursor.getColumnIndex("set_num")))
                         weight.add(cursor.getFloat(cursor.getColumnIndex("weight")))
                         num.add(cursor.getInt(cursor.getColumnIndex("exercise_count")))
-                        time.add(cursor.getString(cursor.getColumnIndex("time")))
+                        time.add(cursor.getInt(cursor.getColumnIndex("time")))
                     } while (cursor.moveToNext())
                     data.add(ExerciseData(date_format.toInt(), name, set, num, weight, time))
                 }
@@ -407,13 +407,13 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
             var set = ArrayList<Int>()
             var weight = ArrayList<Float>()
             var num = ArrayList<Int>()
-            var time = ArrayList<String>()
+            var time = ArrayList<Int>()
 
             do {
                 set.add(cursor.getInt(cursor.getColumnIndex("set_num")))
                 weight.add(cursor.getFloat(cursor.getColumnIndex("weight")))
                 num.add(cursor.getInt(cursor.getColumnIndex("exercise_count")))
-                time.add(cursor.getString(cursor.getColumnIndex("time")))
+                time.add(cursor.getInt(cursor.getColumnIndex("time")))
             } while (cursor.moveToNext())
 
             data.add(ExerciseData(date_format.toInt(), name, set, num, weight, time))

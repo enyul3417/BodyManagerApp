@@ -86,7 +86,7 @@ class ExerciseRecyclerViewAdapter(var data : ArrayList<ExerciseData>, val contex
             //countTable.removeAllViews()
             name.text = data.name
 
-            if(data.time!![0] == "null" ) {
+            if(data.time!![0] == 0 ) {
                 if(data.weight!![0] == 0f) { // 세트와 횟수만
                    weightNumTable.visibility = View.GONE
                     numTable.visibility = View.VISIBLE
@@ -167,10 +167,21 @@ class ExerciseRecyclerViewAdapter(var data : ArrayList<ExerciseData>, val contex
                     setTV.text = data.set[i-1].toString()
                     setTV.gravity = 17 // 중앙 정렬
                     tableRow.addView(setTV)
+
                     // 시간
+                    /*val linearLayout = LinearLayout(context)
+                    linearLayout.gravity = 17 // 중앙 정렬
+                    val hourTV = TextView(context) // 시
+                    hourTV.textSize = 15f // 글자 크기
+                    hourTV.text = ((data.time?.get(i-1)) / 3600).toString()
+                    linearLayout.addView(hourTV)*/
+
                     val timeTV = TextView(context)
                     timeTV.textSize = 15f // 글자 크기
-                    timeTV.text = data.time?.get(i-1).toString()
+                    val hour = (data.time?.get(i-1) / 3600)
+                    val min = (data.time?.get(i-1) % 3600) / 60
+                    val sec = (data.time?.get(i-1) % 3600) % 60
+                    timeTV.text = "${hour}:${min}:${sec}"
                     timeTV.gravity = 17 // 중앙 정렬
                     tableRow.addView(timeTV)
 

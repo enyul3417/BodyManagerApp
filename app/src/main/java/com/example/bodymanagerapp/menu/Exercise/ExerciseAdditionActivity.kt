@@ -43,7 +43,10 @@ class ExerciseAdditionActivity : AppCompatActivity() {
     //private val SET_ID : Int = 100 // 세트
     private val NUM_ID: Int = 200 // 횟수
     private val WEIGHT_ID: Int = 300 // 무게
-    private val TIME_ID: Int = 400 // 시
+    //private val TIME_ID: Int = 400 // 시간
+    private val HOUR_ID : Int = 500
+    private val MIN_ID : Int = 600
+    private val SEC_ID : Int = 700
 
     private lateinit var button_exercise_add_done: Button // 운동 추가 버튼
 
@@ -129,37 +132,52 @@ class ExerciseAdditionActivity : AppCompatActivity() {
 
         var weightArray : ArrayList<Float> ?= ArrayList() // 무게 배열
         var numArray : ArrayList<Int> ?= ArrayList() // 횟수 배열
-        var timeArray : ArrayList<String> ?= ArrayList() // 시간 배열
+        var timeArray : ArrayList<Int> ?= ArrayList() // 시간 배열
 
-        if(findViewById<EditText>(WEIGHT_ID+1) != null) { // 입력한 무게 값이 있으면
+        if(findViewById<EditText>(WEIGHT_ID) != null) { // 입력한 무게 값이 있으면
             for(i in 0 until snum) { // 사용자가 입력한 값 가져오기
                 var weight: EditText = findViewById(WEIGHT_ID + i)
                 weightArray?.add(weight.text.toString().toFloat())
             }
         } else {
-            for(i in 0 until snum) { // 사용자가 입력한 값 가져오기
+            for(i in 0 until snum) {
                 weightArray = null
             }
         }
 
-        if(findViewById<EditText>(NUM_ID+1) != null) { // 입력한 횟수 값이 있으면
+        if(findViewById<EditText>(NUM_ID) != null) { // 입력한 횟수 값이 있으면
             for(i in 0 until snum) { // 사용자가 입력한 값 가져오기
-                var num : EditText = findViewById(NUM_ID+i)
+                var num : EditText = findViewById(NUM_ID + i)
                 numArray?.add(Integer.parseInt(num.text.toString()))
             }
         } else {
-            for(i in 0 until snum) { // 사용자가 입력한 값 가져오기
+            for(i in 0 until snum) {
                 numArray = null
             }
         }
 
-        if(findViewById<EditText>(TIME_ID+1) != null) { // 입력한 시간 값이 있으면
+        /*if(findViewById<EditText>(TIME_ID+1) != null) { // 입력한 시간 값이 있으면
             for(i in 0 until snum) { // 사용자가 입력한 값 가져오기
                 var time: EditText = findViewById(TIME_ID + i)
-                timeArray?.add(time.text.toString())
+                timeArray?.add(time.text.toString().toInt())
             }
         } else {
             for(i in 0 until snum) { // 사용자가 입력한 값 가져오기
+                timeArray = null
+            }
+        }*/
+
+        if(findViewById<EditText>(HOUR_ID) != null || findViewById<EditText>(MIN_ID) != null || findViewById<EditText>(SEC_ID) != null) { // 입력한 시간 값이 있으면
+            for(i in 0 until snum) { // 사용자가 입력한 값 가져오기
+                var time : Int = 0
+                var hour : EditText = findViewById(HOUR_ID + i)
+                var min : EditText = findViewById(MIN_ID + i)
+                var sec : EditText = findViewById(SEC_ID + i)
+                time = (hour.text.toString().toInt() * 3600) + (min.text.toString().toInt() * 60) + (sec.text.toString().toInt())
+                timeArray?.add(time)
+            }
+        } else {
+            for(i in 0 until snum) {
                 timeArray = null
             }
         }
@@ -172,6 +190,8 @@ class ExerciseAdditionActivity : AppCompatActivity() {
             sqldb.execSQL("INSERT INTO exercise_counter VALUES ($date,'${exercise_name.text}', " +
                     "${i+1}, ${weightArray?.get(i)}, ${numArray?.get(i)}, '${timeArray?.get(i)}', 0);")
         }
+
+        sqldb.close()
     }
 
     private fun loadExercise() {
@@ -184,16 +204,16 @@ class ExerciseAdditionActivity : AppCompatActivity() {
 
             var weight = ArrayList<Float>()
             var num = ArrayList<Int>()
-            var time = ArrayList<String>()
+            var time = ArrayList<Int>()
 
             do{
                 weight.add(cursor.getFloat(cursor.getColumnIndex("weight")))
                 num.add(cursor.getInt(cursor.getColumnIndex("exercise_count")))
-                time.add(cursor.getString(cursor.getColumnIndex("time")))
+                time.add(cursor.getInt(cursor.getColumnIndex("time")))
             } while (cursor.moveToNext())
             sqldb.close()
 
-            if(time[0] == "null") {
+            if(time[0] == 0) {
                 if(weight[0] == 0f) { // 세트와 횟수만
                     setNumMode(set_num.text.toString().toInt(), num)
                 }
@@ -280,7 +300,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
             table_exercise_count.visibility = View.VISIBLE
         }
     }
-    private fun setTimeMode(set : Int, time : ArrayList<String>?) {
+    private fun setTimeMode(set : Int, time : ArrayList<Int>?) {
         table_weight_num.visibility = View.GONE
         table_num.visibility = View.GONE
         table_time.visibility = View.VISIBLE
@@ -299,14 +319,54 @@ class ExerciseAdditionActivity : AppCompatActivity() {
             setTV.gravity = 17 // 중앙 정렬
             tableRow.addView(setTV)
             // 시간
-            val timeET = EditText(this)
+            /*val timeET = EditText(this)
             timeET.id = TIME_ID + i // 아이디 값
             timeET.textSize = 15f // 글자 크기
             timeET.gravity = 17 // 중앙 정렬
             timeET.inputType = 4 // 숫자 키패트
             if(time == null) timeET.setText("")
-            else timeET.setText(time?.get(i))
-            tableRow.addView(timeET)
+            else timeET.setText(time?.get(i).toString())
+            tableRow.addView(timeET)*/
+            val linearLayout = LinearLayout(this)
+            linearLayout.gravity = 17 // 중앙 정렬
+
+            val hour = time?.get(i)!! / 3600
+            val min = (time?.get(i)!! % 3600) / 60
+            val sec = (time?.get(i)!! % 3600) % 60
+
+            val hourET = EditText(this)
+            hourET.id = HOUR_ID + i
+            hourET.textSize = 15f // 글자 크기
+            //hourET.gravity = 17 // 중앙 정렬
+            hourET.inputType = 2 // 숫자 키패트
+            hourET.setText("$hour")
+            linearLayout.addView(hourET)
+            val tv1 = TextView(this)
+            tv1.textSize = 15f
+            tv1.text = ":"
+            linearLayout.addView(tv1)
+
+            val minET = EditText(this)
+            minET.id = MIN_ID + i
+            minET.textSize = 15f // 글자 크기
+            //hourET.gravity = 17 // 중앙 정렬
+            minET.inputType = 2 // 숫자 키패트
+            minET.setText("$min")
+            linearLayout.addView(minET)
+            val tv2 = TextView(this)
+            tv2.textSize = 15f
+            tv2.text = ":"
+            linearLayout.addView(tv2)
+
+            val secET = EditText(this)
+            secET.id = SEC_ID + i
+            secET.textSize = 15f // 글자 크기
+            //hourET.gravity = 17 // 중앙 정렬
+            secET.inputType = 2 // 숫자 키패트
+            secET.setText("$sec")
+            linearLayout.addView(secET)
+
+            tableRow.addView(linearLayout)
 
             table_exercise_count.visibility = View.VISIBLE
         }
