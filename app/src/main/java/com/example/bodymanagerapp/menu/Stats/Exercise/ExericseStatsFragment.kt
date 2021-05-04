@@ -19,7 +19,10 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.ValueFormatter
+import com.github.mikephil.charting.formatter.YAxisValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
+import com.github.mikephil.charting.utils.ViewPortHandler
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -51,7 +54,7 @@ class ExericseStatsFragment : Fragment() {
     var exerciseData = ArrayList<ExerciseStatsData>()
     var maxWeightList = ArrayList<Float>()
     var volumeList = ArrayList<Float>()
-    var timeList = ArrayList<String>()
+    var timeList = ArrayList<Float>()
 
     lateinit var ct : Context
 
@@ -172,7 +175,7 @@ class ExericseStatsFragment : Fragment() {
                 }
             }
 
-            lineChartGraph(view, maxWeightList)
+            lineChartGraph(view, maxWeightList, "1RM")
             lineChart.visibility = View.VISIBLE
         }
 
@@ -186,7 +189,7 @@ class ExericseStatsFragment : Fragment() {
             for(i in 0 until exerciseData.size) {
                 var volume = 0f
 
-                if(exerciseData[i].timeList!![0] == "null") {
+                if(exerciseData[i].timeList!![0] == 0) {
                     if (exerciseData[i].weightList!![0] == null) { // 세트와 횟수만
                         for (j in 0 until exerciseData[i].setNum) {
                             volume += exerciseData[i].exerciseCount!![j]
@@ -202,7 +205,7 @@ class ExericseStatsFragment : Fragment() {
                 volumeList.add(volume)
             }
 
-            lineChartGraph(view, volumeList)
+            lineChartGraph(view, volumeList, "볼륨")
             lineChart.visibility = View.VISIBLE
         }
 
@@ -213,8 +216,18 @@ class ExericseStatsFragment : Fragment() {
             exerciseData.addAll(loadData())
 
             for(i in 0 until exerciseData.size) {
-
+                var time = 0
+                if(exerciseData[i].timeList!![0] != 0) {
+                    for(j in 0 until exerciseData[i].timeList!!.size) {
+                        time += exerciseData[i].timeList!![j]
+                    }
+                    timeList.add(time.toFloat())
+                } else {
+                    Toast.makeText(context, "기록된 시간이 없습니다.", Toast.LENGTH_SHORT).show()
+                }
             }
+            lineChartGraph(view, timeList, "시간(시:분:초)")
+            lineChart.visibility = View.VISIBLE
         }
         return view
     }
@@ -267,7 +280,7 @@ class ExericseStatsFragment : Fragment() {
                 var setCount : Int = 0
                 var weightList = ArrayList<Float>()
                 var numList = ArrayList<Int>()
-                var timeList = ArrayList<String>()
+                var timeList = ArrayList<Int>()
 
                 setCount = cursor.count
 
@@ -275,7 +288,7 @@ class ExericseStatsFragment : Fragment() {
                     do {
                         weightList?.add(cursor.getFloat(cursor.getColumnIndex("weight")))
                         numList?.add(cursor.getInt(cursor.getColumnIndex("exercise_count")))
-                        timeList?.add(cursor.getString(cursor.getColumnIndex("time")))
+                        timeList?.add(cursor.getInt(cursor.getColumnIndex("time")))
                     } while (cursor.moveToNext())
                 }
                 data.add(ExerciseStatsData(date, setCount, weightList, numList, timeList))
@@ -286,7 +299,9 @@ class ExericseStatsFragment : Fragment() {
     }
 
     // 운동 기록을 그래프로 나타냄
-    private fun lineChartGraph(view : View, dataList : ArrayList<Float> ) {
+    private fun lineChartGraph(view : View, dataList : ArrayList<Float>, str : String ) {
+        lineChart.clear()
+
         var entries : ArrayList<Entry> = ArrayList() // 그래프에서 표현하려는 데이터 리스트
         for(i in 0 until dataList.size) {
             entries.add(Entry(dataList[i], i))
@@ -297,27 +312,31 @@ class ExericseStatsFragment : Fragment() {
             position = XAxis.XAxisPosition.BOTTOM // x축 데이터의 위치를 아래로
             textSize = 10f // 텍스트 크기 지정
             setDrawGridLines(false) // 배경 그리드 라인
-            //xAxis.setAxisMaxValue(end_date.toFloat())
-            //xAxis.setAxisMinValue(start_date.toFloat())
         }
 
         lineChart.apply { // 라인차트 세팅
             axisRight.isEnabled = false // y축의 오른쪽 데이터 비활성화
             axisLeft.textColor = Color.BLACK // y축 왼쪽 데이터 글자 색
+            if(dataList == timeList){ // 시간이면 시간 형태에 맞춰서 표기
+                axisLeft.valueFormatter = YAxisFormatter()
+            } else {
+                axisLeft.valueFormatter = null
+            }
             setBackgroundColor(Color.WHITE) // 배경 색상
             setDescription("날짜") // description 글자
             setDescriptionTextSize(12f) // description 글자 크기
         }
 
-        var depenses : LineDataSet = LineDataSet(entries, "depenses")
+        var depenses : LineDataSet = LineDataSet(entries, "$str")
         depenses.axisDependency = YAxis.AxisDependency.LEFT
 
+        // 날짜 값 변형
         var dates : ArrayList<String> = ArrayList()
         for(i in 0 until exerciseData.size) {
             val year = exerciseData[i].date / 10000
             val month = (exerciseData[i].date % 10000) / 100
             val date = exerciseData[i].date % 100
-            dates.add("${year}년 ${month}월 ${date}일")
+            dates.add("${year}/${month}/${date}")
         }
 
         var data_sets : ArrayList<ILineDataSet> = ArrayList()
@@ -325,11 +344,34 @@ class ExericseStatsFragment : Fragment() {
         var data : LineData = LineData(dates, data_sets)
         depenses.color = Color.BLACK
         depenses.valueTextSize = 10f
-        //depenses.valueFormatter = MyValueFormatter()
+        if(dataList == timeList) { // 시간이면 시간 형태에 맞춰서 표기
+            depenses.valueFormatter = TimeFormatter()
+        } else {
+            depenses.valueFormatter = null
+        }
         depenses.setCircleColor(Color.BLACK)
 
         lineChart.data = data
         lineChart.invalidate()
+    }
+
+    inner class TimeFormatter : ValueFormatter {
+        override fun getFormattedValue(value: Float, entry: Entry?, dataSetIndex: Int, viewPortHandler: ViewPortHandler?): String {
+            val hour = value.toInt() / 3600
+            val min = (value.toInt() % 3600) / 60
+            val sec = (value.toInt() % 3600) % 60
+            return "$hour:$min:$sec"
+        }
+    }
+
+    inner class YAxisFormatter : YAxisValueFormatter {
+        override fun getFormattedValue(value: Float, yAxis: YAxis?): String {
+            val hour = value.toInt() / 3600
+            val min = (value.toInt() % 3600) / 60
+            val sec = (value.toInt() % 3600) % 60
+            return "$hour:$min:$sec"
+        }
+
     }
 
     companion object {
