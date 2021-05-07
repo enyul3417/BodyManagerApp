@@ -34,8 +34,8 @@ class PetActivity : AppCompatActivity() {
     lateinit var img_pet : ImageView
 
     var point : Int = MyPreference.prefs.getInt("point", 0) // 포인트 값 가져오기
-    var meal : Int = MyPreference.prefs.getInt("meal", 0) // 식사 값
-    var health : Int = MyPreference.prefs.getInt("health", 0) // 건강 값
+    var meal : Int = MyPreference.prefs.getInt("meal", 50) // 식사 값
+    var health : Int = MyPreference.prefs.getInt("health", 50) // 건강 값
 
     // 펫 랜덤 이동
     var handler : Handler = Handler()

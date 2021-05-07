@@ -88,7 +88,7 @@ class NewDietActivity : AppCompatActivity() {
         button_diet_save.setOnClickListener {
             if(id == 0) {
                 saveDiet()
-                MyPreference.prefs.setInt("point", (point + 100)) // 포인트 획득
+                MyPreference.prefs.setInt("point", (point + 40)) // 포인트 획득
                 Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             } else {
                 updateDiet()

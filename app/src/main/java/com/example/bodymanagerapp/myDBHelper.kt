@@ -57,6 +57,8 @@ class myDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
                 "weight REAL, " +
                 "muscle_mass REAL, " +
                 "fat_mass REAL, " +
+                "bmi REAL, " +
+                "fat_percent REAL" +
                 "body_photo BLOB);")
     }
 

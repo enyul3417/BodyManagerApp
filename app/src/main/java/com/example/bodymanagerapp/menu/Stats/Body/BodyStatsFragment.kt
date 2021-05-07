@@ -298,7 +298,7 @@ class BodyStatsFragment : Fragment() {
         if(cursor.moveToFirst()) { // 저장된 글이 있으면
             do {
                 val bodyImg = cursor.getBlob(cursor.getColumnIndex("body_photo"))
-                if(bodyImg.isNotEmpty()) { // 사진이 저장되어 있으면
+                if(bodyImg != null) { // 사진이 저장되어 있으면
                     val bitmap = BitmapFactory.decodeByteArray(bodyImg, 0, bodyImg!!.size)
                     val imgDate = cursor.getInt(cursor.getColumnIndex("date"))
 

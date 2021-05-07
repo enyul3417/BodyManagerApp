@@ -26,6 +26,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewDebug
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
@@ -53,6 +54,7 @@ import java.util.*
 // 수정해야할 것
 // 삭제 후 해당 날짜로 새로고침 넣기
 // 사진 사이즈 조절하기
+// ocr 없애고 인바디 api 사용하기
 
 class BodyActivity : AppCompatActivity() {
     // DB
@@ -82,6 +84,8 @@ class BodyActivity : AppCompatActivity() {
     lateinit var et_weight : EditText // 몸무게
     lateinit var et_fat : EditText // 체지방량
     lateinit var et_muscle : EditText // 근육
+    lateinit var et_bmi : EditText
+    lateinit var et_fat_percent : EditText
     lateinit var button_inbody : Button // 인바디
     lateinit var button_camera : ImageButton // 카메라로 사진 찍는 버튼
     lateinit var button_gallery : ImageButton // 갤러리에서 사진 가져오는 버튼
@@ -111,8 +115,10 @@ class BodyActivity : AppCompatActivity() {
         button_delete = findViewById(R.id.button_body_delete) // 삭제 버튼
         et_height = findViewById(R.id.edit_text_body_height) // 키
         et_weight = findViewById(R.id.edit_text_body_weight) // 몸무게
-        et_fat = findViewById(R.id.edit_text_body_fat) // 체지방량
+        et_fat = findViewById(R.id.edit_text_body_fat_mass) // 체지방량
         et_muscle = findViewById(R.id.edit_text_body_muscle) // 근육량
+        et_bmi = findViewById(R.id.edit_text_bmi) // bmi
+        et_fat_percent = findViewById(R.id.edit_text_body_fat_percent) // 체지방률
         button_inbody = findViewById(R.id.button_read_inbody) // 인바디 OCR 버튼
         button_camera = findViewById(R.id.button_body_camera) // 카메라
         button_gallery = findViewById(R.id.button_body_image) // 갤러리
@@ -409,6 +415,8 @@ class BodyActivity : AppCompatActivity() {
         var weight : Float = et_weight.text.toString().toFloat()
         var muscle : Float = et_muscle.text.toString().toFloat()
         var fat : Float = et_fat.text.toString().toFloat()
+        var bmi : Float = et_bmi.text.toString().toFloat()
+        var fat_percent : Float = et_fat_percent.text.toString().toFloat()
         var image : Drawable = body_image.drawable
         var byteArray : ByteArray ?= null
         
@@ -424,10 +432,10 @@ class BodyActivity : AppCompatActivity() {
         }
 
         if(byteArray == null) { // 저장하려는 사진이 없을 경우
-            sqldb.execSQL("INSERT INTO body_record VALUES ($date, $height, $weight, $muscle, $fat, null)")
+            sqldb.execSQL("INSERT INTO body_record VALUES ($date, $height, $weight, $muscle, $fat, $bmi, $fat_percent, null)")
         } else { // 저장하려는 사진이 있는 경우
-            var insQuery : String = "INSERT INTO body_record (date, height, weight, muscle_mass, fat_mass, body_photo) " +
-                    "VALUES ($date, $height, $weight, $muscle, $fat, ?)"
+            var insQuery : String = "INSERT INTO body_record (date, height, weight, muscle_mass, fat_mass, bmi, fat_percent, body_photo) " +
+                    "VALUES ($date, $height, $weight, $muscle, $fat, $bmi, $fat_percent, ?)"
             var stmt : SQLiteStatement = sqldb.compileStatement(insQuery)
             stmt.bindBlob(1, byteArray)
             stmt.execute()
@@ -440,6 +448,8 @@ class BodyActivity : AppCompatActivity() {
         et_weight.text = null
         et_muscle.text = null
         et_fat.text = null
+        et_bmi.text = null
+        et_fat_percent.text = null
         body_image.setImageBitmap(null)
         body_image.visibility = View.GONE
         isLoaded = false
@@ -454,6 +464,8 @@ class BodyActivity : AppCompatActivity() {
             var weight = cursor.getFloat(cursor.getColumnIndex("weight"))
             var muscle = cursor.getFloat(cursor.getColumnIndex("muscle_mass"))
             var fat = cursor.getFloat(cursor.getColumnIndex("fat_mass"))
+            var bmi = cursor.getFloat(cursor.getColumnIndex("bmi"))
+            var fat_percent = cursor.getFloat(cursor.getColumnIndex("fat_percent"))
             bitmap = try {
                 val image : ByteArray ?= cursor.getBlob(cursor.getColumnIndex("body_photo"))
                 BitmapFactory.decodeByteArray(image, 0, image!!.size)
@@ -465,6 +477,8 @@ class BodyActivity : AppCompatActivity() {
             et_weight.setText(weight.toString())
             et_muscle.setText(muscle.toString())
             et_fat.setText(fat.toString())
+            et_bmi.setText(bmi.toString())
+            et_fat_percent.setText(fat_percent.toString())
             body_image.setImageBitmap(bitmap)
             if (bitmap != null ) { // 등록한 이미지가 있다면
                 body_image.visibility = View.VISIBLE
@@ -485,6 +499,8 @@ class BodyActivity : AppCompatActivity() {
         var weight : Float = et_weight.text.toString().toFloat()
         var muscle : Float = et_muscle.text.toString().toFloat()
         var fat : Float = et_fat.text.toString().toFloat()
+        var bmi : Float = et_bmi.text.toString().toFloat()
+        var fat_percent : Float = et_fat_percent.text.toString().toFloat()
         var image : Drawable = body_image.drawable
         var byteArray : ByteArray ?= null
 
@@ -501,11 +517,13 @@ class BodyActivity : AppCompatActivity() {
 
         if(byteArray == null) { // 저장하려는 사진이 없을 경우
             sqldb.execSQL("UPDATE body_record SET " +
-                    "height = $height, weight = $weight, muscle_mass = $muscle, fat_mass = $fat, body_photo = null" +
+                    "height = $height, weight = $weight, muscle_mass = $muscle, fat_mass = $fat, " +
+                    "bmi = $bmi, fat_percent = $fat_percent, body_photo = null" +
                     "where date = $date")
         } else { // 저장하려는 사진이 있는 경우
             var udtQuery : String = "UPDATE body_record SET " +
-                    "height = $height, weight = $weight, muscle_mass = $muscle, fat_mass = $fat, body_photo = ?" +
+                    "height = $height, weight = $weight, muscle_mass = $muscle, fat_mass = $fat, " +
+                    "bmi = $bmi, fat_percent = $fat_percent, body_photo = ?" +
                     "where date = $date"
             var stmt : SQLiteStatement = sqldb.compileStatement(udtQuery)
             stmt.bindBlob(1, byteArray)
