@@ -1,13 +1,18 @@
 package com.example.bodymanagerapp.menu.Pet
 
 import android.animation.ObjectAnimator
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
+import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
@@ -19,6 +24,7 @@ import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
 import com.example.bodymanagerapp.menu.Stats.StatsActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.util.*
+import kotlin.concurrent.timer
 
 class PetActivity : AppCompatActivity() {
     // 상하단
@@ -32,17 +38,20 @@ class PetActivity : AppCompatActivity() {
     lateinit var btn_exercise : Button
     lateinit var btn_snack : Button
     lateinit var img_pet : ImageView
+    lateinit var gridLayout: GridLayout
 
     var point : Int = MyPreference.prefs.getInt("point", 0) // 포인트 값 가져오기
     var meal : Int = MyPreference.prefs.getInt("meal", 50) // 식사 값
     var health : Int = MyPreference.prefs.getInt("health", 50) // 건강 값
 
-    // 펫 랜덤 이동
+    // 펫 이동
     var handler : Handler = Handler()
     var runnable : Runnable = Runnable {  }
-    var random = Random()
+    var timerTask : Timer? = null
+    var time = 0
+    /*var random = Random()
     var ranX = 0
-    var ranY = 0
+    var ranY = 0*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +68,7 @@ class PetActivity : AppCompatActivity() {
         btn_exercise = findViewById(R.id.btn_pet_exercise)
         btn_snack = findViewById(R.id.btn_pet_snack)
         img_pet = findViewById(R.id.img_pet)
+        gridLayout = findViewById(R.id.gridLayout)
 
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
         setSupportActionBar(toolbar)
@@ -67,7 +77,8 @@ class PetActivity : AppCompatActivity() {
         tv_meal.text = "${meal}%"
         tv_health.text = "${health}%"
 
-        imageMove(img_pet, 600f, 600f, 5000L)
+        //imageMove(img_pet, 600f, 600f, 5000L)
+        imageMove(gridLayout, img_pet)
     }
 
     // 하단 메뉴 선택 시 작동
@@ -136,14 +147,14 @@ class PetActivity : AppCompatActivity() {
     }
 
     // 이미지 이동
-    private fun imageMove(image : ImageView, posX : Float, posY : Float, duration1 : Long) {
+    /*private fun imageMove(image : ImageView, posX : Float, posY : Float, duration1 : Long) {
         runnable = object : Runnable {
             override fun run() {
-                ObjectAnimator.ofFloat(image, "translationX", posX).apply {
+                ObjectAnimator.ofFloat(image, "translationX", -posX).apply {
                     duration = duration1
                     start()
                 }
-                ObjectAnimator.ofFloat(image, "translationY", posY).apply {
+                ObjectAnimator.ofFloat(image, "translationY", -posY).apply {
                     duration = duration1
                     start()
                 }
@@ -151,5 +162,31 @@ class PetActivity : AppCompatActivity() {
             }
         }
         handler.post(runnable)
+    }*/
+    // 화면 벗어남 수정 필요
+    private fun imageMove(view : View, img : ImageView) {
+        val rand = Random()
+        var numX = 0
+        var numY = 0
+
+        Log.d("좌표 뷰", "(${view.width}, ${view.height})")
+
+        timerTask = timer(period=1000) {
+            time++
+
+            if(time == 5) {
+                numX = rand.nextInt(view.width)
+                numY = rand.nextInt(view.height)
+                Log.d("좌표 값", "($numX, $numY)")
+
+                img
+                        .animate()
+                        .translationX(numX.toFloat())
+                        .translationY(numY.toFloat())
+                        .setDuration(4000)
+
+                time = 0
+            }
+        }
     }
 }
