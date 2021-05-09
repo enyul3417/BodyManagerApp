@@ -77,7 +77,6 @@ class BodyActivity : AppCompatActivity() {
 
     lateinit var text_date : TextView // 날짜 텍스트
     var date : Int = 0 // 날짜 값 받는 곳
-    lateinit var date_format : SimpleDateFormat
     lateinit var button_save : ImageButton // 저장 버튼
     lateinit var button_delete : ImageButton // 삭제 버튼
     lateinit var et_height : EditText // 키
@@ -125,8 +124,6 @@ class BodyActivity : AppCompatActivity() {
         body_image = findViewById(R.id.image_body) // 눈바디
 
         test = findViewById(R.id.tv_test)
-
-        date_format = SimpleDateFormat("yyyyMMdd")
 
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
         setSupportActionBar(toolbar)

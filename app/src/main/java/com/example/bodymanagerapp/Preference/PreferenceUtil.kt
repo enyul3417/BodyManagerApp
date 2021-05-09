@@ -2,6 +2,7 @@ package com.example.bodymanagerapp.Preference
 
 import android.content.Context
 import android.content.SharedPreferences
+import java.util.*
 
 class PreferenceUtil(context: Context) {
     private val prefs : SharedPreferences =
@@ -13,5 +14,13 @@ class PreferenceUtil(context: Context) {
 
     fun setInt(key : String, i : Int) {
         prefs.edit().putInt(key, i).apply()
+    }
+
+    fun getLong(key: String, defValue: Long) : Long {
+        return prefs.getLong(key, defValue)
+    }
+
+    fun setLong(key: String, l : Long) {
+        prefs.edit().putLong(key, l).apply()
     }
 }

@@ -1,8 +1,11 @@
 package com.example.bodymanagerapp.menu.Pet
 
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -19,11 +22,17 @@ import com.example.bodymanagerapp.menu.Body.BodyActivity
 import com.example.bodymanagerapp.menu.Diet.DietActivity
 import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
 import com.example.bodymanagerapp.menu.Stats.StatsActivity
+import com.example.bodymanagerapp.myDBHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.timer
 
 class PetActivity : AppCompatActivity() {
+    // DB
+    lateinit var myDBHelper: myDBHelper
+    lateinit var sqldb: SQLiteDatabase
+
     // 상하단
     lateinit var bottom_nav_view: BottomNavigationView
     lateinit var toolbar: Toolbar
@@ -37,9 +46,14 @@ class PetActivity : AppCompatActivity() {
     lateinit var img_pet : ImageView
     lateinit var gridLayout: GridLayout
 
-    var point : Int = MyPreference.prefs.getInt("point", 0) // 포인트 값 가져오기
-    var meal : Int = MyPreference.prefs.getInt("meal", 50) // 식사 값
-    var health : Int = MyPreference.prefs.getInt("health", 50) // 건강 값
+    // 펫 수치 관련
+    var point : Int = 0
+    var meal : Int = 0
+    var health : Int = 0
+    /*lateinit var lastTime : Date // 마지막 접속 시간
+    lateinit var nowTime : Date // 현재 접속 시간*/
+    var lastTime : Long = 0L
+    var nowTime : Long = 0L
 
     // 펫 이동
     var timerTask : Timer? = null
@@ -48,6 +62,8 @@ class PetActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pet)
+
+        myDBHelper = myDBHelper(this)
 
         //메뉴
         bottom_nav_view = findViewById(R.id.bottom_nav_view)
@@ -64,6 +80,10 @@ class PetActivity : AppCompatActivity() {
 
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
         setSupportActionBar(toolbar)
+
+        loadData()
+
+
 
         tv_point.text = point.toString()
         tv_meal.text = "${meal}%"
@@ -236,5 +256,44 @@ class PetActivity : AppCompatActivity() {
                 time = 0
             }
         }
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private fun loadData() {
+        nowTime = System.currentTimeMillis() // 현재 접속 시간
+        lastTime = MyPreference.prefs.getLong("last", nowTime) // 마지막 접속 시간
+        MyPreference.prefs.setLong("last", nowTime) // 현재 접속 시간을 마지막 접속 시간으로 변경
+        var subTime = (nowTime - lastTime).toInt() / (1000 * 60) // 시간 차이를 분 단위로 변경
+
+        Log.d("시간", "$nowTime || $lastTime || $subTime")
+
+        point = MyPreference.prefs.getInt("point", 0) // 포인트 값 가져오기
+        meal = MyPreference.prefs.getInt("meal", 50) // 식사 값
+        health = MyPreference.prefs.getInt("health", 50) // 건강 값
+
+        meal -= (subTime / 20) * 3 // 20분 당 3% 감소
+        health -= (subTime / 10) * 1 // 10분 당 1% 감소
+
+        // 변경된 값 저장해두기
+        MyPreference.prefs.setInt("meal", meal)
+        MyPreference.prefs.setInt("health", health)
+
+        // 사용자의 최신 BMI 값 가져와서 펫 이미지 설정
+        sqldb = myDBHelper.readableDatabase
+        var cursor : Cursor = sqldb.rawQuery("SELECT bmi FROM body_record ORDER BY date DESC", null)
+        if(cursor.moveToFirst()) { // 데이터가 있으면
+            var bmi = cursor.getFloat(cursor.getColumnIndex("bmi"))
+            Log.d("BMI", "$bmi")
+            when {
+                bmi >= 25 -> img_pet.setImageResource(R.drawable.pigcat) // 비만 이상은 뚱냥이
+                bmi >= 23 -> img_pet.setImageResource(R.drawable.chubbycat) // 과체중은 포동냥이
+                else -> img_pet.setImageResource(R.drawable.cat) // 그 외는 그냥 냥이
+            }
+        } else { // 데이터가 없으면
+            img_pet.setImageResource(R.drawable.pigcat) // 뚱냥이
+        }
+
+        // 7일 이상 접속 기록이 없으면 뚱냥이 넣기
+        if(subTime / (60 * 24) >= 7) img_pet.setImageResource(R.drawable.pigcat)
     }
 }
