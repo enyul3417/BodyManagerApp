@@ -11,10 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.GridLayout
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import com.example.bodymanagerapp.Preference.MyPreference
 import com.example.bodymanagerapp.R
@@ -45,13 +42,8 @@ class PetActivity : AppCompatActivity() {
     var health : Int = MyPreference.prefs.getInt("health", 50) // 건강 값
 
     // 펫 이동
-    var handler : Handler = Handler()
-    var runnable : Runnable = Runnable {  }
     var timerTask : Timer? = null
     var time = 0
-    /*var random = Random()
-    var ranX = 0
-    var ranY = 0*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,8 +69,80 @@ class PetActivity : AppCompatActivity() {
         tv_meal.text = "${meal}%"
         tv_health.text = "${health}%"
 
-        //imageMove(img_pet, 600f, 600f, 5000L)
         imageMove(gridLayout, img_pet)
+        //MyPreference.prefs.setInt("point", 200)
+
+        // 밥주기 버튼
+        btn_feeding.setOnClickListener {
+            if(point >= 50) {
+                // 포인트 감소
+                point -= 50
+                MyPreference.prefs.setInt("point", point)
+                tv_point.text = point.toString()
+
+                // 포만감 증가
+                if (meal + 20 > 100) meal = 100
+                else meal += 20
+                MyPreference.prefs.setInt("meal", meal)
+                tv_meal.text = "${meal}%"
+
+                // 건강 감소
+                if (health - 5 < 0) health = 0
+                else health -= 5
+                MyPreference.prefs.setInt("health", health)
+                tv_health.text = "${health}%"
+            } else {
+                Toast.makeText(this, "포인트가 부족합니다.", Toast.LENGTH_SHORT).show()
+            }
+
+        }
+        // 운동하기 버튼
+        btn_exercise.setOnClickListener {
+            if(point >= 30) {
+                // 포인트 감소
+                point -= 30
+                MyPreference.prefs.setInt("point", point)
+                tv_point.text = point.toString()
+
+                // 포만감 감소
+                if (meal - 10 < 0) meal = 0
+                else meal -= 10
+                MyPreference.prefs.setInt("meal", meal)
+                tv_meal.text = "${meal}%"
+
+                // 건강 증가
+                if (health + 20 > 100) health = 100
+                else health += 20
+                MyPreference.prefs.setInt("health", health)
+                tv_health.text = "${health}%"
+            } else {
+                Toast.makeText(this, "포인트가 부족합니다.", Toast.LENGTH_SHORT).show()
+            }
+
+        }
+        // 간식주기 버튼
+        btn_snack.setOnClickListener {
+            if(point >= 10) {
+                // 포인트 감소
+                point -= 10
+                MyPreference.prefs.setInt("point", point)
+                tv_point.text = point.toString()
+
+                // 포만감 증가
+                if (meal + 5 > 100) meal = 100
+                else meal += 5
+                MyPreference.prefs.setInt("meal", meal)
+                tv_meal.text = "${meal}%"
+
+                // 건강 감소
+                if (health - 10 < 0) health = 0
+                else health -= 10
+                MyPreference.prefs.setInt("health", health)
+                tv_health.text = "${health}%"
+            } else {
+                Toast.makeText(this, "포인트가 부족합니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     // 하단 메뉴 선택 시 작동
@@ -146,24 +210,8 @@ class PetActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    // 이미지 이동
-    /*private fun imageMove(image : ImageView, posX : Float, posY : Float, duration1 : Long) {
-        runnable = object : Runnable {
-            override fun run() {
-                ObjectAnimator.ofFloat(image, "translationX", -posX).apply {
-                    duration = duration1
-                    start()
-                }
-                ObjectAnimator.ofFloat(image, "translationY", -posY).apply {
-                    duration = duration1
-                    start()
-                }
-                handler.postDelayed(runnable, duration1)
-            }
-        }
-        handler.post(runnable)
-    }*/
     // 화면 벗어남 수정 필요
+    // 펫 이미지 이동
     private fun imageMove(view : View, img : ImageView) {
         val rand = Random()
         var numX = 0
@@ -174,7 +222,7 @@ class PetActivity : AppCompatActivity() {
         timerTask = timer(period=1000) {
             time++
 
-            if(time == 5) {
+            if(time == 10) {
                 numX = rand.nextInt(view.width)
                 numY = rand.nextInt(view.height)
                 Log.d("좌표 값", "($numX, $numY)")
