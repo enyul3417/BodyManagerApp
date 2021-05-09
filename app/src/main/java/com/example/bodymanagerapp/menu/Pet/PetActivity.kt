@@ -76,7 +76,7 @@ class PetActivity : AppCompatActivity() {
         btn_exercise = findViewById(R.id.btn_pet_exercise)
         btn_snack = findViewById(R.id.btn_pet_snack)
         img_pet = findViewById(R.id.img_pet)
-        gridLayout = findViewById(R.id.gridLayout)
+        //gridLayout = findViewById(R.id.gridLayout)
 
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
         setSupportActionBar(toolbar)
@@ -89,7 +89,7 @@ class PetActivity : AppCompatActivity() {
         tv_meal.text = "${meal}%"
         tv_health.text = "${health}%"
 
-        imageMove(gridLayout, img_pet)
+        imageMove(img_pet)
         //MyPreference.prefs.setInt("point", 200)
 
         // 밥주기 버튼
@@ -232,19 +232,17 @@ class PetActivity : AppCompatActivity() {
 
     // 화면 벗어남 수정 필요
     // 펫 이미지 이동
-    private fun imageMove(view : View, img : ImageView) {
+    private fun imageMove(img : ImageView) {
         val rand = Random()
         var numX = 0
         var numY = 0
 
-        Log.d("좌표 뷰", "(${view.width}, ${view.height})")
-
         timerTask = timer(period=1000) {
             time++
 
-            if(time == 10) {
-                numX = rand.nextInt(view.width)
-                numY = rand.nextInt(view.height)
+            if(time == 5) {
+                numX = rand.nextInt(700)
+                numY = rand.nextInt(800)
                 Log.d("좌표 값", "($numX, $numY)")
 
                 img
@@ -258,6 +256,7 @@ class PetActivity : AppCompatActivity() {
         }
     }
 
+    // 각종 데이터 불러오기
     @SuppressLint("SimpleDateFormat")
     private fun loadData() {
         nowTime = System.currentTimeMillis() // 현재 접속 시간
