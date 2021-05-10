@@ -1,7 +1,6 @@
 package com.example.bodymanagerapp.menu.Exercise.Routine
 
 import android.app.AlertDialog
-import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -15,8 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bodymanagerapp.MainActivity
 import com.example.bodymanagerapp.R
-import com.example.bodymanagerapp.menu.Body.BodyActivity
-import com.example.bodymanagerapp.menu.Exercise.ExerciseData
 import com.example.bodymanagerapp.menu.SettingsFragment
 import com.example.bodymanagerapp.myDBHelper
 import java.time.LocalDate
@@ -32,7 +29,7 @@ class SavedRoutineActivity : AppCompatActivity() {
     lateinit var spinner : Spinner
     lateinit var et_routine : EditText
     lateinit var rv : RecyclerView
-    lateinit var rvAdapter : SavedRoutineRVAdapter
+    lateinit var rvAdapter : RoutineRVAdapter
     lateinit var btn_save : Button
 
     var nameList = ArrayList<String>()
@@ -64,16 +61,24 @@ class SavedRoutineActivity : AppCompatActivity() {
         routineData.clear()
         routineData.addAll(loadExercise()) // 오늘 운동 불러오기
         if(routineData.size > 0) { // 데이터가 있으면
-            rvAdapter = SavedRoutineRVAdapter(routineData, this, rv)
+            rvAdapter = RoutineRVAdapter(routineData, this, rv)
             rv.adapter = rvAdapter
             rv.layoutManager = LinearLayoutManager(this)
             rv.visibility = View.VISIBLE
         }
 
-        if(nameList[spinner.selectedItemPosition] == "직접 입력") {
-            et_routine.visibility = View.VISIBLE
-        } else {
-            et_routine.visibility = View.GONE
+        spinner.onItemSelectedListener = object  : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if(nameList[spinner.selectedItemPosition] == "직접 입력") {
+                    et_routine.visibility = View.VISIBLE
+                } else {
+                    et_routine.visibility = View.GONE
+                }
+            }
         }
 
         btn_save.setOnClickListener {

@@ -156,17 +156,6 @@ class ExerciseAdditionActivity : AppCompatActivity() {
             }
         }
 
-        /*if(findViewById<EditText>(TIME_ID+1) != null) { // 입력한 시간 값이 있으면
-            for(i in 0 until snum) { // 사용자가 입력한 값 가져오기
-                var time: EditText = findViewById(TIME_ID + i)
-                timeArray?.add(time.text.toString().toInt())
-            }
-        } else {
-            for(i in 0 until snum) { // 사용자가 입력한 값 가져오기
-                timeArray = null
-            }
-        }*/
-
         if(findViewById<EditText>(HOUR_ID) != null || findViewById<EditText>(MIN_ID) != null || findViewById<EditText>(SEC_ID) != null) { // 입력한 시간 값이 있으면
             for(i in 0 until snum) { // 사용자가 입력한 값 가져오기
                 var time : Int = 0
@@ -318,15 +307,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
             setTV.text = "${i+1}"
             setTV.gravity = 17 // 중앙 정렬
             tableRow.addView(setTV)
-            // 시간
-            /*val timeET = EditText(this)
-            timeET.id = TIME_ID + i // 아이디 값
-            timeET.textSize = 15f // 글자 크기
-            timeET.gravity = 17 // 중앙 정렬
-            timeET.inputType = 4 // 숫자 키패트
-            if(time == null) timeET.setText("")
-            else timeET.setText(time?.get(i).toString())
-            tableRow.addView(timeET)*/
+
             val linearLayout = LinearLayout(this)
             linearLayout.gravity = 17 // 중앙 정렬
 

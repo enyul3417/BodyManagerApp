@@ -194,7 +194,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         // 루틴 불러오기 버튼 클릭 시
         button_load_routine.setOnClickListener {
             val intent : Intent = Intent(this, LoadRoutineActivity::class.java)
-            startActivityForResult(intent, REQUEST_CODE_LOAD_ROUTINE)
+            startActivity(intent)
         }
 
         // 운동 추가 버튼 클릭 시
@@ -350,9 +350,6 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
                     rv.adapter = rvAdapter
                     rv.layoutManager = LinearLayoutManager(this)
                     rv.visibility = View.VISIBLE
-                }
-                REQUEST_CODE_LOAD_ROUTINE -> {
-
                 }
             }
         }
