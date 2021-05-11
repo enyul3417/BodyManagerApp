@@ -182,6 +182,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
 
         // 운동 완료 버튼 클릭 시
         button_done.setOnClickListener {
+            saveExercise()
             exerciseDone()
         }
 
@@ -355,7 +356,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         }
     }
 
-    fun loadExercise() : ArrayList<ExerciseData>{
+    private fun loadExercise() : ArrayList<ExerciseData>{
         Log.d("exercise", "신호 수신")
 
         var data = ArrayList<ExerciseData>()
@@ -418,5 +419,15 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         }
 
         return data
+    }
+
+    private fun saveExercise() {
+        sqldb = myDBHelper.writableDatabase
+        var hour = timer_hour.text.toString().toInt() * 3600
+        var min = timer_minute.text.toString().toInt() * 60
+        var time = hour + min + (timer_second.text.toString().toInt())
+
+        sqldb.execSQL("INSERT INTO exercise_record(date, total_time) VALUES (${date_format.toInt()}, $time);")
+        sqldb.close()
     }
 }
