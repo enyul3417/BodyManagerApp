@@ -76,21 +76,17 @@ class PetActivity : AppCompatActivity() {
         btn_exercise = findViewById(R.id.btn_pet_exercise)
         btn_snack = findViewById(R.id.btn_pet_snack)
         img_pet = findViewById(R.id.img_pet)
-        //gridLayout = findViewById(R.id.gridLayout)
 
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
         setSupportActionBar(toolbar)
 
         loadData()
 
-
-
         tv_point.text = point.toString()
         tv_meal.text = "${meal}%"
         tv_health.text = "${health}%"
 
         imageMove(img_pet)
-        //MyPreference.prefs.setInt("point", 200)
 
         // 밥주기 버튼
         btn_feeding.setOnClickListener {
@@ -270,8 +266,10 @@ class PetActivity : AppCompatActivity() {
         meal = MyPreference.prefs.getInt("meal", 50) // 식사 값
         health = MyPreference.prefs.getInt("health", 50) // 건강 값
 
-        meal -= (subTime / 20) * 3 // 20분 당 3% 감소
-        health -= (subTime / 10) * 1 // 10분 당 1% 감소
+        if(meal - (subTime / 20) * 3 < 0) meal = 0
+        else meal -= (subTime / 20) * 3 // 20분 당 3% 감소
+        if(health - (subTime / 10) * 1 < 0) health = 0
+        else health -= (subTime / 10) * 1 // 10분 당 1% 감소
 
         // 변경된 값 저장해두기
         MyPreference.prefs.setInt("meal", meal)
