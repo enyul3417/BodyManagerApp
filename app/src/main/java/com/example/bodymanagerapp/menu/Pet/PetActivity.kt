@@ -284,7 +284,8 @@ class PetActivity : AppCompatActivity() {
             when {
                 bmi >= 25 -> img_pet.setImageResource(R.drawable.pigcat) // 비만 이상은 뚱냥이
                 bmi >= 23 -> img_pet.setImageResource(R.drawable.chubbycat) // 과체중은 포동냥이
-                else -> img_pet.setImageResource(R.drawable.cat) // 그 외는 그냥 냥이
+                bmi >= 18.5 -> img_pet.setImageResource(R.drawable.cat) // 정상 체중은 냥이
+                else -> img_pet.setImageResource(R.drawable.driedcat) // 그 외(저체중)는 말린 냥이
             }
         } else { // 데이터가 없으면
             img_pet.setImageResource(R.drawable.pigcat) // 뚱냥이
