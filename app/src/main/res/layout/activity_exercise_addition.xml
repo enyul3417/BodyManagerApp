@@ -84,6 +84,62 @@
 
             </TableLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+                <CheckBox
+                    android:id="@+id/cb_chest"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="가슴"/>
+                <CheckBox
+                    android:id="@+id/cb_shoulder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="어깨"/>
+                <CheckBox
+                    android:id="@+id/cb_back"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="등"/>
+                <CheckBox
+                    android:id="@+id/cb_abs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="복근"/>
+                <CheckBox
+                    android:id="@+id/cb_arms"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="팔"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+                <CheckBox
+                    android:id="@+id/cb_lower_body"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="하체"/>
+                <CheckBox
+                    android:id="@+id/cb_hip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="엉덩이"/>
+                <CheckBox
+                    android:id="@+id/cb_whole_body"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="전신"/>
+                <CheckBox
+                    android:id="@+id/cb_aerobic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="유산소"/>
+            </LinearLayout>
+
             <!-- 버튼 -->
             <LinearLayout
                 android:layout_width="wrap_content"

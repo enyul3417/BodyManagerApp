@@ -33,6 +33,7 @@ class myDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
         db?.execSQL("CREATE TABLE exercise_counter (" +
                 "date INTEGER, " +
                 "exercise_name TEXT, " +
+                "tag TEXT, "+
                 "set_num INTEGER, " +
                 "weight REAL, " +
                 "exercise_count INTEGER, " +

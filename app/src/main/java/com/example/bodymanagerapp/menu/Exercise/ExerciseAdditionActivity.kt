@@ -27,6 +27,17 @@ class ExerciseAdditionActivity : AppCompatActivity() {
     lateinit var exercise_name: EditText // 운동 이름
     lateinit var set_num: EditText // 세트 수
 
+    // 운동 부위 체크 박스
+    lateinit var cb_chest : CheckBox
+    lateinit var cb_shoulder : CheckBox
+    lateinit var cb_back : CheckBox
+    lateinit var cb_abs : CheckBox
+    lateinit var cb_arms : CheckBox
+    lateinit var cb_lower_body : CheckBox
+    lateinit var cb_hip : CheckBox
+    lateinit var cb_whole_body : CheckBox
+    lateinit var cb_aerobic : CheckBox
+
     lateinit var button_weight_number: Button // 무게, 횟수
     lateinit var button_number: Button // 횟수
     lateinit var button_time: Button // 시간
@@ -63,6 +74,16 @@ class ExerciseAdditionActivity : AppCompatActivity() {
 
         exercise_name = findViewById(R.id.exercise_name)
         set_num = findViewById(R.id.set_num)
+
+        cb_chest = findViewById(R.id.cb_chest)
+        cb_shoulder = findViewById(R.id.cb_shoulder)
+        cb_back = findViewById(R.id.cb_back)
+        cb_abs = findViewById(R.id.cb_abs)
+        cb_arms = findViewById(R.id.cb_arms)
+        cb_lower_body = findViewById(R.id.cb_lower_body)
+        cb_hip = findViewById(R.id.cb_hip)
+        cb_whole_body = findViewById(R.id.cb_whole_body)
+        cb_aerobic = findViewById(R.id.cb_aerobic)
 
         button_weight_number = findViewById(R.id.button_weight_number)
         button_number = findViewById(R.id.button_number)
@@ -133,6 +154,35 @@ class ExerciseAdditionActivity : AppCompatActivity() {
         var weightArray : ArrayList<Float> ?= ArrayList() // 무게 배열
         var numArray : ArrayList<Int> ?= ArrayList() // 횟수 배열
         var timeArray : ArrayList<Int> ?= ArrayList() // 시간 배열
+        var str : String = ""
+
+        if (cb_chest.isChecked) {
+            str += "${cb_chest.text},"
+        }
+        if (cb_shoulder.isChecked) {
+            str += "${cb_shoulder.text},"
+        }
+        if (cb_back.isChecked) {
+            str += "${cb_back.text},"
+        }
+        if (cb_abs.isChecked) {
+            str += "${cb_abs.text},"
+        }
+        if (cb_arms.isChecked) {
+            str += "${cb_arms.text},"
+        }
+        if (cb_lower_body.isChecked) {
+            str += "${cb_lower_body.text},"
+        }
+        if (cb_hip.isChecked) {
+            str += "${cb_hip.text},"
+        }
+        if (cb_whole_body.isChecked) {
+            str += "${cb_whole_body.text},"
+        }
+        if (cb_aerobic.isChecked) {
+            str += "${cb_aerobic.text},"
+        }
 
         if(findViewById<EditText>(WEIGHT_ID) != null) { // 입력한 무게 값이 있으면
             for(i in 0 until snum) { // 사용자가 입력한 값 가져오기
@@ -176,7 +226,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
             sqldb.execSQL("DELETE FROM exercise_counter WHERE date = $date AND exercise_name = '${name}'")
         }
         for(i in 0 until snum) { //데이터 저장하기
-            sqldb.execSQL("INSERT INTO exercise_counter VALUES ($date,'${exercise_name.text}', " +
+            sqldb.execSQL("INSERT INTO exercise_counter VALUES ($date,'${exercise_name.text}', '$str', " +
                     "${i+1}, ${weightArray?.get(i)}, ${numArray?.get(i)}, '${timeArray?.get(i)}', 0);")
         }
 
@@ -190,6 +240,45 @@ class ExerciseAdditionActivity : AppCompatActivity() {
             isLoaded = true
             set_num.setText(cursor.count.toString())
             exercise_name.setText(name)
+
+            var str : String = cursor.getString(cursor.getColumnIndex("tag"))
+            var part : String = ""
+            for(i in str.indices) {
+                if(str[i] == ',') {
+                    when (part) {
+                        "${cb_chest.text}" -> {
+                            cb_chest.isChecked = true
+                        }
+                        "${cb_shoulder.text}" -> {
+                            cb_shoulder.isChecked = true
+                        }
+                        "${cb_back.text}" -> {
+                            cb_back.isChecked = true
+                        }
+                        "${cb_abs.text}" -> {
+                            cb_abs.isChecked = true
+                        }
+                        "${cb_arms.text}" -> {
+                            cb_arms.isChecked = true
+                        }
+                        "${cb_lower_body.text}" -> {
+                            cb_lower_body.isChecked = true
+                        }
+                        "${cb_hip.text}" -> {
+                            cb_hip.isChecked = true
+                        }
+                        "${cb_whole_body.text}" -> {
+                            cb_whole_body.isChecked = true
+                        }
+                        "${cb_aerobic.text}" -> {
+                            cb_aerobic.isChecked = true
+                        }
+                    }
+                    part = ""
+                } else {
+                    part += str[i]
+                }
+            }
 
             var weight = ArrayList<Float>()
             var num = ArrayList<Int>()
