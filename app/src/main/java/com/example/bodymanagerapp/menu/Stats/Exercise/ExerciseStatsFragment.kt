@@ -451,19 +451,7 @@ class ExerciseStatsFragment : Fragment() {
                                 "FROM exercise_counter " +
                                 "WHERE date = $date AND exercise_name = '$name'", null)
 
-                        var setCount : Int = cursor.count
-                        var weightList = ArrayList<Float>()
-                        var numList = ArrayList<Int>()
-                        var timeList = ArrayList<Int>()
-
-                        if(cursor.moveToFirst()) {
-                            do {
-                                weightList?.add(cursor.getFloat(cursor.getColumnIndex("weight")))
-                                numList?.add(cursor.getInt(cursor.getColumnIndex("exercise_count")))
-                                timeList?.add(cursor.getInt(cursor.getColumnIndex("time")))
-                            } while (cursor.moveToNext())
-                        }
-                        data.add(ExerciseStatsData(date, name, tag, setCount, weightList, numList, timeList))
+                        data.add(ExerciseStatsData(date, name, tag))
                     } while (nameCursor.moveToNext())
                 }
             } while(dateCursor.moveToNext())
