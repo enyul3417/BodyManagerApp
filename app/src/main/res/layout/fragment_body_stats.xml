@@ -6,159 +6,154 @@
     android:layout_height="match_parent"
     tools:context=".menu.Stats.Body.BodyStatsFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/linearLayout4"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/tv_sb_start_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="시작 날짜"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:text="~"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/tv_sb_end_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="끝 날짜"
+                    android:textSize="20sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="411dp"
+                android:layout_height="46dp"
+                android:layout_marginTop="5dp"
+                android:gravity="center">
+
+                <Button
+                    android:id="@+id/button_sb_7days"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="7일"
+                    android:textSize="10sp" />
+
+                <Button
+                    android:id="@+id/button_sb_1month"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1개월"
+                    android:textSize="10sp" />
+
+                <Button
+                    android:id="@+id/button_sb_3months"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3개월"
+                    android:textSize="10sp" />
+
+                <Button
+                    android:id="@+id/button_sb_1year"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1년"
+                    android:textSize="10sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center">
+
+                <Button
+                    android:id="@+id/button_sb_height"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="키(cm)"
+                    android:textAllCaps="false"
+                    android:textSize="10sp"
+                    android:layout_weight="1"/>
+
+                <Button
+                    android:id="@+id/button_sb_weight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="체중(kg)"
+                    android:textAllCaps="false"
+                    android:textSize="10sp"
+                    android:layout_weight="1"/>
+
+                <Button
+                    android:id="@+id/button_sb_muscle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="골격근량(kg)"
+                    android:textAllCaps="false"
+                    android:textSize="10sp"
+                    android:layout_weight="1"/>
+                <Button
+                    android:id="@+id/button_sb_fat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="체지방량(kg)"
+                    android:textAllCaps="false"
+                    android:textSize="10sp"
+                    android:layout_weight="1"/>
+
+                <Button
+                    android:id="@+id/button_sb_img"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="눈바디"
+                    android:textSize="10sp"
+                    android:layout_weight="1"/>
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/tv_sb_start_date"
-                android:layout_width="wrap_content"
+                android:id="@+id/tv_sb_feedback"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="시작 날짜"
-                android:textSize="20sp" />
+                android:layout_margin="10dp"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:text="~"
-                android:textSize="20sp" />
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/sb_chart"
+                android:layout_width="match_parent"
+                android:layout_height="450dp"
+                android:visibility="gone"
+                android:layout_margin="10dp" />
 
-            <TextView
-                android:id="@+id/tv_sb_end_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="끝 날짜"
-                android:textSize="20sp" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_sb"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_margin="10dp" />
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/linearLayout5"
-            android:layout_width="411dp"
-            android:layout_height="46dp"
-            android:layout_marginTop="5dp"
-            android:gravity="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
 
-            <Button
-                android:id="@+id/button_sb_7days"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="7일"
-                android:textSize="10sp" />
 
-            <Button
-                android:id="@+id/button_sb_1month"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="1개월"
-                android:textSize="10sp" />
-
-            <Button
-                android:id="@+id/button_sb_3months"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="3개월"
-                android:textSize="10sp" />
-
-            <Button
-                android:id="@+id/button_sb_1year"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="1년"
-                android:textSize="10sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/linearLayout6"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:gravity="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout5">
-
-            <Button
-                android:id="@+id/button_sb_height"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="키(cm)"
-                android:textAllCaps="false"
-                android:textSize="10sp"
-                android:layout_weight="1"/>
-
-            <Button
-                android:id="@+id/button_sb_weight"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="체중(kg)"
-                android:textAllCaps="false"
-                android:textSize="10sp"
-                android:layout_weight="1"/>
-
-            <Button
-                android:id="@+id/button_sb_muscle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="골격근량(kg)"
-                android:textAllCaps="false"
-                android:textSize="10sp"
-                android:layout_weight="1"/>
-            <Button
-                android:id="@+id/button_sb_fat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="체지방량(kg)"
-                android:textAllCaps="false"
-                android:textSize="10sp"
-                android:layout_weight="1"/>
-
-            <Button
-                android:id="@+id/button_sb_img"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="눈바디"
-                android:textSize="10sp"
-                android:layout_weight="1"/>
-        </LinearLayout>
-
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/sb_chart"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:visibility="gone"
-            android:layout_margin="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_sb"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:orientation="vertical"
-            android:visibility="gone"
-            android:layout_margin="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
 </LinearLayout>

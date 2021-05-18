@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -55,6 +56,7 @@ class BodyStatsFragment : Fragment() {
     lateinit var btn_fat : Button // 체지방량
     lateinit var btn_body_img : Button // 눈바디
     lateinit var lineChart : LineChart
+    lateinit var tv_feedback : TextView
 
     var start_date : Int= 0
     var end_date : Int= 0
@@ -63,6 +65,10 @@ class BodyStatsFragment : Fragment() {
     // 차트에 사용할 ArrayList
     var date_list = ArrayList<Int>()
     var data_list = ArrayList<Float>()
+
+    // 피드백에 사용할 ArrayList
+    var body_list = ArrayList<BodyDietData>()
+    var diet_list = ArrayList<BodyDietData>()
 
     lateinit var ct : Context
 
@@ -100,12 +106,17 @@ class BodyStatsFragment : Fragment() {
         btn_fat = view.findViewById(R.id.button_sb_fat)
         btn_body_img = view.findViewById(R.id.button_sb_img)
         lineChart = view.findViewById(R.id.sb_chart)
+        tv_feedback = view.findViewById(R.id.tv_sb_feedback)
 
         // 시작 날짜 선택
         tv_start_date.setOnClickListener {
             DatePickerDialog(ct, DatePickerDialog.OnDateSetListener { datePicker, y, m, d ->
                 start_date = dateToInt(y, m, d)
                 tv_start_date.text = "${y}년 ${m+1}월 ${d}일"
+                if(end_date > 0) {
+                    loadFeedbackData()
+                    setFeedback(body_list, diet_list)
+                }
             }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE)).show()
         }
 
@@ -114,6 +125,10 @@ class BodyStatsFragment : Fragment() {
             DatePickerDialog(ct, DatePickerDialog.OnDateSetListener { datePicker, y, m, d ->
                 end_date = dateToInt(y, m, d)
                 tv_end_date.text = "${y}년 ${m+1}월 ${d}일"
+                if(start_date > 0) {
+                    loadFeedbackData()
+                    setFeedback(body_list, diet_list)
+                }
             }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE)).show()
         }
 
@@ -138,6 +153,9 @@ class BodyStatsFragment : Fragment() {
             }
             end_date = dateToInt(year, month, date)
             tv_end_date.text = "${year}년 ${month}월 ${date}일"
+
+            loadFeedbackData()
+            setFeedback(body_list, diet_list)
         }
 
         // 1개월 버튼 클릭 시
@@ -146,6 +164,9 @@ class BodyStatsFragment : Fragment() {
             tv_start_date.text = "${year}년 ${month - 1}월 ${date}일"
             end_date = dateToInt(year, month, date)
             tv_end_date.text = "${year}년 ${month}월 ${date}일"
+
+            loadFeedbackData()
+            setFeedback(body_list, diet_list)
         }
 
         // 3개월 버튼 클릭 시
@@ -154,6 +175,9 @@ class BodyStatsFragment : Fragment() {
             tv_start_date.text = "${year}년 ${month - 3}월 ${date}일"
             end_date = dateToInt(year, month, date)
             tv_end_date.text = "${year}년 ${month}월 ${date}일"
+
+            loadFeedbackData()
+            setFeedback(body_list, diet_list)
         }
 
         // 1년 버튼 클릭 시
@@ -162,6 +186,9 @@ class BodyStatsFragment : Fragment() {
             tv_start_date.text = "${year - 1}년 ${month}월 ${date}일"
             end_date = dateToInt(year, month, date)
             tv_end_date.text = "${year}년 ${month}월 ${date}일"
+
+            loadFeedbackData()
+            setFeedback(body_list, diet_list)
         }
 
         // 키 버튼 클릭 시
@@ -240,6 +267,50 @@ class BodyStatsFragment : Fragment() {
         }
     }
 
+    private fun loadFeedbackData() {
+        body_list .clear()
+        diet_list.clear()
+
+        sqldb = myDBHelper.readableDatabase
+
+        var bodyCursor : Cursor = sqldb.rawQuery("SELECT * FROM body_record " +
+                "WHERE date >= $start_date AND date <= $end_date " +
+                "ORDER BY date ASC", null)
+
+        // 첫 데이터와 마지막 데이터 가져오기
+        if(bodyCursor.moveToFirst()) {
+            var date = bodyCursor.getInt(bodyCursor.getColumnIndex("date"))
+            var weight = bodyCursor.getFloat(bodyCursor.getColumnIndex("weight"))
+            var muscle_mass = bodyCursor.getFloat(bodyCursor.getColumnIndex("muscle_mass"))
+            var fat_mass = bodyCursor.getFloat(bodyCursor.getColumnIndex("fat_mass"))
+            var bmi = bodyCursor.getFloat(bodyCursor.getColumnIndex("bmi"))
+            var fat_percent = bodyCursor.getFloat(bodyCursor.getColumnIndex("fat_percent"))
+            body_list.add(BodyDietData(date, weight, muscle_mass, fat_mass, bmi, fat_percent))
+        }
+        if(bodyCursor.moveToLast()) {
+            var date = bodyCursor.getInt(bodyCursor.getColumnIndex("date"))
+            var weight = bodyCursor.getFloat(bodyCursor.getColumnIndex("weight"))
+            var muscle_mass = bodyCursor.getFloat(bodyCursor.getColumnIndex("muscle_mass"))
+            var fat_mass = bodyCursor.getFloat(bodyCursor.getColumnIndex("fat_mass"))
+            var bmi = bodyCursor.getFloat(bodyCursor.getColumnIndex("bmi"))
+            var fat_percent = bodyCursor.getFloat(bodyCursor.getColumnIndex("fat_percent"))
+            body_list.add(BodyDietData(date, weight, muscle_mass, fat_mass, bmi, fat_percent))
+        }
+
+        var dietCursor : Cursor = sqldb.rawQuery("SELECT date, time FROM diet_record " +
+                "WHERE date >= $start_date AND date <= $end_date " +
+                "ORDER BY date ASC", null)
+
+        if(dietCursor.moveToFirst()) {
+            do {
+                var date = dietCursor.getInt(dietCursor.getColumnIndex("date"))
+                var time = dietCursor.getInt(dietCursor.getColumnIndex("time"))
+                diet_list.add(BodyDietData(date, time))
+            } while (dietCursor.moveToNext())
+        }
+
+    }
+
     // 이미지를 제외한 값들의 그래프
     private fun lineChartGraph(view : View, data_list : ArrayList<Float>, date_list : ArrayList<Int>, str : String ) {
 
@@ -310,6 +381,34 @@ class BodyStatsFragment : Fragment() {
             } while (cursor.moveToNext())
         }
         return imgData
+    }
+
+    private fun setFeedback(body : ArrayList<BodyDietData>, diet : ArrayList<BodyDietData>) {
+        var feedback = ""
+        if (body.size == 0 && diet.size == 0) {
+            Toast.makeText(ct, "저장된 데이터가 없습니다.", Toast.LENGTH_SHORT).show()
+        }
+        if(body.size > 0) {
+            feedback += " 현재 체지방률은 ${body[1].fat_percent}%입니다. "
+            // 남성과 여성 나눠야함 일단 여성의 경우만 작성
+            if(body[body.size-1].fat_percent < 11) {
+                feedback += "체지방률이 매우 낮은 상태입니다. 생리 등 건강 상의 문제가 생길 수 있으니 " +
+                        "체지방을 증가하는 것을 추천드려요!"
+            } else if(body[body.size-1].fat_percent < 20) {
+                feedback += "적정 체지방률 보다 낮은 체지방을 가지고 계시는군요. 마른 것도 좋지만 " +
+                        "체지방이 낮을 경우 건강에 문제가 생길 수도 있으니 주의하세요!"
+            } else if(body[body.size-1].fat_percent < 25) {
+                feedback += "적정 체지방률에 해당합니다!"
+            } else if(body[body.size-1].fat_percent < 30) {
+                feedback += "적정 체지방률 보다 조금 높은 상태입니다. 운동을 통해 관리하시는 것이 좋겠어요."
+            } else {
+                feedback += "체지방률이 매우 높습니다. 비만으로 인해 고혈압, 당뇨병, 각종 암 등에 걸릴 " +
+                        "확률이 높아집니다. 꾸준한 운동과 식단 조절을 통해 적정 체지방률인 20%~25%가 될 " +
+                        "수 있도록 노력해주세요!"
+            }
+        }
+
+        tv_feedback.text = feedback
     }
 
     companion object {
