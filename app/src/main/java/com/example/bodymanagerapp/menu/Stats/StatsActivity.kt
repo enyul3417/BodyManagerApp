@@ -14,7 +14,7 @@ import com.example.bodymanagerapp.menu.Diet.DietActivity
 import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
 import com.example.bodymanagerapp.menu.Pet.PetActivity
 import com.example.bodymanagerapp.menu.Stats.Body.BodyStatsFragment
-import com.example.bodymanagerapp.menu.Stats.Exercise.ExericseStatsFragment
+import com.example.bodymanagerapp.menu.Stats.Exercise.ExerciseStatsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class StatsActivity : AppCompatActivity() {
@@ -35,12 +35,12 @@ class StatsActivity : AppCompatActivity() {
         btn_exercise = findViewById(R.id.button_exercise_stats)
         btn_body = findViewById(R.id.button_body_stats)
 
-        replaceFragment(ExericseStatsFragment())
+        replaceFragment(ExerciseStatsFragment())
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
         setSupportActionBar(toolbar)
 
         btn_exercise.setOnClickListener {
-            replaceFragment(ExericseStatsFragment())
+            replaceFragment(ExerciseStatsFragment())
         }
 
         btn_body.setOnClickListener {
