@@ -47,7 +47,6 @@ class DietActivity : AppCompatActivity() {
     //식단 관련 변수
     lateinit var text_date: TextView // 날짜
     lateinit var button_diet_add: Button // 식단 추가 버튼
-    lateinit var button_diet_refresh : ImageButton
     var date : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,7 +61,6 @@ class DietActivity : AppCompatActivity() {
 
         text_date = findViewById(R.id.text_diet_date) // 날짜
         button_diet_add = findViewById(R.id.button_diet_add) // 식단 추가 버튼
-        button_diet_refresh = findViewById(R.id.button_diet_refresh)
 
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
         setSupportActionBar(toolbar)
@@ -107,10 +105,6 @@ class DietActivity : AppCompatActivity() {
                 startActivity(intent)
                 //rvAdapter.notifyDataSetChanged()
             }
-        }
-
-        button_diet_refresh.setOnClickListener {
-            rvAdapter.notifyDataSetChanged()
         }
     }
 
@@ -190,18 +184,18 @@ class DietActivity : AppCompatActivity() {
     private fun loadDiet() : ArrayList<DietData> {
         var dietData = ArrayList<DietData>()
         sqldb = myDBHelper.readableDatabase
-        cursor = sqldb.rawQuery("SELECT * FROM diet_record WHERE date = $date", null)
+        cursor = sqldb.rawQuery("SELECT * FROM diet_record WHERE date = $date ORDER BY time ASC", null)
 
         if(cursor.moveToFirst()) { // 저장된 글이 있으면
             var id : Int = 0
-            var time : String = ""
+            var time : Int = 0
             var bitmap : Bitmap ?= null
             var memo : String = ""
 
             do{
                 try {
                     id = cursor.getInt(cursor.getColumnIndex("DId"))
-                    time = cursor.getString(cursor.getColumnIndex("time"))
+                    time = cursor.getInt(cursor.getColumnIndex("time"))
                     memo = cursor.getString(cursor.getColumnIndex("memo"))
                     val image : ByteArray ?= cursor.getBlob(cursor.getColumnIndex("diet_photo"))
                     bitmap = BitmapFactory.decodeByteArray(image, 0, image!!.size)
@@ -220,15 +214,5 @@ class DietActivity : AppCompatActivity() {
             Toast.makeText(this, "저장된 식단이 없습니다.", Toast.LENGTH_SHORT).show()
         }
         return dietData
-    }
-
-    private fun refresh() { // 새로 고침
-        var intent = Intent(this, this::class.java)
-        //intent.putExtra("date", date)
-        finish()
-        startActivity(intent)
-
-        //var gintent : Intent = getIntent()
-        //date = gintent.getStringExtra("date").toString()
     }
 }

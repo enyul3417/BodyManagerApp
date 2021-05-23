@@ -47,6 +47,7 @@ class NewDietActivity : AppCompatActivity() {
 
     var date : Int = 0
     var id : Int = 0
+    var time : Int = 0
 
     var currenturi: Uri?=null // 사진 uri
 
@@ -75,6 +76,7 @@ class NewDietActivity : AppCompatActivity() {
         text_time.setOnClickListener {
             val cal = Calendar.getInstance()
             TimePickerDialog(this, TimePickerDialog.OnTimeSetListener { timePicker, h, m ->
+                time = h * 60 + m
                 text_time.text = "${h}시 ${m}분"
             }, cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), true).show()
         }
@@ -157,12 +159,10 @@ class NewDietActivity : AppCompatActivity() {
     // 저장
     private fun saveDiet() {
         sqldb = myDBHelper.writableDatabase
-
-        var timeview = findViewById<TextView>(R.id.text_diet_time)
+        
         var imgView = findViewById<ImageView>(R.id.image_diet)
         var memoView = findViewById<TextView>(R.id.diet_memo)
-
-        var diet_time : String = timeview.text.toString()
+        
         var image : Drawable = imgView.drawable
         var memo : String = memoView.text.toString()
         var byteArray : ByteArray ?= null
@@ -179,10 +179,10 @@ class NewDietActivity : AppCompatActivity() {
         }
 
         if(byteArray == null) { // 저장하려는 사진이 없을 경우
-            sqldb.execSQL("INSERT INTO diet_record VALUES (null, $date,'$diet_time', null,'$memo')")
+            sqldb.execSQL("INSERT INTO diet_record VALUES (null, $date, $time, null,'$memo')")
         } else { // 저장하려는 사진이 있는 경우
             var insQuery : String = "INSERT INTO diet_record (DId, date, time, diet_photo, memo) " +
-                    "VALUES (null, '$date', '$diet_time', ?, '$memo')"
+                    "VALUES (null, '$date', $time, ?, '$memo')"
             var stmt : SQLiteStatement = sqldb.compileStatement(insQuery)
             stmt.bindBlob(1, byteArray)
             stmt.execute()
@@ -194,7 +194,6 @@ class NewDietActivity : AppCompatActivity() {
         sqldb = myDBHelper.writableDatabase
 
         //var diet_date : String = date
-        var diet_time : String = text_time.text.toString()
         var image : Drawable = image_diet.drawable
         var memo : String = diet_memo.text.toString()
         var byteArray : ByteArray ?= null
@@ -212,10 +211,10 @@ class NewDietActivity : AppCompatActivity() {
 
         if(byteArray == null) { // 저장하려는 사진이 없을 경우
             sqldb.execSQL("UPDATE diet_record SET " +
-                    "time = '$diet_time', diet_photo = null, memo = '$memo' WHERE DId = $id")
+                    "time = $time, diet_photo = null, memo = '$memo' WHERE DId = $id")
         } else { // 저장하려는 사진이 있는 경우
             var udtQuery : String = "UPDATE diet_record SET "+
-                    "time = '$diet_time', diet_photo = ?, memo = '$memo' WHERE DId = $id"
+                    "time = $time, diet_photo = ?, memo = '$memo' WHERE DId = $id"
             var stmt : SQLiteStatement = sqldb.compileStatement(udtQuery)
             stmt.bindBlob(1, byteArray)
             stmt.execute()
@@ -231,7 +230,8 @@ class NewDietActivity : AppCompatActivity() {
         // 해당 날짜에 저장된 식단들 가져오기
         if(cursor.moveToFirst()) {
             // 시간 값 가져오기
-            text_time.text = cursor.getString(cursor.getColumnIndex("time"))
+            time = cursor.getInt(cursor.getColumnIndex("time"))
+            text_time.text = "${time / 60}시 ${time % 60}분"
             // 사진 가져오기
             try {
                 val image = cursor.getBlob(cursor.getColumnIndex("diet_photo")) ?: null

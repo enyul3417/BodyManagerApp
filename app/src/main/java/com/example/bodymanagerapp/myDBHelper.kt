@@ -44,7 +44,7 @@ class myDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
         db?.execSQL("CREATE TABLE diet_record (" +
                 "DId INTEGER, " +
                 "date INTEGER, " +
-                "time TEXT, " +
+                "time INTEGER, " +
                 "diet_photo BLOB, " +
                 "memo TEXT," +
                 "PRIMARY KEY(DId AUTOINCREMENT));")

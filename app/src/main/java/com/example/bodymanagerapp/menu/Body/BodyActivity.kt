@@ -98,6 +98,8 @@ class BodyActivity : AppCompatActivity() {
 
     // 포인트 값 가져오기
     var point : Int = MyPreference.prefs.getInt("point", 0)
+    // 성별 값 가져오기
+    var sex : Int = MyPreference.prefs.getInt("sex", 0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -128,14 +130,29 @@ class BodyActivity : AppCompatActivity() {
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
         setSupportActionBar(toolbar)
 
-        dataPath = "${filesDir.toString()}/tesseract/"  // 언어 데이터의 경로 미리 지정
+       /* dataPath = "${filesDir.toString()}/tesseract/"  // 언어 데이터의 경로 미리 지정
 
         checkFile(File("${dataPath}tessdata/"), "kor") // 사용할 언어 파일의 이름 지정
         checkFile(File("${dataPath}tessdata/"), "eng")
 
         var str  : String = "kor+eng"
         tess = TessBaseAPI() // API 준비
-        tess.init(dataPath, str) // 해당 사용할 언어데이터로 초기화
+        tess.init(dataPath, str) // 해당 사용할 언어데이터로 초기화*/
+
+        if(sex == 0) {
+            var dig = AlertDialog.Builder(this) // 대화상자
+            dig.setTitle("성별") // 제목
+            dig.setMessage("사용자의 성별을 선택해주세요")
+            dig.setPositiveButton("남성") { dialog, which ->
+               MyPreference.prefs.setInt("sex", 1)
+            }
+            dig.setNegativeButton("여성") { dialog, which ->
+                MyPreference.prefs.setInt("sex", 2)
+            }
+            dig.show()
+        }
+
+        Log.d("sex : ", "$sex")
 
         // 날짜 텍스트 클릭 시 달력으로 날짜 선택
         text_date.setOnClickListener {
@@ -203,7 +220,7 @@ class BodyActivity : AppCompatActivity() {
         }
 
         button_inbody.setOnClickListener {
-         processImage(BitmapFactory.decodeResource(resources, R.drawable.test))  // 이미지 가공 후 텍스트 뷰에 띄우기
+         /*processImage(BitmapFactory.decodeResource(resources, R.drawable.test))  // 이미지 가공 후 텍스트 뷰에 띄우기*/
         }
     }
 
@@ -537,7 +554,7 @@ class BodyActivity : AppCompatActivity() {
     }
 
     // Assets 폴더의 언어 데이터를 사용하기 위해 내부 저장소로 이동시킴
-    private fun copyFile(str : String) {
+    /*private fun copyFile(str : String) {
         try {
             // 언어데이터파일의 위치
             var filePath : String = "${dataPath}/tessdata/${str}.traineddata"
@@ -566,10 +583,10 @@ class BodyActivity : AppCompatActivity() {
         } catch (ioe : IOException) {
             Log.d("오류 발생", ioe.toString())
         }
-    }
+    }*/
 
     // 언어 데이터가 내부 저장소에 없으면 내부 저장소로 언어 데이터 복사함
-    private fun checkFile(dir : File, str : String) {
+    /*private fun checkFile(dir : File, str : String) {
         // 파일 존재 여부 확인 후 내부로 복사
         if(!dir.exists() && dir.mkdirs()) {
             copyFile(str)
@@ -582,13 +599,13 @@ class BodyActivity : AppCompatActivity() {
                 copyFile(str)
             }
         }
-    }
+    }*/
 
-    private fun processImage(bitmap: Bitmap) {
+    /*private fun processImage(bitmap: Bitmap) {
         Toast.makeText(this, "인바디 정보를 읽어옵니다.", Toast.LENGTH_SHORT).show()
         var ocrResult : String ?= null
         tess.setImage(bitmap)
         ocrResult = tess.utF8Text
         test.text = ocrResult
-    }
+    }*/
 }

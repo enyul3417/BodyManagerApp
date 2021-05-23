@@ -65,7 +65,7 @@ class DietRecyclerViewAdapter(var data : ArrayList<DietData>, val context : Cont
 
         //onBindViewHolder에서 호출할 bind 함수
         fun bind(data: DietData, num: Int) {
-            time.text = data.time
+            time.text = "${data.time / 60}시 ${data.time % 60}분"
             memo.text = data.memo
 
             if (data.image != null){ // 등록된 이미지가 있다면

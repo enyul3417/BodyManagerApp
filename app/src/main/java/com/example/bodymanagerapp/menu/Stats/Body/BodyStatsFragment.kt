@@ -18,6 +18,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.bodymanagerapp.Preference.MyPreference
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.myDBHelper
 import com.github.mikephil.charting.charts.LineChart
@@ -27,8 +28,10 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.round
 
 // 수정해야할 것
 // 날짜 범위 조절 필요
@@ -71,6 +74,8 @@ class BodyStatsFragment : Fragment() {
     var diet_list = ArrayList<BodyDietData>()
 
     lateinit var ct : Context
+
+    var sex = MyPreference.prefs.getInt("sex", 0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -385,30 +390,116 @@ class BodyStatsFragment : Fragment() {
 
     private fun setFeedback(body : ArrayList<BodyDietData>, diet : ArrayList<BodyDietData>) {
         var feedback = ""
-        if (body.size == 0 && diet.size == 0) {
+        var fatPercent = 0f
+        var bmi = 0f
+        if (body.size == 0 && diet.size == 0 || sex == 0) {
             Toast.makeText(ct, "저장된 데이터가 없습니다.", Toast.LENGTH_SHORT).show()
         }
         if(body.size > 0) {
-            feedback += " 현재 체지방률은 ${body[1].fat_percent}%입니다. "
-            // 남성과 여성 나눠야함 일단 여성의 경우만 작성
-            if(body[body.size-1].fat_percent < 11) {
-                feedback += "체지방률이 매우 낮은 상태입니다. 생리 등 건강 상의 문제가 생길 수 있으니 " +
-                        "체지방을 증가하는 것을 추천드려요!"
-            } else if(body[body.size-1].fat_percent < 20) {
-                feedback += "적정 체지방률 보다 낮은 체지방을 가지고 계시는군요. 마른 것도 좋지만 " +
-                        "체지방이 낮을 경우 건강에 문제가 생길 수도 있으니 주의하세요!"
-            } else if(body[body.size-1].fat_percent < 25) {
-                feedback += "적정 체지방률에 해당합니다!"
-            } else if(body[body.size-1].fat_percent < 30) {
-                feedback += "적정 체지방률 보다 조금 높은 상태입니다. 운동을 통해 관리하시는 것이 좋겠어요."
-            } else {
-                feedback += "체지방률이 매우 높습니다. 비만으로 인해 고혈압, 당뇨병, 각종 암 등에 걸릴 " +
-                        "확률이 높아집니다. 꾸준한 운동과 식단 조절을 통해 적정 체지방률인 20%~25%가 될 " +
-                        "수 있도록 노력해주세요!"
+            fatPercent = body[body.size-1].fat_percent
+            bmi = body[body.size-1].bmi
+
+            if(sex != 0 && fatPercent > 0) { // 체지방
+                feedback += " 최근 체지방률은 ${fatPercent}%입니다. "
+                feedback += when {
+                    fatPercent <= 5 && sex == 1 -> {
+                        "체지방률이 매우 낮은 상태입니다. 건강에 안좋은 영향을 줄 수 있으니 " +
+                                "대회 등을 목적으로 하는 것이 아니라면 체지방을 증가해야해요!"
+                    }
+                    fatPercent < 11 && sex == 2 -> {
+                        "체지방률이 매우 낮은 상태입니다. 생리 등 건강 상의 문제가 생길 수 있으니 " +
+                                "체지방을 증가하는 것을 추천드려요!"
+                    }
+                    fatPercent < 20 -> {
+                        "적정 체지방률 보다 낮은 체지방을 가지고 계시는군요. 마른 것도 좋지만 " +
+                                "체지방이 낮을 경우 건강에 문제가 생길 수도 있으니 주의하세요!"
+                    }
+                    fatPercent < 25 -> {
+                        "적정 체지방률에 해당합니다!"
+                    }
+                    fatPercent < 30 -> {
+                        "적정 체지방률 보다 조금 높은 상태입니다. 운동을 통해 관리하시는 것이 좋겠어요."
+                    }
+                    else -> {
+                        "체지방률이 매우 높습니다. 비만으로 인해 고혈압, 당뇨병, 각종 암 등에 걸릴 " +
+                                "확률이 높아집니다. 꾸준한 운동과 식단 조절을 통해 적정 체지방률인 20%~25%가 될 " +
+                                "수 있도록 노력해주세요!"
+                    }
+                }
+            }
+            if(bmi > 0) {
+                feedback += "\n 최근 BMI는 ${bmi}kg/m\u00B2으로, "
+                feedback += when {
+                    bmi < 18.5 -> {
+                        "저체중입니다. 저체중도 비만만큼 위험하답니다. 저체중일 경우 골다공증, 만성피로, " +
+                                "무기력증 등의 위험이 커지며 면역력도 떨어지게 됩니다. 규칙적인 식사와 " +
+                                "운동으로 건강하게 체중을 증가하는 것이 좋아요:) 계속해서 건강이 안좋다면 " +
+                                "꼭 전문가와 상담을 하셔야해요."
+                    }
+                    bmi < 23 -> {
+                        "정상 체중입니다. 잘 하고 계시는군요. 체중을 지금처럼 유지해봐요!"
+                    }
+                    bmi < 25 -> {
+                        "과체중입니다. 과체중이거나 비만일 경우 암 위험이 평균 12% 높다고해요. 건강을 위해서 " +
+                                "지금보다 체중을 낮추려고 노력해봐요. 무작정 굶으면 오히려 건강에 좋지 않으니 " +
+                                "꾸준한 운동과 식단 조절을 통해서 감소해봐요!"
+                    }
+                    else -> {
+                        "비만입니다. 비만일 경우 만성피로, 두통, 소화불량, 체력 부족 등의 문제를 겪을 수 있으며, " +
+                                "고혈압, 당뇨 등의 위험성도 커진답니다. 식단 조절과 운동을 통해서 건강하게 체중을 " +
+                                "줄여봐요. 주기적인 검사와 전문가의 상담을 받으면 더욱 좋겠죠?"
+                    }
+                }
             }
         }
 
+        if(diet.size > 0) {
+            var days = dateToDays(start_date, end_date)
+            var avgDiet = round((diet.size.toFloat() / days) * 10) / 10 // 소수 둘째 자리에서 반올림
+            var late = 0
+
+            feedback += "\n 일일 평균 음식 섭취 수는 약 ${avgDiet}회로, "
+
+            if(avgDiet < 3) { // 하루에 음식 섭취 수가 3번 미만이면
+                feedback += "음식 섭취량이 적은 것으로 판단됩니다. "
+                if (bmi < 18.5 && bmi > 0) {
+                    feedback += "사용자님은 저체중이기 때문에 식사량을 늘리는 것을 추천드려요. 한 번에 많은 음식을 못드신다면 " +
+                            "조금씩 나누어 자주 먹는 것도 좋아요."
+                }
+                if(bmi > 25) {
+                    feedback += "만약 체중 감량을 위해 식사량을 급격히 줄인 것이라면 그 방법은 추천드리지 않아요. 요요가 올 수도 " +
+                            "있으며, 폭식이나 과식을 할수도 있기 때문이에요. 이것 보다는 열량이 낮고 영양소가 골고루 " +
+                            "들어간 식사를 세끼를 드시고, 간식을 줄이는 것을 추천드려요. 간식이 필요하다면 과자, 케이크 등" +
+                            " 보다는 오이, 삶은 계란, 방울토마토와 같은 건강 간식을 드시는 것이 좋아요!"
+                }
+            } else if (avgDiet > 5) { // 하루에 5번 초과로 음식을 먹는다면
+                feedback += "음식 섭취량이 많은 것으로 판단됩니다. 소량의 음식이고, 운동을 병행하고 있다면 괜찮지만, " +
+                        "속이 더부룩할 정도의 양을 자주 드신다면 음식 섭취를 줄이는 것을 추천드려요."
+            }
+
+            for(i in 0 until diet.size) {
+                if(diet[i].time > 21 * 60) { // 9시 이후에 음식을 섭취했으면
+                    late++
+                }
+            }
+            if(late.toFloat() / days * 100 > 40) { // 해당 기간의 40% 이상의 식단을 늦은 시간에 섭취했다면
+                feedback += "\n 사용자님께서는 늦은 시간에 음식을 자주 섭취하시네요. 야식은 가끔 먹는 것은 괜찮아요." +
+                        "하지만 야식을 자주 먹으면 수면의 질이 저하되며, 역류성 식도염 등과 같은 질병이 생길 수도 있어요." +
+                        "또 밤에는 몸이 에너지를 저장하려 하기에 야식을 먹으면 살이 더 잘찐답니다. 배가 너무 고프다면 " +
+                        "바나나 하나, 우유 한 컵 등의 건강한 간식을 소량 섭취하시는 것을 추천드려요."
+            }
+
+        }
+
         tv_feedback.text = feedback
+    }
+
+    private fun dateToDays(start : Int, end : Int) : Int {
+        var format = SimpleDateFormat("yyyyMMdd")
+        var date1 = format.parse(start.toString())
+        var date2 = format.parse(end.toString())
+
+        return ((date2.time - date1.time) / (60 * 60 * 24 * 1000)).toInt()
     }
 
     companion object {

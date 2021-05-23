@@ -63,14 +63,6 @@
                     android:gravity="center"
                     android:text="@string/text_date"
                     android:textSize="18sp" />
-
-                <ImageButton
-                    android:id="@+id/button_diet_refresh"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="10dp"
-                    android:layout_weight="1"
-                    android:src="@drawable/ic_baseline_refresh_24" />
             </LinearLayout>
 
 

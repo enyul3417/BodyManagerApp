@@ -44,7 +44,7 @@ class PetActivity : AppCompatActivity() {
     lateinit var btn_exercise : Button
     lateinit var btn_snack : Button
     lateinit var img_pet : ImageView
-    lateinit var gridLayout: GridLayout
+    //lateinit var gridLayout: GridLayout
 
     // 펫 수치 관련
     var point : Int = 0
