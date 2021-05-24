@@ -21,6 +21,7 @@ import com.example.bodymanagerapp.myDBHelper
 import com.google.firebase.database.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.math.round
 
 
 class ExerciseAdditionActivity : AppCompatActivity() {
@@ -175,7 +176,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
                 checkLastData()
                 if(lastData.size > 0) {
                     when(mode) {
-                        1 -> {
+                        1 -> { // 무게, 횟수
                             var weight1 = lastData[0].weight!![0]
                             var rm1  = weight1 + (weight1 * lastData[0].num!![0] * 0.025f)
                             var weight2 = findViewById<EditText>(WEIGHT_ID).text.toString().toFloat()
@@ -185,7 +186,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
                             if(rm1 > rm2) {
                                 var dig = AlertDialog.Builder(this) // 대화상자
                                 dig.setTitle("1RM 감소") // 제목
-                                dig.setMessage("마지막 기록보다 1RM이 ${rm1 - rm2}kg 감소했습니다. 진행하시겠습니까?")
+                                dig.setMessage("마지막 기록보다 1RM이 ${round((rm1 - rm2) * 10) / 10}kg 감소했습니다. 진행하시겠습니까?")
                                 dig.setPositiveButton("예") { dialog, which ->
                                     addExercise()
                                     val intent = Intent(this, ExerciseActivity::class.java)
@@ -209,7 +210,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
                             if(vol1 > vol2) {
                                 var dig = AlertDialog.Builder(this) // 대화상자
                                 dig.setTitle("볼륨 감소") // 제목
-                                dig.setMessage("마지막 기록보다 볼륨이 ${vol1 - vol2}kg 감소했습니다. 진행하시겠습니까?")
+                                dig.setMessage("마지막 기록보다 볼륨이 ${round((vol1 - vol2) * 10) / 10}kg 감소했습니다. 진행하시겠습니까?")
                                 dig.setPositiveButton("예") { dialog, which ->
                                     addExercise()
                                     val intent = Intent(this, ExerciseActivity::class.java)
@@ -222,16 +223,62 @@ class ExerciseAdditionActivity : AppCompatActivity() {
                                 dig.show()
                             }
                         }
-                        2 -> {
+                        2 -> { // 횟수
+                            var vol1 = 0f
+                            var vol2 = 0f
+                            for(i in 0 until lastData[0].num!!.size) {
+                                vol1 += lastData[0].num!![i]
+                            }
+                            for(i in 0 until set_num.text.toString().toInt()) {
+                                vol2 += findViewById<EditText>(NUM_ID + i).text.toString().toInt()
+                            }
+                            if(vol1 > vol2) {
+                                var dig = AlertDialog.Builder(this) // 대화상자
+                                dig.setTitle("볼륨 감소") // 제목
+                                dig.setMessage("마지막 기록보다 볼륨이 ${round((vol1 - vol2) * 10) / 10}회 감소했습니다. 진행하시겠습니까?")
+                                dig.setPositiveButton("예") { dialog, which ->
+                                    addExercise()
+                                    val intent = Intent(this, ExerciseActivity::class.java)
+                                    intent.putExtra("NAME", exercise_name.text.toString())
+                                    setResult(Activity.RESULT_OK, intent)
+                                    Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
+                                    finish()
+                                }
+                                dig.setNegativeButton("아니오", null)
+                                dig.show()
+                            }
 
                         }
                         3 -> {
-
+                            var time1 = 0
+                            var time2 = 0
+                            for(i in 0 until lastData[0].time!!.size) {
+                                time1 += lastData[0].time!![i]
+                            }
+                            for(i in 0 until set_num.text.toString().toInt()) {
+                                time2 += (findViewById<EditText>(HOUR_ID + i).text.toString().toInt() * 3600)
+                                + (findViewById<EditText>(MIN_ID + i).text.toString().toInt() * 60)
+                                + findViewById<EditText>(SEC_ID + i).text.toString().toInt()
+                            }
+                            if(time1 > time2) {
+                                var time = time1 - time2
+                                var dig = AlertDialog.Builder(this) // 대화상자
+                                dig.setTitle("시간 감소") // 제목
+                                dig.setMessage("마지막 기록보다 시간이 ${time / 3600}시 ${time / 3600 % 60}분 ${time % 3600 % 60}초 감소했습니다. 진행하시겠습니까?")
+                                dig.setPositiveButton("예") { dialog, which ->
+                                    addExercise()
+                                    val intent = Intent(this, ExerciseActivity::class.java)
+                                    intent.putExtra("NAME", exercise_name.text.toString())
+                                    setResult(Activity.RESULT_OK, intent)
+                                    Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
+                                    finish()
+                                }
+                                dig.setNegativeButton("아니오", null)
+                                dig.show()
+                            }
                         }
                     }
                 }
-
-
             }
         }
     }
@@ -412,12 +459,15 @@ class ExerciseAdditionActivity : AppCompatActivity() {
 
             if(time[0] == 0) {
                 if(weight[0] == 0f) { // 세트와 횟수만
+                    mode = 2
                     setNumMode(set_num.text.toString().toInt(), num)
                 }
                 else { // 세트, 횟수, 무게
+                    mode = 1
                     setWeightNumMode(set_num.text.toString().toInt(), weight, num)
                 }
             } else { // 세트, 시간
+                mode = 3
                 setTimeMode(set_num.text.toString().toInt(), time)
             }
         }
@@ -574,10 +624,11 @@ class ExerciseAdditionActivity : AppCompatActivity() {
         if(dateCursor.moveToFirst()) { // 해당 데이터를 가지고 있으면
             date = dateCursor.getInt(dateCursor.getColumnIndex("date"))
 
-            val cursor : Cursor = sqldb.rawQuery("SELECT weight, exercise_count, time" +
+            val cursor : Cursor = sqldb.rawQuery("SELECT weight, exercise_count, time " +
                     "FROM exercise_counter " +
                     "WHERE exercise_name = '${exercise_name.text}' AND date = $date;", null)
 
+            cursor.moveToFirst()
             do {
                 weightList.add(cursor.getFloat(cursor.getColumnIndex("weight")))
                 countList.add(cursor.getInt(cursor.getColumnIndex("exercise_count")))
