@@ -2,28 +2,44 @@ package com.example.bodymanagerapp.menu.Exercise
 
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.example.bodymanagerapp.Preference.MyPreference
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.myDBHelper
+import com.google.firebase.database.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+
 class ExerciseAdditionActivity : AppCompatActivity() {
+    // id 값에 사용
+    //private val SET_ID : Int = 100 // 세트
+    private val NUM_ID: Int = 200 // 횟수
+    private val WEIGHT_ID: Int = 300 // 무게
+    //private val TIME_ID: Int = 400 // 시간
+    private val HOUR_ID : Int = 500
+    private val MIN_ID : Int = 600
+    private val SEC_ID : Int = 700
+
     lateinit var toolbar: Toolbar
 
     // DB
     lateinit var myDBHelper: myDBHelper
     lateinit var sqldb: SQLiteDatabase
 
+    lateinit var search_view : SearchView
     lateinit var exercise_name: EditText // 운동 이름
     lateinit var set_num: EditText // 세트 수
 
@@ -47,22 +63,17 @@ class ExerciseAdditionActivity : AppCompatActivity() {
     lateinit var table_time: TableLayout // 시간 테이블
     lateinit var table_exercise_count: TableLayout // 각각 값 입력 받는 곳
 
+    lateinit var button_exercise_add_done: Button // 운동 추가 버튼
+
     private var snum: Int = 0 // 세트 수
     private var isLoaded : Boolean = false
+    private var date: Int = 0 // 현재 날짜
+    private var name: String = "" // 운동 이름
+    private var lastData = ArrayList<ExerciseData>()
+    private var mode : Int = 0 // 무게+횟수 = 1, 횟수 = 2, 시간 = 3
 
-    // id 값에 사용
-    //private val SET_ID : Int = 100 // 세트
-    private val NUM_ID: Int = 200 // 횟수
-    private val WEIGHT_ID: Int = 300 // 무게
-    //private val TIME_ID: Int = 400 // 시간
-    private val HOUR_ID : Int = 500
-    private val MIN_ID : Int = 600
-    private val SEC_ID : Int = 700
-
-    private lateinit var button_exercise_add_done: Button // 운동 추가 버튼
-
-    var date: Int = 0 // 현재 날짜
-    var name: String = "" // 운동 이름
+    // 파이어베이스
+    private lateinit var database : DatabaseReference
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +83,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
         toolbar = findViewById(R.id.toolbar)
         myDBHelper = myDBHelper(this)
 
+        search_view = findViewById(R.id.search_exercise)
         exercise_name = findViewById(R.id.exercise_name)
         set_num = findViewById(R.id.set_num)
 
@@ -102,7 +114,21 @@ class ExerciseAdditionActivity : AppCompatActivity() {
         //date = intent.getIntExtra("DATE", 0)
         name = intent.getStringExtra("NAME").toString()
 
+        database = FirebaseDatabase.getInstance().getReference()
         loadExercise()
+
+        search_view.setOnQueryTextListener(object  : SearchView.OnQueryTextListener {
+
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                readExercise(query!!)
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return false
+            }
+
+        })
 
         // 무게, 횟수 버튼 클릭 시
         button_weight_number.setOnClickListener {
@@ -111,6 +137,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
             } catch (nfe: NumberFormatException) {
                 1;
             }
+            mode = 1
             setWeightNumMode(snum, null, null)
         }
         // 횟수 버튼 클릭 시
@@ -120,6 +147,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
             } catch (nfe: NumberFormatException) {
                 1;
             }
+            mode = 2
             setNumMode(snum, null)
         }
         // 시간 버튼 클릭 시
@@ -129,22 +157,102 @@ class ExerciseAdditionActivity : AppCompatActivity() {
             } catch (nfe: NumberFormatException) {
                 1;
             }
+            mode = 3
             setTimeMode(snum, null)
         }
         // 운동 추가 완료
         button_exercise_add_done.setOnClickListener {
-            snum = try {
-                Integer.parseInt(set_num.text.toString()) // 입력 없을시 에러 발생, 익셉션 처리 필요
-            } catch (nfe: NumberFormatException) {
-                1;
+            if (mode == 0) {
+                Toast.makeText(this, "내용을 작성해주세요.", Toast.LENGTH_SHORT).show()
+            } else {
+                snum = try {
+                    Integer.parseInt(set_num.text.toString()) // 입력 없을시 에러 발생, 익셉션 처리 필요
+                } catch (nfe: NumberFormatException) {
+                    1;
+                }
+
+                // 정리 필요
+                checkLastData()
+                if(lastData.size > 0) {
+                    when(mode) {
+                        1 -> {
+                            var weight1 = lastData[0].weight!![0]
+                            var rm1  = weight1 + (weight1 * lastData[0].num!![0] * 0.025f)
+                            var weight2 = findViewById<EditText>(WEIGHT_ID).text.toString().toFloat()
+                            var count = findViewById<EditText>(NUM_ID).text.toString().toInt()
+                            var rm2 = weight2 + (weight2 * count * 0.025f)
+
+                            if(rm1 > rm2) {
+                                var dig = AlertDialog.Builder(this) // 대화상자
+                                dig.setTitle("1RM 감소") // 제목
+                                dig.setMessage("마지막 기록보다 1RM이 ${rm1 - rm2}kg 감소했습니다. 진행하시겠습니까?")
+                                dig.setPositiveButton("예") { dialog, which ->
+                                    addExercise()
+                                    val intent = Intent(this, ExerciseActivity::class.java)
+                                    intent.putExtra("NAME", exercise_name.text.toString())
+                                    setResult(Activity.RESULT_OK, intent)
+                                    Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
+                                    finish()
+                                }
+                                dig.setNegativeButton("아니오", null)
+                                dig.show()
+                            }
+
+                            var vol1 = 0f
+                            var vol2 = 0f
+                            for(i in 0 until lastData[0].weight!!.size) {
+                                vol1 += lastData[0].weight!![i] * lastData[0].num!![i]
+                            }
+                            for(i in 0 until set_num.text.toString().toInt()) {
+                                vol2 += findViewById<EditText>(WEIGHT_ID + i).text.toString().toFloat() * findViewById<EditText>(NUM_ID + i).text.toString().toInt()
+                            }
+                            if(vol1 > vol2) {
+                                var dig = AlertDialog.Builder(this) // 대화상자
+                                dig.setTitle("볼륨 감소") // 제목
+                                dig.setMessage("마지막 기록보다 볼륨이 ${vol1 - vol2}kg 감소했습니다. 진행하시겠습니까?")
+                                dig.setPositiveButton("예") { dialog, which ->
+                                    addExercise()
+                                    val intent = Intent(this, ExerciseActivity::class.java)
+                                    intent.putExtra("NAME", exercise_name.text.toString())
+                                    setResult(Activity.RESULT_OK, intent)
+                                    Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
+                                    finish()
+                                }
+                                dig.setNegativeButton("아니오", null)
+                                dig.show()
+                            }
+                        }
+                        2 -> {
+
+                        }
+                        3 -> {
+
+                        }
+                    }
+                }
+
+
             }
-            addExercise()
-            val intent = Intent(this, ExerciseActivity::class.java)
-            intent.putExtra("NAME", exercise_name.text.toString())
-            setResult(Activity.RESULT_OK, intent)
-            Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
-            finish()
         }
+    }
+
+    private fun readExercise(name : String) {
+        database.child("exercise").child(name).addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // Get Post object and use the values to update the UI
+                /*if (dataSnapshot.getValue(ExerciseDB::class.java) != null) {
+                    val exercise: ExerciseDB? = dataSnapshot.getValue(ExerciseDB::class.java)
+                    Log.w("FireBaseData", "getData" + exercise.toString())
+                } else {
+                    Toast.makeText(this@ExerciseAdditionActivity, "데이터 없음...", Toast.LENGTH_SHORT).show()
+                }*/
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Getting Post failed, log a message
+                Log.w("FireBaseData", "loadPost:onCancelled", databaseError.toException())
+            }
+        })
     }
 
     // 정리 필요함
@@ -184,6 +292,17 @@ class ExerciseAdditionActivity : AppCompatActivity() {
             str += "${cb_aerobic.text},"
         }
 
+        /*when(mode) {
+            1 -> {
+
+            }
+            2 -> {
+
+            }
+            3 -> {
+
+            }
+        }*/
         if(findViewById<EditText>(WEIGHT_ID) != null) { // 입력한 무게 값이 있으면
             for(i in 0 until snum) { // 사용자가 입력한 값 가져오기
                 var weight: EditText = findViewById(WEIGHT_ID + i)
@@ -227,7 +346,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
         }
         for(i in 0 until snum) { //데이터 저장하기
             sqldb.execSQL("INSERT INTO exercise_counter VALUES ($date,'${exercise_name.text}', '$str', " +
-                    "${i+1}, ${weightArray?.get(i)}, ${numArray?.get(i)}, '${timeArray?.get(i)}', 0);")
+                    "${i + 1}, ${weightArray?.get(i)}, ${numArray?.get(i)}, '${timeArray?.get(i)}', 0);")
         }
 
         sqldb.close()
@@ -301,12 +420,10 @@ class ExerciseAdditionActivity : AppCompatActivity() {
             } else { // 세트, 시간
                 setTimeMode(set_num.text.toString().toInt(), time)
             }
-        } else { // 저장된 글이 없으면
-            Toast.makeText(this, "저장된 식단이 없습니다.", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun setWeightNumMode(set : Int, weight : ArrayList<Float>?, num : ArrayList<Int>?) {
+    private fun setWeightNumMode(set: Int, weight: ArrayList<Float>?, num: ArrayList<Int>?) {
         table_weight_num.visibility = View.VISIBLE
         table_num.visibility = View.GONE
         table_time.visibility = View.GONE
@@ -378,7 +495,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
             table_exercise_count.visibility = View.VISIBLE
         }
     }
-    private fun setTimeMode(set : Int, time : ArrayList<Int>?) {
+    private fun setTimeMode(set: Int, time: ArrayList<Int>?) {
         table_weight_num.visibility = View.GONE
         table_num.visibility = View.GONE
         table_time.visibility = View.VISIBLE
@@ -439,6 +556,34 @@ class ExerciseAdditionActivity : AppCompatActivity() {
             tableRow.addView(linearLayout)
 
             table_exercise_count.visibility = View.VISIBLE
+        }
+    }
+
+    private fun checkLastData() {
+        sqldb = myDBHelper.readableDatabase
+        lastData.clear()
+        var weightList = ArrayList<Float>()
+        var countList = ArrayList<Int>()
+        var timeList = ArrayList<Int>()
+        var date = 0
+
+        val dateCursor : Cursor = sqldb.rawQuery("SELECT date " +
+                "FROM exercise_counter " +
+                "WHERE exercise_name = '${exercise_name.text}' " +
+                "ORDER BY date DESC LIMIT 1;", null)
+        if(dateCursor.moveToFirst()) { // 해당 데이터를 가지고 있으면
+            date = dateCursor.getInt(dateCursor.getColumnIndex("date"))
+
+            val cursor : Cursor = sqldb.rawQuery("SELECT weight, exercise_count, time" +
+                    "FROM exercise_counter " +
+                    "WHERE exercise_name = '${exercise_name.text}' AND date = $date;", null)
+
+            do {
+                weightList.add(cursor.getFloat(cursor.getColumnIndex("weight")))
+                countList.add(cursor.getInt(cursor.getColumnIndex("exercise_count")))
+                timeList.add(cursor.getInt(cursor.getColumnIndex("time")))
+            } while (cursor.moveToNext())
+            lastData.add(ExerciseData(countList, weightList, timeList))
         }
     }
 }
