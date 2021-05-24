@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "745668019623",
+    "project_id": "bodymanagerapp",
+    "storage_bucket": "bodymanagerapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:745668019623:android:25057a14d0f7f4b6d4e282",
+        "android_client_info": {
+          "package_name": "com.example.bodymanagerapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "745668019623-bkr6b6111cfv66mn15sbj2khsfbfarq8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVSSiHJIhn2YjjBx1_SYjoDdAnw5CluUk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "745668019623-bkr6b6111cfv66mn15sbj2khsfbfarq8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
