@@ -10,9 +10,6 @@ class myDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
         // 외래키 활성화
         db?.execSQL("PRAGMA foreign_keys = 1;")
 
-        // 운동 정보 테이블 생성
-        db?.execSQL("CREATE TABLE exercise_info (exercise_name TEXT PRIMARY KEY, part TEXT);")
-
         // 루틴 정보 테이블 생성
         db?.execSQL("CREATE TABLE routine_info (" +
                 "routine_name TEXT, " +

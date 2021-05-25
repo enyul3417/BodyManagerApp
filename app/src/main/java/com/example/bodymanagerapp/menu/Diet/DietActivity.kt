@@ -71,15 +71,14 @@ class DietActivity : AppCompatActivity() {
             data.clear()
             DatePickerDialog(this, DatePickerDialog.OnDateSetListener { datePicker, y, m, d ->
                 var ymd = "$y"
-
-                ymd += if(m < 10)
-                    "0$m"
-                else "$m"
+                ymd += if(m + 1 < 10)
+                    "0${m+1}"
+                else "${m+1}"
                 ymd += if(d < 10)
                     "0$d"
                 else "$d"
                 date = ymd.toInt()
-                text_date.text = "${y}년 ${m}월 ${d}일"
+                text_date.text = "${y}년 ${m + 1}월 ${d}일"
                 // 해당 날짜에 저장된 식단들 불러오기
                 data.addAll(loadDiet())
                 rvAdapter = DietRecyclerViewAdapter(data, this, rv) {
@@ -91,7 +90,7 @@ class DietActivity : AppCompatActivity() {
                 rv.adapter = rvAdapter
                 rv.layoutManager = LinearLayoutManager(this)
                 rv.visibility = View.VISIBLE
-            }, cal.get(Calendar.YEAR), (cal.get(Calendar.MONTH) + 1), cal.get(Calendar.DATE)).show()
+            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE)).show()
         }
 
         // 식단 추가 버튼 클릭 시

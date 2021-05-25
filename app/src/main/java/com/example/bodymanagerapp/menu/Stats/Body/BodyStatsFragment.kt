@@ -116,7 +116,7 @@ class BodyStatsFragment : Fragment() {
         // 시작 날짜 선택
         tv_start_date.setOnClickListener {
             DatePickerDialog(ct, DatePickerDialog.OnDateSetListener { datePicker, y, m, d ->
-                start_date = dateToInt(y, m, d)
+                start_date = dateToInt(y, m + 1, d)
                 tv_start_date.text = "${y}년 ${m+1}월 ${d}일"
                 if(end_date > 0) {
                     loadFeedbackData()
@@ -128,7 +128,7 @@ class BodyStatsFragment : Fragment() {
         // 끝 날짜 선택
         tv_end_date.setOnClickListener {
             DatePickerDialog(ct, DatePickerDialog.OnDateSetListener { datePicker, y, m, d ->
-                end_date = dateToInt(y, m, d)
+                end_date = dateToInt(y, m + 1, d)
                 tv_end_date.text = "${y}년 ${m+1}월 ${d}일"
                 if(start_date > 0) {
                     loadFeedbackData()
@@ -402,25 +402,25 @@ class BodyStatsFragment : Fragment() {
             if(sex != 0 && fatPercent > 0) { // 체지방
                 feedback += " 최근 체지방률은 ${fatPercent}%입니다. "
                 feedback += when {
-                    fatPercent <= 5 && sex == 1 -> {
+                    fatPercent <= 5 && sex == 1 -> { // 남성의 매우 낮은 체지방
                         "체지방률이 매우 낮은 상태입니다. 건강에 안좋은 영향을 줄 수 있으니 " +
                                 "대회 등을 목적으로 하는 것이 아니라면 체지방을 증가해야해요!"
                     }
-                    fatPercent < 11 && sex == 2 -> {
+                    fatPercent < 11 && sex == 2 -> { // 여성의 매우 낮은 체지방
                         "체지방률이 매우 낮은 상태입니다. 생리 등 건강 상의 문제가 생길 수 있으니 " +
-                                "체지방을 증가하는 것을 추천드려요!"
+                                "대회 등을 목적으로 하는 것이 아니면 체지방을 증가하는 것을 추천드려요!"
                     }
-                    fatPercent < 20 -> {
+                    fatPercent < 20 -> { // 낮은 체지방
                         "적정 체지방률 보다 낮은 체지방을 가지고 계시는군요. 마른 것도 좋지만 " +
                                 "체지방이 낮을 경우 건강에 문제가 생길 수도 있으니 주의하세요!"
                     }
-                    fatPercent < 25 -> {
+                    fatPercent < 25 -> { // 적정 체지방
                         "적정 체지방률에 해당합니다!"
                     }
-                    fatPercent < 30 -> {
+                    fatPercent < 30 -> { // 높은 체지방
                         "적정 체지방률 보다 조금 높은 상태입니다. 운동을 통해 관리하시는 것이 좋겠어요."
                     }
-                    else -> {
+                    else -> { // 매우 높은 체지방
                         "체지방률이 매우 높습니다. 비만으로 인해 고혈압, 당뇨병, 각종 암 등에 걸릴 " +
                                 "확률이 높아집니다. 꾸준한 운동과 식단 조절을 통해 적정 체지방률인 20%~25%가 될 " +
                                 "수 있도록 노력해주세요!"
@@ -437,7 +437,7 @@ class BodyStatsFragment : Fragment() {
                                 "꼭 전문가와 상담을 하셔야해요."
                     }
                     bmi < 23 -> {
-                        "정상 체중입니다. 잘 하고 계시는군요. 체중을 지금처럼 유지해봐요!"
+                        "정상 체중입니다. 체중을 지금처럼 유지해봐요!"
                     }
                     bmi < 25 -> {
                         "과체중입니다. 과체중이거나 비만일 경우 암 위험이 평균 12% 높다고해요. 건강을 위해서 " +
@@ -461,7 +461,8 @@ class BodyStatsFragment : Fragment() {
             feedback += "\n 일일 평균 음식 섭취 수는 약 ${avgDiet}회로, "
 
             if(avgDiet < 3) { // 하루에 음식 섭취 수가 3번 미만이면
-                feedback += "음식 섭취량이 적은 것으로 판단됩니다. "
+                feedback += "음식 섭취량이 적은 것으로 판단됩니다. 음식 섭취량이 너무 적으면, 영양분 저장을 위해 " +
+                        "몸이 더 살찌기 쉽게 변한답니다."
                 if (bmi < 18.5 && bmi > 0) {
                     feedback += "사용자님은 저체중이기 때문에 식사량을 늘리는 것을 추천드려요. 한 번에 많은 음식을 못드신다면 " +
                             "조금씩 나누어 자주 먹는 것도 좋아요."
@@ -484,7 +485,7 @@ class BodyStatsFragment : Fragment() {
             }
             if(late.toFloat() / days * 100 > 40) { // 해당 기간의 40% 이상의 식단을 늦은 시간에 섭취했다면
                 feedback += "\n 사용자님께서는 늦은 시간에 음식을 자주 섭취하시네요. 야식은 가끔 먹는 것은 괜찮아요." +
-                        "하지만 야식을 자주 먹으면 수면의 질이 저하되며, 역류성 식도염 등과 같은 질병이 생길 수도 있어요." +
+                        "하지만 야식을 자주 먹으면 수면의 질이 저하되며, 역류성 식도염 등과 같은 질병이 생길 수도 있어요. " +
                         "또 밤에는 몸이 에너지를 저장하려 하기에 야식을 먹으면 살이 더 잘찐답니다. 배가 너무 고프다면 " +
                         "바나나 하나, 우유 한 컵 등의 건강한 간식을 소량 섭취하시는 것을 추천드려요."
             }
@@ -499,7 +500,7 @@ class BodyStatsFragment : Fragment() {
         var date1 = format.parse(start.toString())
         var date2 = format.parse(end.toString())
 
-        return ((date2.time - date1.time) / (60 * 60 * 24 * 1000)).toInt()
+        return ((date2.time - date1.time) / (60 * 60 * 24 * 1000)).toInt() + 1
     }
 
     companion object {

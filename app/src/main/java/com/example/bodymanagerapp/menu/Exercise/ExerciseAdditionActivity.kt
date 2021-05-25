@@ -224,28 +224,6 @@ class ExerciseAdditionActivity : AppCompatActivity() {
                 if(lastData.size > 0) {
                     when(mode) {
                         1 -> { // 무게, 횟수
-                            var weight1 = lastData[0].weight!![0]
-                            var rm1  = weight1 + (weight1 * lastData[0].num!![0] * 0.025f)
-                            var weight2 = findViewById<EditText>(WEIGHT_ID).text.toString().toFloat()
-                            var count = findViewById<EditText>(NUM_ID).text.toString().toInt()
-                            var rm2 = weight2 + (weight2 * count * 0.025f)
-
-                            if(rm1 > rm2) {
-                                var dig = AlertDialog.Builder(this) // 대화상자
-                                dig.setTitle("1RM 감소") // 제목
-                                dig.setMessage("마지막 기록보다 1RM이 ${round((rm1 - rm2) * 10) / 10}kg 감소했습니다. 진행하시겠습니까?")
-                                dig.setPositiveButton("예") { dialog, which ->
-                                    addExercise()
-                                    val intent = Intent(this, ExerciseActivity::class.java)
-                                    intent.putExtra("NAME", exercise_name.text.toString())
-                                    setResult(Activity.RESULT_OK, intent)
-                                    Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
-                                    finish()
-                                }
-                                dig.setNegativeButton("아니오", null)
-                                dig.show()
-                            }
-
                             var vol1 = 0f
                             var vol2 = 0f
                             for(i in 0 until lastData[0].weight!!.size) {
@@ -258,6 +236,28 @@ class ExerciseAdditionActivity : AppCompatActivity() {
                                 var dig = AlertDialog.Builder(this) // 대화상자
                                 dig.setTitle("볼륨 감소") // 제목
                                 dig.setMessage("마지막 기록보다 볼륨이 ${round((vol1 - vol2) * 10) / 10}kg 감소했습니다. 진행하시겠습니까?")
+                                dig.setPositiveButton("예") { dialog, which ->
+                                    addExercise()
+                                    val intent = Intent(this, ExerciseActivity::class.java)
+                                    intent.putExtra("NAME", exercise_name.text.toString())
+                                    setResult(Activity.RESULT_OK, intent)
+                                    Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
+                                    finish()
+                                }
+                                dig.setNegativeButton("아니오", null)
+                                dig.show()
+                            }
+
+                            var weight1 = lastData[0].weight!![0]
+                            var rm1  = weight1 + (weight1 * lastData[0].num!![0] * 0.025f)
+                            var weight2 = findViewById<EditText>(WEIGHT_ID).text.toString().toFloat()
+                            var count = findViewById<EditText>(NUM_ID).text.toString().toInt()
+                            var rm2 = weight2 + (weight2 * count * 0.025f)
+
+                            if(rm1 > rm2) {
+                                var dig = AlertDialog.Builder(this) // 대화상자
+                                dig.setTitle("1RM 감소") // 제목
+                                dig.setMessage("마지막 기록보다 1RM이 ${round((rm1 - rm2) * 10) / 10}kg 감소했습니다. 진행하시겠습니까?")
                                 dig.setPositiveButton("예") { dialog, which ->
                                     addExercise()
                                     val intent = Intent(this, ExerciseActivity::class.java)
@@ -583,16 +583,11 @@ class ExerciseAdditionActivity : AppCompatActivity() {
             val linearLayout = LinearLayout(this)
             linearLayout.gravity = 17 // 중앙 정렬
 
-            val hour = time?.get(i)!! / 3600
-            val min = (time?.get(i)!! % 3600) / 60
-            val sec = (time?.get(i)!! % 3600) % 60
-
             val hourET = EditText(this)
             hourET.id = HOUR_ID + i
             hourET.textSize = 15f // 글자 크기
             //hourET.gravity = 17 // 중앙 정렬
             hourET.inputType = 2 // 숫자 키패트
-            hourET.setText("$hour")
             linearLayout.addView(hourET)
             val tv1 = TextView(this)
             tv1.textSize = 15f
@@ -604,7 +599,6 @@ class ExerciseAdditionActivity : AppCompatActivity() {
             minET.textSize = 15f // 글자 크기
             //hourET.gravity = 17 // 중앙 정렬
             minET.inputType = 2 // 숫자 키패트
-            minET.setText("$min")
             linearLayout.addView(minET)
             val tv2 = TextView(this)
             tv2.textSize = 15f
@@ -616,8 +610,17 @@ class ExerciseAdditionActivity : AppCompatActivity() {
             secET.textSize = 15f // 글자 크기
             //hourET.gravity = 17 // 중앙 정렬
             secET.inputType = 2 // 숫자 키패트
-            secET.setText("$sec")
             linearLayout.addView(secET)
+
+            if(time != null) {
+                val hour = time?.get(i)!! / 3600
+                val min = (time?.get(i)!! % 3600) / 60
+                val sec = (time?.get(i)!! % 3600) % 60
+                hourET.setText("$hour")
+                minET.setText("$min")
+                secET.setText("$sec")
+            }
+
 
             tableRow.addView(linearLayout)
 

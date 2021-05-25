@@ -159,7 +159,7 @@ class BodyActivity : AppCompatActivity() {
             val cal = Calendar.getInstance()
             DatePickerDialog(this, DatePickerDialog.OnDateSetListener { datePicker, y, m, d ->
                 var ymd = "$y"
-                ymd += if(m < 10)
+                ymd += if(m + 1 < 10)
                     "0${m+1}"
                 else "${m+1}"
                 ymd += if(d < 10)
