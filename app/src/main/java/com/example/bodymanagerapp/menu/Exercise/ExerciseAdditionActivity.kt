@@ -4,10 +4,14 @@ package com.example.bodymanagerapp.menu.Exercise
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -15,10 +19,10 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import com.example.bodymanagerapp.Preference.MyPreference
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.myDBHelper
 import com.google.firebase.database.*
+import com.mancj.materialsearchbar.MaterialSearchBar
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.round
@@ -40,7 +44,8 @@ class ExerciseAdditionActivity : AppCompatActivity() {
     lateinit var myDBHelper: myDBHelper
     lateinit var sqldb: SQLiteDatabase
 
-    lateinit var search_view : SearchView
+    lateinit var searchBar : MaterialSearchBar
+    lateinit var list_view : ListView
     lateinit var exercise_name: EditText // 운동 이름
     lateinit var set_num: EditText // 세트 수
 
@@ -66,6 +71,8 @@ class ExerciseAdditionActivity : AppCompatActivity() {
 
     lateinit var button_exercise_add_done: Button // 운동 추가 버튼
 
+    private var nameList = ArrayList<String>()
+    private var partsList = ArrayList<String>()
     private var snum: Int = 0 // 세트 수
     private var isLoaded : Boolean = false
     private var date: Int = 0 // 현재 날짜
@@ -74,7 +81,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
     private var mode : Int = 0 // 무게+횟수 = 1, 횟수 = 2, 시간 = 3
 
     // 파이어베이스
-    private lateinit var database : DatabaseReference
+    //private lateinit var database : DatabaseReference
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,7 +91,8 @@ class ExerciseAdditionActivity : AppCompatActivity() {
         toolbar = findViewById(R.id.toolbar)
         myDBHelper = myDBHelper(this)
 
-        search_view = findViewById(R.id.search_exercise)
+        searchBar = findViewById(R.id.search_exercise)
+        list_view = findViewById(R.id.lv_exercise)
         exercise_name = findViewById(R.id.exercise_name)
         set_num = findViewById(R.id.set_num)
 
@@ -115,21 +123,60 @@ class ExerciseAdditionActivity : AppCompatActivity() {
         //date = intent.getIntExtra("DATE", 0)
         name = intent.getStringExtra("NAME").toString()
 
-        database = FirebaseDatabase.getInstance().getReference()
+        readExercise()
         loadExercise()
 
-        search_view.setOnQueryTextListener(object  : SearchView.OnQueryTextListener {
+        searchBar.setHint("운동 이름 검색")
+        //searchBar.setTextColor(Color.BLACK)
+        val listAdapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, nameList)
+        list_view.adapter = listAdapter
+        searchBar.setOnSearchActionListener(object : MaterialSearchBar.OnSearchActionListener {
+            override fun onButtonClicked(buttonCode: Int) {
 
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                readExercise(query!!)
-                return false
             }
 
-            override fun onQueryTextChange(newText: String?): Boolean {
-                return false
+            // 검색창 클릭 여부부
+            override fun onSearchStateChanged(enabled: Boolean) {
+                if(enabled) list_view.visibility = View.VISIBLE
+                else list_view.visibility = View.GONE
+            }
+
+            override fun onSearchConfirmed(text: CharSequence?) {
+
             }
 
         })
+        searchBar.addTextChangeListener(object  : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            // 검색어에 따라 ListView 내용 변경
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                listAdapter.filter.filter(s)
+            }
+
+        })
+        list_view.onItemClickListener = object : AdapterView.OnItemClickListener {
+            override fun onItemClick(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                searchBar.disableSearch()
+                Log.d("검색", listAdapter.getItem(position)!!.toString())
+                Log.d("검색", "$position")
+                exercise_name.setText("${listAdapter.getItem(position)!!.toString()}")
+
+                setParts(partsList[position])
+            }
+
+        }
 
         // 무게, 횟수 버튼 클릭 시
         button_weight_number.setOnClickListener {
@@ -283,16 +330,21 @@ class ExerciseAdditionActivity : AppCompatActivity() {
         }
     }
 
-    private fun readExercise(name : String) {
-        database.child("exercise").child(name).addValueEventListener(object : ValueEventListener {
+    private fun readExercise() {
+        var sortByName = FirebaseDatabase.getInstance().reference.child("exercise").orderByChild("exerciseName")
+        sortByName.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // Get Post object and use the values to update the UI
-                /*if (dataSnapshot.getValue(ExerciseDB::class.java) != null) {
-                    val exercise: ExerciseDB? = dataSnapshot.getValue(ExerciseDB::class.java)
-                    Log.w("FireBaseData", "getData" + exercise.toString())
-                } else {
-                    Toast.makeText(this@ExerciseAdditionActivity, "데이터 없음...", Toast.LENGTH_SHORT).show()
-                }*/
+                nameList.clear()
+                partsList.clear()
+                for (snapshot in dataSnapshot.children) {
+                    val get: ExerciseDB? = snapshot.getValue(ExerciseDB::class.java)
+                    nameList.add(get!!.exerciseName)
+                    partsList.add(get!!.parts)
+                }
+                /*arrayAdapter.clear()
+                arrayAdapter.addAll(arrayData)
+                arrayAdapter.notifyDataSetChanged()*/
+
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -408,43 +460,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
             exercise_name.setText(name)
 
             var str : String = cursor.getString(cursor.getColumnIndex("tag"))
-            var part : String = ""
-            for(i in str.indices) {
-                if(str[i] == ',') {
-                    when (part) {
-                        "${cb_chest.text}" -> {
-                            cb_chest.isChecked = true
-                        }
-                        "${cb_shoulder.text}" -> {
-                            cb_shoulder.isChecked = true
-                        }
-                        "${cb_back.text}" -> {
-                            cb_back.isChecked = true
-                        }
-                        "${cb_abs.text}" -> {
-                            cb_abs.isChecked = true
-                        }
-                        "${cb_arms.text}" -> {
-                            cb_arms.isChecked = true
-                        }
-                        "${cb_lower_body.text}" -> {
-                            cb_lower_body.isChecked = true
-                        }
-                        "${cb_hip.text}" -> {
-                            cb_hip.isChecked = true
-                        }
-                        "${cb_whole_body.text}" -> {
-                            cb_whole_body.isChecked = true
-                        }
-                        "${cb_aerobic.text}" -> {
-                            cb_aerobic.isChecked = true
-                        }
-                    }
-                    part = ""
-                } else {
-                    part += str[i]
-                }
-            }
+            setParts(str)
 
             var weight = ArrayList<Float>()
             var num = ArrayList<Int>()
@@ -606,6 +622,56 @@ class ExerciseAdditionActivity : AppCompatActivity() {
             tableRow.addView(linearLayout)
 
             table_exercise_count.visibility = View.VISIBLE
+        }
+    }
+
+    private fun setParts(str : String) {
+        cb_chest.isChecked = false
+        cb_shoulder.isChecked = false
+        cb_back.isChecked = false
+        cb_abs.isChecked = false
+        cb_arms.isChecked = false
+        cb_lower_body.isChecked = false
+        cb_hip.isChecked = false
+        cb_whole_body.isChecked = false
+        cb_aerobic.isChecked = false
+
+        var part : String = ""
+        for(i in str.indices) {
+            if(str[i] == ',') {
+                when (part) {
+                    "${cb_chest.text}" -> {
+                        cb_chest.isChecked = true
+                    }
+                    "${cb_shoulder.text}" -> {
+                        cb_shoulder.isChecked = true
+                    }
+                    "${cb_back.text}" -> {
+                        cb_back.isChecked = true
+                    }
+                    "${cb_abs.text}" -> {
+                        cb_abs.isChecked = true
+                    }
+                    "${cb_arms.text}" -> {
+                        cb_arms.isChecked = true
+                    }
+                    "${cb_lower_body.text}" -> {
+                        cb_lower_body.isChecked = true
+                    }
+                    "${cb_hip.text}" -> {
+                        cb_hip.isChecked = true
+                    }
+                    "${cb_whole_body.text}" -> {
+                        cb_whole_body.isChecked = true
+                    }
+                    "${cb_aerobic.text}" -> {
+                        cb_aerobic.isChecked = true
+                    }
+                }
+                part = ""
+            } else {
+                part += str[i]
+            }
         }
     }
 

@@ -34,12 +34,18 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <!-- 검색 -->
-    <SearchView
+    <com.mancj.materialsearchbar.MaterialSearchBar
         android:id="@+id/search_exercise"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:iconifiedByDefault="false"
-        android:queryHint="운동 이름으로 검색하기"/>
+        app:mt_hint="운동 이름 검색"
+        app:mt_speechMode="true" />
+
+    <ListView
+        android:id="@+id/lv_exercise"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
     <ScrollView
         android:layout_width="match_parent"

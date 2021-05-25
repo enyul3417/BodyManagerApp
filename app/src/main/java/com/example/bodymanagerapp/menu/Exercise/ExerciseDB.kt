@@ -1,7 +1,15 @@
 package com.example.bodymanagerapp.menu.Exercise
 
-class ExerciseDB(var exerciseName : String, var parts : String) {
-    @JvmName("getExerciseName1")
+class ExerciseDB() {
+    var exerciseName = ""
+    var parts = ""
+
+    constructor(exerciseName : String, parts : String) : this() {
+        this.exerciseName = exerciseName
+        this.parts = parts
+    }
+
+    /*@JvmName("getExerciseName1")
     fun getExerciseName() : String{
         return exerciseName
     }
@@ -12,5 +20,5 @@ class ExerciseDB(var exerciseName : String, var parts : String) {
 
     override fun toString(): String {
         return "Exercise { exerciseName = ${exerciseName}, parts = ${parts}}"
-    }
+    }*/
 }

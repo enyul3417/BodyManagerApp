@@ -1,9 +1,24 @@
 package com.example.bodymanagerapp.menu.Exercise
 
-class ExerciseData(val num : ArrayList<Int>?, val weight : ArrayList<Float>?, val time : ArrayList<Int>?) {
+class ExerciseData() {
     var date = 0
     var name = ""
+    var parts = ""
     var set = ArrayList<Int>()
+    var num = ArrayList<Int>()
+    var weight = ArrayList<Float>()
+    var time = ArrayList<Int>()
+
+    constructor(name : String, parts : String) : this() {
+        this.name = name
+        this.parts = parts
+    }
+
+    constructor(num : ArrayList<Int>?, weight : ArrayList<Float>?, time : ArrayList<Int>?) : this(){
+        this.num = num!!
+        this.weight = weight!!
+        this.time = time!!
+    }
 
     constructor(date : Int, name : String, set : ArrayList<Int>, num : ArrayList<Int>?,
                 weight : ArrayList<Float>?, time : ArrayList<Int>?): this(num, weight, time){
