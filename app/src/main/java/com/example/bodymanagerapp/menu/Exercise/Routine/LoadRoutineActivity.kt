@@ -98,11 +98,13 @@ class LoadRoutineActivity : AppCompatActivity() {
             dig.show()
         }
 
-        btn_load.setOnClickListener {
+        btn_load.setOnClickListener { // 불러오기 버튼
             deleteAllExercise()
             addExercise()
-            val intent = Intent(this, ExerciseActivity::class.java)
-            startActivity(intent)
+            val intent = Intent(this, MainActivity::class.java)
+            setResult(Activity.RESULT_OK, intent)
+            /*val intent = Intent(this, ExerciseActivity::class.java)
+            startActivity(intent)*/
             //setResult(Activity.RESULT_OK, intent)
             finish()
         }
@@ -137,13 +139,15 @@ class LoadRoutineActivity : AppCompatActivity() {
         sqldb = myDBHelper.readableDatabase
 
         // 중복 없이 운동명 가져오기
-        var nameCursor = sqldb.rawQuery("SELECT DISTINCT exercise_name FROM routine_info WHERE routine_name = '${nameList[spinner.selectedItemPosition]}';", null)
+        var nameCursor = sqldb.rawQuery("SELECT DISTINCT exercise_name, tag FROM routine_info WHERE routine_name = '${nameList[spinner.selectedItemPosition]}';", null)
 
         if(nameCursor.moveToFirst()) { // 저장된 운동이 있으면
             var name : String = ""
+            var tag : String = ""
 
             do{
                 name = nameCursor.getString(nameCursor.getColumnIndex("exercise_name")) // 이름 값 받기
+                tag = nameCursor.getString(nameCursor.getColumnIndex("tag"))
 
                 // 이름에 해당하는 데이터 검색해서 추가하기
                 var cursor = sqldb.rawQuery("SELECT * FROM routine_info WHERE routine_name = '${nameList[spinner.selectedItemPosition]}' AND exercise_name = '$name';", null)
@@ -160,7 +164,7 @@ class LoadRoutineActivity : AppCompatActivity() {
                         time.add(cursor.getInt(cursor.getColumnIndex("time")))
                     } while (cursor.moveToNext())
 
-                    data.add(RoutineData(name, set, weight, num, time))
+                    data.add(RoutineData(name, tag, set, weight, num, time))
                 }
             } while (nameCursor.moveToNext())
         }
@@ -180,8 +184,8 @@ class LoadRoutineActivity : AppCompatActivity() {
 
         for(i in 0 until routineData.size) {
             for(j in 0 until routineData[i].set.size) {
-                sqldb.execSQL("INSERT INTO exercise_counter VALUES ($date,'${routineData[i].exercise_name}', ${j+1}, " +
-                        "${routineData[i].weightList[j]}, ${routineData[i].exercise_count[j]}, '${routineData[i].time[j]}', 0);")
+                sqldb.execSQL("INSERT INTO exercise_counter VALUES ($date,'${routineData[i].exercise_name}', '${routineData[i].tag}', ${j+1}, " +
+                        "${routineData[i].weightList[j]}, ${routineData[i].exercise_count[j]}, ${routineData[i].time[j]}, 0);")
             }
         }
         sqldb.close()

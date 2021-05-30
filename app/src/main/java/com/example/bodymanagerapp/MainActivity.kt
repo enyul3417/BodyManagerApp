@@ -1,13 +1,16 @@
 package com.example.bodymanagerapp
 
+import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.example.bodymanagerapp.menu.*
+import com.example.bodymanagerapp.menu.Exercise.ExerciseFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -28,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         bottom_nav_view = findViewById(R.id.bottom_nav_view)
         toolbar = findViewById(R.id.toolbar)
 
-        //replaceFragment(ExerciseFragment())
+        replaceFragment(ExerciseFragment())
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
         setSupportActionBar(toolbar)
     }
@@ -38,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         when(item.itemId) {
             // 운동 메뉴 선택 시
             R.id.navigation_exercise -> {
-                //replaceFragment(ExerciseFragment())
+                replaceFragment(ExerciseFragment())
                 return@OnNavigationItemSelectedListener true
             }
 
@@ -92,5 +95,14 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        //var fragment : Fragment= supportFragmentManager.findFragmentById(R.id.exercise_fragment) as Fragment
+        var fragment : Fragment= supportFragmentManager.findFragmentByTag("exercise_fragment") as Fragment
+        var fragment1 = ExerciseFragment
+        fragment.onActivityResult(requestCode, resultCode, data)
+        Log.d("데이터 전달", "$requestCode, $resultCode, $data")
     }
 }

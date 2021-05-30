@@ -129,13 +129,14 @@ class SavedRoutineActivity : AppCompatActivity() {
         sqldb = myDBHelper.readableDatabase
 
         // 중복 없이 운동명 가져오기
-        var nameCursor = sqldb.rawQuery("SELECT DISTINCT exercise_name FROM exercise_counter WHERE date = ${date_format.toInt()};", null)
+        var nameCursor = sqldb.rawQuery("SELECT DISTINCT exercise_name, tag FROM exercise_counter WHERE date = ${date_format.toInt()};", null)
 
         if(nameCursor.moveToFirst()) { // 저장된 운동이 있으면
             var name : String = ""
-
+            var tag : String = ""
             do{
                 name = nameCursor.getString(nameCursor.getColumnIndex("exercise_name")) // 이름 값 받기
+                tag = nameCursor.getString(nameCursor.getColumnIndex("tag"))
 
                 // 이름에 해당하는 데이터 검색해서 추가하기
                 var cursor = sqldb.rawQuery("SELECT * FROM exercise_counter WHERE date = ${date_format.toInt()} AND exercise_name = '$name';", null)
@@ -152,7 +153,7 @@ class SavedRoutineActivity : AppCompatActivity() {
                         time.add(cursor.getInt(cursor.getColumnIndex("time")))
                     } while (cursor.moveToNext())
 
-                    data.add(RoutineData(name, set, weight, num, time))
+                    data.add(RoutineData(name, tag ,set, weight, num, time))
                 }
             } while (nameCursor.moveToNext())
         }
@@ -167,14 +168,14 @@ class SavedRoutineActivity : AppCompatActivity() {
             sqldb.execSQL("DELETE FROM routine_info WHERE routine_name = '${nameList[spinner.selectedItemPosition]}'")
             for(i in 0 until routineData.size) {
                 for(j in 0 until routineData[i].set.size) {
-                    sqldb.execSQL("INSERT INTO routine_info VALUES ('${nameList[spinner.selectedItemPosition]}', '${routineData[i].exercise_name}', " +
+                    sqldb.execSQL("INSERT INTO routine_info VALUES ('${nameList[spinner.selectedItemPosition]}', '${routineData[i].exercise_name}', '${routineData[i].tag}', " +
                             "${routineData[i].set[j]}, ${routineData[i].weightList[j]}, ${routineData[i].exercise_count[j]}, ${routineData[i].time[j]})")
                 }
             }
         } else {
             for(i in 0 until routineData.size) {
                 for(j in 0 until routineData[i].set.size) {
-                    sqldb.execSQL("INSERT INTO routine_info VALUES ('${et_routine.text}', '${routineData[i].exercise_name}', " +
+                    sqldb.execSQL("INSERT INTO routine_info VALUES ('${et_routine.text}', '${routineData[i].exercise_name}', '${routineData[i].tag}', " +
                             "${routineData[i].set[j]}, ${routineData[i].weightList[j]}, ${routineData[i].exercise_count[j]}, ${routineData[i].time[j]})")
                 }
             }

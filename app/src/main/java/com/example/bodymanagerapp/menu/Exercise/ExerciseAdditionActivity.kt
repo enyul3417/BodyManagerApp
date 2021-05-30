@@ -19,6 +19,7 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.example.bodymanagerapp.MainActivity
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.myDBHelper
 import com.google.firebase.database.*
@@ -180,30 +181,33 @@ class ExerciseAdditionActivity : AppCompatActivity() {
 
         // 무게, 횟수 버튼 클릭 시
         button_weight_number.setOnClickListener {
-            snum = try {
-                Integer.parseInt(set_num.text.toString()) // 입력 없을시 에러 발생, 익셉션 처리 필요
+            try {
+                snum = Integer.parseInt(set_num.text.toString()) // 입력 없을시 에러 발생, 익셉션 처리 필요
             } catch (nfe: NumberFormatException) {
-                1;
+                snum = 1
+                set_num.setText("1")
             }
             mode = 1
             setWeightNumMode(snum, null, null)
         }
         // 횟수 버튼 클릭 시
         button_number.setOnClickListener {
-            snum = try {
-                Integer.parseInt(set_num.text.toString()) // 입력 없을시 에러 발생, 익셉션 처리 필요
+            try {
+                snum = Integer.parseInt(set_num.text.toString()) // 입력 없을시 에러 발생, 익셉션 처리 필요
             } catch (nfe: NumberFormatException) {
-                1;
+                snum = 1
+                set_num.setText("1")
             }
             mode = 2
             setNumMode(snum, null)
         }
         // 시간 버튼 클릭 시
         button_time.setOnClickListener {
-            snum = try {
-                Integer.parseInt(set_num.text.toString()) // 입력 없을시 에러 발생, 익셉션 처리 필요
+            try {
+                snum = Integer.parseInt(set_num.text.toString()) // 입력 없을시 에러 발생, 익셉션 처리 필요
             } catch (nfe: NumberFormatException) {
-                1;
+                snum = 1
+                set_num.setText("1")
             }
             mode = 3
             setTimeMode(snum, null)
@@ -213,11 +217,11 @@ class ExerciseAdditionActivity : AppCompatActivity() {
             if (mode == 0) {
                 Toast.makeText(this, "내용을 작성해주세요.", Toast.LENGTH_SHORT).show()
             } else {
-                snum = try {
+                /*snum = try {
                     Integer.parseInt(set_num.text.toString()) // 입력 없을시 에러 발생, 익셉션 처리 필요
                 } catch (nfe: NumberFormatException) {
                     1;
-                }
+                }*/
 
                 // 정리 필요
                 checkLastData()
@@ -238,7 +242,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
                                 dig.setMessage("마지막 기록보다 볼륨이 ${round((vol1 - vol2) * 10) / 10}kg 감소했습니다. 진행하시겠습니까?")
                                 dig.setPositiveButton("예") { dialog, which ->
                                     addExercise()
-                                    val intent = Intent(this, ExerciseActivity::class.java)
+                                    val intent = Intent(this, MainActivity::class.java)
                                     intent.putExtra("NAME", exercise_name.text.toString())
                                     setResult(Activity.RESULT_OK, intent)
                                     Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
@@ -260,7 +264,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
                                 dig.setMessage("마지막 기록보다 1RM이 ${round((rm1 - rm2) * 10) / 10}kg 감소했습니다. 진행하시겠습니까?")
                                 dig.setPositiveButton("예") { dialog, which ->
                                     addExercise()
-                                    val intent = Intent(this, ExerciseActivity::class.java)
+                                    val intent = Intent(this, MainActivity::class.java)
                                     intent.putExtra("NAME", exercise_name.text.toString())
                                     setResult(Activity.RESULT_OK, intent)
                                     Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
@@ -285,7 +289,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
                                 dig.setMessage("마지막 기록보다 볼륨이 ${round((vol1 - vol2) * 10) / 10}회 감소했습니다. 진행하시겠습니까?")
                                 dig.setPositiveButton("예") { dialog, which ->
                                     addExercise()
-                                    val intent = Intent(this, ExerciseActivity::class.java)
+                                    val intent = Intent(this, MainActivity::class.java)
                                     intent.putExtra("NAME", exercise_name.text.toString())
                                     setResult(Activity.RESULT_OK, intent)
                                     Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
@@ -302,10 +306,11 @@ class ExerciseAdditionActivity : AppCompatActivity() {
                             for(i in 0 until lastData[0].time!!.size) {
                                 time1 += lastData[0].time!![i]
                             }
-                            for(i in 0 until set_num.text.toString().toInt()) {
-                                time2 += (findViewById<EditText>(HOUR_ID + i).text.toString().toInt() * 3600)
-                                + (findViewById<EditText>(MIN_ID + i).text.toString().toInt() * 60)
-                                + findViewById<EditText>(SEC_ID + i).text.toString().toInt()
+                            for(i in 0 until snum) {
+                                var hour = findViewById<EditText>(HOUR_ID + i).text.toString().toInt() * 3600
+                                var min = findViewById<EditText>(MIN_ID + i).text.toString().toInt() * 60
+                                var sec = findViewById<EditText>(SEC_ID + i).text.toString().toInt()
+                                time2 = hour + min + sec
                             }
                             if(time1 > time2) {
                                 var time = time1 - time2
@@ -314,7 +319,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
                                 dig.setMessage("마지막 기록보다 시간이 ${time / 3600}시 ${time / 3600 % 60}분 ${time % 3600 % 60}초 감소했습니다. 진행하시겠습니까?")
                                 dig.setPositiveButton("예") { dialog, which ->
                                     addExercise()
-                                    val intent = Intent(this, ExerciseActivity::class.java)
+                                    val intent = Intent(this, MainActivity::class.java)
                                     intent.putExtra("NAME", exercise_name.text.toString())
                                     setResult(Activity.RESULT_OK, intent)
                                     Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
@@ -322,9 +327,23 @@ class ExerciseAdditionActivity : AppCompatActivity() {
                                 }
                                 dig.setNegativeButton("아니오", null)
                                 dig.show()
+                            } else {
+                                addExercise()
+                                val intent = Intent(this, MainActivity::class.java)
+                                intent.putExtra("NAME", exercise_name.text.toString())
+                                setResult(Activity.RESULT_OK, intent)
+                                Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
+                                finish()
                             }
                         }
                     }
+                } else {
+                    addExercise()
+                    /*val intent = Intent()
+                    intent.putExtra("NAME", exercise_name.text.toString())*/
+                    setResult(Activity.RESULT_OK, null)
+                    Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
+                    finish()
                 }
             }
         }
@@ -456,7 +475,8 @@ class ExerciseAdditionActivity : AppCompatActivity() {
         var cursor = sqldb.rawQuery("SELECT * FROM exercise_counter WHERE date = $date AND exercise_name = '$name';", null)
         if(cursor.moveToFirst()) { // 저장된 글이 있으면
             isLoaded = true
-            set_num.setText(cursor.count.toString())
+            snum = cursor.count
+            set_num.setText("$snum")
             exercise_name.setText(name)
 
             var str : String = cursor.getString(cursor.getColumnIndex("tag"))

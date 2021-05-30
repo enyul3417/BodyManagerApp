@@ -2,6 +2,7 @@ package com.example.bodymanagerapp.menu.Exercise
 
 import android.Manifest
 import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -12,42 +13,34 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.*
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.bodymanagerapp.MainActivity
 import com.example.bodymanagerapp.R
-import com.example.bodymanagerapp.menu.Body.BodyActivity
-import com.example.bodymanagerapp.menu.Diet.DietActivity
 import com.example.bodymanagerapp.menu.Exercise.Routine.LoadRoutineActivity
 import com.example.bodymanagerapp.menu.Exercise.Routine.SavedRoutineActivity
-import com.example.bodymanagerapp.menu.Pet.PetActivity
-import com.example.bodymanagerapp.menu.SettingsFragment
-import com.example.bodymanagerapp.menu.Stats.StatsActivity
 import com.example.bodymanagerapp.myDBHelper
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.timer
 
-// 운동 수정 후 새로 고침이 안됨
-
-class ExerciseActivity : AppCompatActivity(), SensorEventListener {
-    lateinit var bottom_nav_view : BottomNavigationView
-    lateinit var toolbar: Toolbar
-
+class ExerciseFragment : Fragment()/*, SensorEventListener*/ {
     // DB
     lateinit var myDBHelper: myDBHelper
     lateinit var sqldb: SQLiteDatabase
@@ -83,7 +76,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
     private var counterSteps : Int = 0 // 리스너 등록 후의 발걸음 수
 
     // 운동
-    lateinit var button_exercise_add :Button
+    lateinit var button_exercise_add : Button
     private var date_format : String = ""
     private var name : String = ""
 
@@ -91,82 +84,77 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
     lateinit var button_load_routine : Button
     lateinit var button_save_routine : Button
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    lateinit var ct : Context
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_exercise)
+    }
 
-        bottom_nav_view = findViewById(R.id.bottom_nav_view)
-        toolbar = findViewById(R.id.toolbar)
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.fragment_exercise, container, false)
+        ct = container!!.context
 
-        myDBHelper = myDBHelper(this)
-        rv = findViewById(R.id.recycler_exercise)
+        myDBHelper = myDBHelper(ct)
+        rv = view.findViewById(R.id.recycler_exercise)
 
         // 운동 타이머
-        timer_hour = findViewById(R.id.timer_hour)
-        timer_minute = findViewById(R.id.timer_minute)
-        timer_second = findViewById(R.id.timer_second)
-        button_start = findViewById(R.id.button_startnpause)
-        button_done = findViewById(R.id.button_done)
+        timer_hour = view.findViewById(R.id.timer_hour)
+        timer_minute = view.findViewById(R.id.timer_minute)
+        timer_second = view.findViewById(R.id.timer_second)
+        button_start = view.findViewById(R.id.button_startnpause)
+        button_done = view.findViewById(R.id.button_done)
 
         // 만보기
-        stepsTextView = findViewById(R.id.steps)
+        stepsTextView = view.findViewById(R.id.steps)
 
         // 운동
-        button_exercise_add = findViewById(R.id.button_exercise_add)
+        button_exercise_add = view.findViewById(R.id.button_exercise_add)
 
         // 나만의 루틴
-        button_load_routine = findViewById(R.id.button_load_routine)
-        button_save_routine = findViewById(R.id.button_save_routine)
-
-        bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
-        setSupportActionBar(toolbar)
+        button_load_routine = view.findViewById(R.id.button_load_routine)
+        button_save_routine = view.findViewById(R.id.button_save_routine)
 
         var now = LocalDate.now()
         date_format = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
 
-        // 만보기 사용을 위한 센서 접근 권한
-        var sensorPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)
-
-        if(sensorPermission != PackageManager.PERMISSION_GRANTED) { // 권한이 허용되지 않은 경우
-            // 권한이 허용되지 않음
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACTIVITY_RECOGNITION)) {
-                // 이전에 이미 권한이 거부되었을 때 설명
-                var dig = AlertDialog.Builder(this)
+        /*// 만보기 사용을 위한 센서 접근 권한
+        var sensorPermission = ContextCompat.checkSelfPermission(ct, Manifest.permission.ACTIVITY_RECOGNITION)
+        when {
+            sensorPermission == PackageManager.PERMISSION_GRANTED -> {
+                // 만보기
+                sensorManager = activity?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+                try {
+                    stepCountSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+                    //sensorManager.registerListener(this, stepCountSensor, )
+                }
+                catch (ise : IllegalStateException){
+                    Toast.makeText(ct, "걸음 센서가 없습니다", Toast.LENGTH_SHORT).show()
+                }
+            }
+            shouldShowRequestPermissionRationale(Manifest.permission.ACTIVITY_RECOGNITION) -> {
+                var dig = AlertDialog.Builder(ct)
                 dig.setTitle("권한이 필요한 이유")
                 dig.setMessage("만보기 사용을 위해 센서 사용 권한이 필수로 필요합니다.")
-                dig.setPositiveButton("확인") { dialog, which ->
-                    ActivityCompat.requestPermissions(this,
-                            arrayOf(Manifest.permission.ACTIVITY_RECOGNITION), REQUEST_ACTIVITY_RECOGNITION)
+                dig.setPositiveButton("동의") { dialog, which ->
+                    requestPermissions(arrayOf(Manifest.permission.ACTIVITY_RECOGNITION), REQUEST_ACTIVITY_RECOGNITION)
                 }
                 dig.setNegativeButton("취소", null)
                 dig.show()
-            } else {
-                // 처음 권한 요청
-                ActivityCompat.requestPermissions(this,
-                        arrayOf(Manifest.permission.ACTIVITY_RECOGNITION), REQUEST_ACTIVITY_RECOGNITION)
             }
-        } else {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACTIVITY_RECOGNITION), REQUEST_ACTIVITY_RECOGNITION)
-        }
-
-        // 만보기
-        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        try {
-            stepCountSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
-            //sensorManager.registerListener(this, stepCountSensor, )
-        }
-        catch (ise : IllegalStateException){
-            Toast.makeText(this, "걸음 센서가 없습니다", Toast.LENGTH_SHORT).show()
-        }
+            else -> {
+                requestPermissions(arrayOf(Manifest.permission.ACTIVITY_RECOGNITION), REQUEST_ACTIVITY_RECOGNITION)
+            }
+        }*/
 
         // 오늘 입력해둔 운동 불러오기
         exerciseData.clear()
         exerciseData.addAll(loadExercise())
         if (exerciseData.size > 0) {
-            rvAdapter = ExerciseRecyclerViewAdapter(exerciseData, this, rv)
+            rvAdapter = ExerciseRecyclerViewAdapter(exerciseData, ct, rv)
             rv.adapter = rvAdapter
-            rv.layoutManager = LinearLayoutManager(this)
+            rv.layoutManager = LinearLayoutManager(ct)
             rv.visibility = View.VISIBLE
         }
 
@@ -188,87 +176,26 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
 
         // 루틴 저장 버튼 클릭 시
         button_save_routine.setOnClickListener {
-            val intent : Intent = Intent(this, SavedRoutineActivity::class.java)
+            val intent : Intent = Intent(ct, SavedRoutineActivity::class.java)
             startActivity(intent)
         }
 
         // 루틴 불러오기 버튼 클릭 시
         button_load_routine.setOnClickListener {
-            val intent : Intent = Intent(this, LoadRoutineActivity::class.java)
-            startActivity(intent)
+            val intent : Intent = Intent(ct, LoadRoutineActivity::class.java)
+            //startActivity(intent)
+            startActivityForResult(intent, REQUEST_CODE_LOAD_ROUTINE)
         }
 
         // 운동 추가 버튼 클릭 시
         button_exercise_add.setOnClickListener {
-            val intent : Intent = Intent(this, ExerciseAdditionActivity::class.java)
-            //intent.putExtra("DATE", date_format)
+            val intent : Intent = Intent(ct, ExerciseAdditionActivity::class.java)
+            intent.putExtra("DATE", date_format)
             startActivityForResult(intent, REQUEST_CODE_ADD_EXERCISE)
+
         }
-    }
 
-    // 하단 메뉴 선택 시 작동
-    private val bottomNavItemSelectedListener =
-            BottomNavigationView.OnNavigationItemSelectedListener { item ->
-                when (item.itemId) {
-                    // 운동 메뉴 선택 시
-                    R.id.navigation_exercise -> {
-                        var intent: Intent = Intent(this, ExerciseActivity::class.java)
-                        startActivity(intent)
-                        finish()
-                        return@OnNavigationItemSelectedListener true
-                    }
-
-                    // 식단 메뉴 선택 시
-                    R.id.navigation_diet -> {
-                        var intent: Intent = Intent(this, DietActivity::class.java)
-                        startActivity(intent)
-                        finish()
-                        return@OnNavigationItemSelectedListener true
-                    }
-
-                    // 신체 메뉴 선택 시
-                    R.id.navigation_body -> {
-                        var intent: Intent = Intent(this, BodyActivity::class.java)
-                        startActivity(intent)
-                        finish()
-                        return@OnNavigationItemSelectedListener true
-                    }
-
-                    // 통계 메뉴 선택 시
-                    R.id.navigation_stats -> {
-                        var intent : Intent = Intent(this, StatsActivity::class.java)
-                        startActivity(intent)
-                        finish()
-                        return@OnNavigationItemSelectedListener true
-                    }
-
-                    // 펫 선택 시
-                    R.id.navigation_pet -> {
-                        var intent : Intent = Intent(this, PetActivity::class.java)
-                        startActivity(intent)
-                        finish()
-                        return@OnNavigationItemSelectedListener true
-                    }
-
-                    // 그 외
-                    else -> false
-                }
-            }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item?.itemId)
-        {
-            R.id.menu_settings -> {
-                MainActivity().replaceFragment(SettingsFragment())
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
+        return view
     }
 
     // 운동 시작
@@ -284,7 +211,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
             val minStr = String.format("%02d", min)
             val secStr = String.format("%02d", sec)
 
-            runOnUiThread {
+            activity?.runOnUiThread {
                 timer_hour.text = hour.toString()
                 timer_minute.text = minStr
                 timer_second.text = secStr
@@ -307,7 +234,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         timer_minute.text = "00"
         timer_second.text = "00"
     }
-
+/*
     override fun onStart() {
         super.onStart()
         if(stepCountSensor != null) {
@@ -318,9 +245,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onStop() {
         super.onStop()
-        if(sensorManager != null) {
-            sensorManager.unregisterListener(this)
-        }
+        sensorManager.unregisterListener(this)
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
@@ -338,23 +263,41 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
             steps = event.values[0].toInt() - counterSteps
             stepsTextView.text = steps.toString()
         }
-    }
+    }*/
 
-    /*override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode == Activity.RESULT_OK) {
             when(requestCode) {
                 REQUEST_CODE_ADD_EXERCISE -> {
-                    name = data?.getStringExtra("NAME").toString()
+                    /*name = data?.getStringExtra("NAME").toString()
                     exerciseData.addAll(addExercise())
-                    rvAdapter = ExerciseRecyclerViewAdapter(exerciseData, this, rv)
+                    rvAdapter = ExerciseRecyclerViewAdapter(exerciseData, ct, rv)
                     rv.adapter = rvAdapter
-                    rv.layoutManager = LinearLayoutManager(this)
-                    rv.visibility = View.VISIBLE
+                    rv.layoutManager = LinearLayoutManager(ct)
+                    rv.visibility = View.VISIBLE*/
+                    exerciseData.clear()
+                    exerciseData.addAll(loadExercise())
+                    if (exerciseData.size > 0) {
+                        rvAdapter = ExerciseRecyclerViewAdapter(exerciseData, ct, rv)
+                        rv.adapter = rvAdapter
+                        rv.layoutManager = LinearLayoutManager(ct)
+                        rv.visibility = View.VISIBLE
+                    }
+                }
+                REQUEST_CODE_LOAD_ROUTINE -> {
+                    exerciseData.clear()
+                    exerciseData.addAll(loadExercise())
+                    if (exerciseData.size > 0) {
+                        rvAdapter = ExerciseRecyclerViewAdapter(exerciseData, ct, rv)
+                        rv.adapter = rvAdapter
+                        rv.layoutManager = LinearLayoutManager(ct)
+                        rv.visibility = View.VISIBLE
+                    }
                 }
             }
         }
-    }*/
+    }
 
     private fun loadExercise() : ArrayList<ExerciseData>{
         Log.d("exercise", "신호 수신")
@@ -429,5 +372,9 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
 
         sqldb.execSQL("INSERT INTO exercise_record(date, total_time) VALUES (${date_format.toInt()}, $time);")
         sqldb.close()
+    }
+
+    companion object {
+
     }
 }

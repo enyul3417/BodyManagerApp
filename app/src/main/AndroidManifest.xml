@@ -29,16 +29,18 @@
         <activity android:name=".menu.Stats.StatsActivity" />
         <activity android:name=".menu.Body.BodyActivity" />
         <activity android:name=".menu.Exercise.ExerciseActivity">
+
+        </activity>
+        <activity android:name=".menu.Diet.NewDietActivity" />
+        <activity android:name=".menu.Diet.DietActivity" />
+        <activity android:name=".menu.Exercise.ExerciseAdditionActivity" />
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".menu.Diet.NewDietActivity" />
-        <activity android:name=".menu.Diet.DietActivity" />
-        <activity android:name=".menu.Exercise.ExerciseAdditionActivity" />
-        <activity android:name=".MainActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
