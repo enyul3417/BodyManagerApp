@@ -35,8 +35,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         prefs = PreferenceManager.getDefaultSharedPreferences(activity)
 
-        rmCalc.onPreferenceClickListener
-
         if(!prefs.getString("theme_selection", "").equals("")) {
             themList.summary = prefs.getString("theme_selection", "블랙")
         }
