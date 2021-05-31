@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bodymanagerapp.MainActivity
 import com.example.bodymanagerapp.R
-import com.example.bodymanagerapp.menu.SettingsFragment
+import com.example.bodymanagerapp.menu.Settings.SettingsFragment
 import com.example.bodymanagerapp.myDBHelper
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -103,7 +103,7 @@ class SavedRoutineActivity : AppCompatActivity() {
         when(item?.itemId)
         {
             R.id.menu_settings -> {
-                MainActivity().replaceFragment(SettingsFragment())
+                //MainActivity().replaceFragment(SettingsFragment())
                 return true
             }
         }

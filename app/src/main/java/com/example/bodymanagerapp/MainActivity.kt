@@ -11,6 +11,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.example.bodymanagerapp.menu.*
 import com.example.bodymanagerapp.menu.Exercise.ExerciseFragment
+import com.example.bodymanagerapp.menu.Settings.SettingsActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -90,7 +91,9 @@ class MainActivity : AppCompatActivity() {
         when(item?.itemId)
         {
             R.id.menu_settings -> {
-                replaceFragment(SettingsFragment())
+                //replaceFragment(SettingsFragment())
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
                 return true
             }
         }

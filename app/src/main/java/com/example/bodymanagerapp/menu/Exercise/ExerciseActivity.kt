@@ -1,7 +1,6 @@
 package com.example.bodymanagerapp.menu.Exercise
 
 import android.Manifest
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -32,7 +31,7 @@ import com.example.bodymanagerapp.menu.Diet.DietActivity
 import com.example.bodymanagerapp.menu.Exercise.Routine.LoadRoutineActivity
 import com.example.bodymanagerapp.menu.Exercise.Routine.SavedRoutineActivity
 import com.example.bodymanagerapp.menu.Pet.PetActivity
-import com.example.bodymanagerapp.menu.SettingsFragment
+import com.example.bodymanagerapp.menu.Settings.SettingsFragment
 import com.example.bodymanagerapp.menu.Stats.StatsActivity
 import com.example.bodymanagerapp.myDBHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -264,7 +263,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         when(item?.itemId)
         {
             R.id.menu_settings -> {
-                MainActivity().replaceFragment(SettingsFragment())
+                //MainActivity().replaceFragment(SettingsFragment())
                 return true
             }
         }
