@@ -23,8 +23,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.bodymanagerapp.Preference.MyPreference
 import com.example.bodymanagerapp.R
-import com.example.bodymanagerapp.myDBHelper
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.bodymanagerapp.MyDBHelper
 import java.io.ByteArrayOutputStream
 import java.util.*
 
@@ -32,7 +31,7 @@ class NewDietActivity : AppCompatActivity() {
 
     lateinit var toolbar: Toolbar
     // DB
-    lateinit var myDBHelper: myDBHelper
+    lateinit var MyDBHelper: MyDBHelper
     lateinit var sqldb : SQLiteDatabase
 
     // 권한 관련 변수
@@ -58,7 +57,7 @@ class NewDietActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_diet)
 
-        myDBHelper = myDBHelper(this)
+        MyDBHelper = MyDBHelper(this)
 
         var intent : Intent = getIntent()
         date = intent.getIntExtra("DATE", 0)
@@ -158,7 +157,7 @@ class NewDietActivity : AppCompatActivity() {
 
     // 저장
     private fun saveDiet() {
-        sqldb = myDBHelper.writableDatabase
+        sqldb = MyDBHelper.writableDatabase
         
         var imgView = findViewById<ImageView>(R.id.image_diet)
         var memoView = findViewById<TextView>(R.id.diet_memo)
@@ -191,7 +190,7 @@ class NewDietActivity : AppCompatActivity() {
 
     // 수정
     private fun updateDiet() {
-        sqldb = myDBHelper.writableDatabase
+        sqldb = MyDBHelper.writableDatabase
 
         //var diet_date : String = date
         var image : Drawable = image_diet.drawable
@@ -224,7 +223,7 @@ class NewDietActivity : AppCompatActivity() {
 
     // 불러오기
     private fun loadDiet() {
-        sqldb = myDBHelper.readableDatabase
+        sqldb = MyDBHelper.readableDatabase
         var cursor : Cursor = sqldb.rawQuery("SELECT * FROM diet_record WHERE DId = '${id}'", null)
 
         // 해당 날짜에 저장된 식단들 가져오기

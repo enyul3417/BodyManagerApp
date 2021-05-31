@@ -40,11 +40,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
         if(!prefs.getString("font_selection", "").equals("")) {
-            themList.summary = prefs.getString("font_selection", "폰트1")
+            fontList.summary = prefs.getString("font_selection", "폰트1")
         }
 
         if(!prefs.getString("font_size", "").equals("")) {
-            themList.summary = prefs.getString("font_size", "보통")
+            fontSize.summary = prefs.getString("font_size", "보통")
         }
 
         if (prefs.getBoolean("alarm", true)) {

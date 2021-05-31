@@ -12,16 +12,14 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.bodymanagerapp.MainActivity
 import com.example.bodymanagerapp.R
-import com.example.bodymanagerapp.menu.Settings.SettingsFragment
-import com.example.bodymanagerapp.myDBHelper
+import com.example.bodymanagerapp.MyDBHelper
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class SavedRoutineActivity : AppCompatActivity() {
     // DB
-    lateinit var myDBHelper: myDBHelper
+    lateinit var MyDBHelper: MyDBHelper
     lateinit var sqldb: SQLiteDatabase
 
     lateinit var toolbar: Toolbar
@@ -47,7 +45,7 @@ class SavedRoutineActivity : AppCompatActivity() {
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        myDBHelper = myDBHelper(this)
+        MyDBHelper = MyDBHelper(this)
 
         spinner = findViewById(R.id.spinner_routine_save)
         et_routine = findViewById(R.id.et_routine_name)
@@ -113,7 +111,7 @@ class SavedRoutineActivity : AppCompatActivity() {
     private fun loadRoutineName() {
         nameList.clear()
         nameList.add("직접 입력")
-        sqldb = myDBHelper.readableDatabase
+        sqldb = MyDBHelper.readableDatabase
         var cursor = sqldb.rawQuery("SELECT DISTINCT routine_name FROM routine_info ORDER BY routine_name ASC;", null)
 
         if(cursor.moveToFirst()) {
@@ -126,7 +124,7 @@ class SavedRoutineActivity : AppCompatActivity() {
 
     private fun loadExercise() : ArrayList<RoutineData> {
         var data = ArrayList<RoutineData>()
-        sqldb = myDBHelper.readableDatabase
+        sqldb = MyDBHelper.readableDatabase
 
         // 중복 없이 운동명 가져오기
         var nameCursor = sqldb.rawQuery("SELECT DISTINCT exercise_name, tag FROM exercise_counter WHERE date = ${date_format.toInt()};", null)
@@ -162,7 +160,7 @@ class SavedRoutineActivity : AppCompatActivity() {
     }
 
     private fun saveRoutine() {
-        sqldb = myDBHelper.writableDatabase
+        sqldb = MyDBHelper.writableDatabase
 
         if(nameList[spinner.selectedItemPosition] != "직접 입력") {
             sqldb.execSQL("DELETE FROM routine_info WHERE routine_name = '${nameList[spinner.selectedItemPosition]}'")

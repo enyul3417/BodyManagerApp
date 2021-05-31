@@ -16,8 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bodymanagerapp.MainActivity
 import com.example.bodymanagerapp.R
-import com.example.bodymanagerapp.menu.Settings.SettingsFragment
-import com.example.bodymanagerapp.myDBHelper
+import com.example.bodymanagerapp.MyDBHelper
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -29,7 +28,7 @@ class LoadRoutineActivity : AppCompatActivity() {
     private val SEC_ID : Int = 700
 
     // DB
-    lateinit var myDBHelper: myDBHelper
+    lateinit var MyDBHelper: MyDBHelper
     lateinit var sqldb: SQLiteDatabase
 
     lateinit var toolbar: Toolbar
@@ -53,7 +52,7 @@ class LoadRoutineActivity : AppCompatActivity() {
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        myDBHelper = myDBHelper(this)
+        MyDBHelper = MyDBHelper(this)
 
         spinner = findViewById(R.id.spinner_routine_load)
         rv = findViewById(R.id.recycler_routine_load)
@@ -121,7 +120,7 @@ class LoadRoutineActivity : AppCompatActivity() {
 
     private fun loadRoutineName() {
         nameList.clear()
-        sqldb = myDBHelper.readableDatabase
+        sqldb = MyDBHelper.readableDatabase
         var cursor = sqldb.rawQuery("SELECT DISTINCT routine_name FROM routine_info ORDER BY routine_name ASC;", null)
 
         if(cursor.moveToFirst()) {
@@ -135,7 +134,7 @@ class LoadRoutineActivity : AppCompatActivity() {
 
     private fun loadRoutine() : ArrayList<RoutineData> {
         var data = ArrayList<RoutineData>()
-        sqldb = myDBHelper.readableDatabase
+        sqldb = MyDBHelper.readableDatabase
 
         // 중복 없이 운동명 가져오기
         var nameCursor = sqldb.rawQuery("SELECT DISTINCT exercise_name, tag FROM routine_info WHERE routine_name = '${nameList[spinner.selectedItemPosition]}';", null)
@@ -172,14 +171,14 @@ class LoadRoutineActivity : AppCompatActivity() {
     }
 
     private fun deleteRoutine() {
-        sqldb = myDBHelper.writableDatabase
+        sqldb = MyDBHelper.writableDatabase
         sqldb.execSQL("DELETE FROM routine_info WHERE routine_name = '${nameList[spinner.selectedItemPosition]}'")
         sqldb.close()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun addExercise() {
-        sqldb = myDBHelper.writableDatabase
+        sqldb = MyDBHelper.writableDatabase
 
         for(i in 0 until routineData.size) {
             for(j in 0 until routineData[i].set.size) {
@@ -191,7 +190,7 @@ class LoadRoutineActivity : AppCompatActivity() {
     }
 
     private fun deleteAllExercise() {
-        sqldb = myDBHelper.writableDatabase
+        sqldb = MyDBHelper.writableDatabase
         sqldb.execSQL("DELETE FROM exercise_counter WHERE date = $date")
         sqldb.close()
     }

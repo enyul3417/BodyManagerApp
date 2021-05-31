@@ -4,7 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class myDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1) {
+class MyDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1) {
 
     override fun onCreate(db: SQLiteDatabase?) {
         // 외래키 활성화
@@ -44,7 +44,7 @@ class myDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
                 "date INTEGER, " +
                 "time INTEGER, " +
                 "diet_photo BLOB, " +
-                "memo TEXT," +
+                "memo TEXT, " +
                 "PRIMARY KEY(DId AUTOINCREMENT));")
 
         // 신체 기록 테이블 생성
@@ -55,8 +55,21 @@ class myDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
                 "muscle_mass REAL, " +
                 "fat_mass REAL, " +
                 "bmi REAL, " +
-                "fat_percent REAL" +
+                "fat_percent REAL, " +
                 "body_photo BLOB);")
+
+        // 목표 데이블 생성
+        db?.execSQL("CREATE TABLE goal_table (" +
+                "gId INTEGER, " +
+                "goal TEXT, " +
+                "date INTEGER, " +
+                "PRIMARY KEY(gId AUTOINCREMENT));")
+
+        db?.execSQL("CREATE TABLE time_table (" +
+                "tId INTEGER, " +
+                "time INTEGER, " +
+                "memo TEXT, " +
+                "PRIMARY KEY(tId AUTOINCREMENT));")
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {

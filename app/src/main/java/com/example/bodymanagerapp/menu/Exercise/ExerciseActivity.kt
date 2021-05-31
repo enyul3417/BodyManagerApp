@@ -24,16 +24,14 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.bodymanagerapp.MainActivity
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.menu.Body.BodyActivity
 import com.example.bodymanagerapp.menu.Diet.DietActivity
 import com.example.bodymanagerapp.menu.Exercise.Routine.LoadRoutineActivity
 import com.example.bodymanagerapp.menu.Exercise.Routine.SavedRoutineActivity
 import com.example.bodymanagerapp.menu.Pet.PetActivity
-import com.example.bodymanagerapp.menu.Settings.SettingsFragment
 import com.example.bodymanagerapp.menu.Stats.StatsActivity
-import com.example.bodymanagerapp.myDBHelper
+import com.example.bodymanagerapp.MyDBHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -48,7 +46,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
     lateinit var toolbar: Toolbar
 
     // DB
-    lateinit var myDBHelper: myDBHelper
+    lateinit var MyDBHelper: MyDBHelper
     lateinit var sqldb: SQLiteDatabase
     var exerciseData = ArrayList<ExerciseData>()
 
@@ -98,7 +96,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         bottom_nav_view = findViewById(R.id.bottom_nav_view)
         toolbar = findViewById(R.id.toolbar)
 
-        myDBHelper = myDBHelper(this)
+        MyDBHelper = MyDBHelper(this)
         rv = findViewById(R.id.recycler_exercise)
 
         // 운동 타이머
@@ -359,7 +357,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         Log.d("exercise", "신호 수신")
 
         var data = ArrayList<ExerciseData>()
-        sqldb = myDBHelper.readableDatabase
+        sqldb = MyDBHelper.readableDatabase
 
         // 중복 없이 운동명 가져오기
         var nameCursor = sqldb.rawQuery("SELECT DISTINCT exercise_name FROM exercise_counter WHERE date = ${date_format.toInt()};", null)
@@ -396,7 +394,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         Log.d("exercise", "신호 수신")
 
         var data = ArrayList<ExerciseData>()
-        sqldb = myDBHelper.readableDatabase
+        sqldb = MyDBHelper.readableDatabase
 
         var cursor = sqldb.rawQuery("SELECT * FROM exercise_counter WHERE date = ${date_format.toInt()} AND exercise_name = '${name}';", null)
 
@@ -421,7 +419,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
     }
 
     private fun saveExercise() {
-        sqldb = myDBHelper.writableDatabase
+        sqldb = MyDBHelper.writableDatabase
         var hour = timer_hour.text.toString().toInt() * 3600
         var min = timer_minute.text.toString().toInt() * 60
         var time = hour + min + (timer_second.text.toString().toInt())

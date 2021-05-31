@@ -1,19 +1,14 @@
 package com.example.bodymanagerapp.menu.Pet
 
-import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import com.example.bodymanagerapp.Preference.MyPreference
@@ -22,15 +17,14 @@ import com.example.bodymanagerapp.menu.Body.BodyActivity
 import com.example.bodymanagerapp.menu.Diet.DietActivity
 import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
 import com.example.bodymanagerapp.menu.Stats.StatsActivity
-import com.example.bodymanagerapp.myDBHelper
+import com.example.bodymanagerapp.MyDBHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.timer
 
 class PetActivity : AppCompatActivity() {
     // DB
-    lateinit var myDBHelper: myDBHelper
+    lateinit var MyDBHelper: MyDBHelper
     lateinit var sqldb: SQLiteDatabase
 
     // 상하단
@@ -63,7 +57,7 @@ class PetActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pet)
 
-        myDBHelper = myDBHelper(this)
+        MyDBHelper = MyDBHelper(this)
 
         //메뉴
         bottom_nav_view = findViewById(R.id.bottom_nav_view)
@@ -276,7 +270,7 @@ class PetActivity : AppCompatActivity() {
         MyPreference.prefs.setInt("health", health)
 
         // 사용자의 최신 BMI 값 가져와서 펫 이미지 설정
-        sqldb = myDBHelper.readableDatabase
+        sqldb = MyDBHelper.readableDatabase
         var cursor : Cursor = sqldb.rawQuery("SELECT bmi FROM body_record ORDER BY date DESC", null)
         if(cursor.moveToFirst()) { // 데이터가 있으면
             var bmi = cursor.getFloat(cursor.getColumnIndex("bmi"))

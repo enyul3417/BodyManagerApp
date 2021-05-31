@@ -19,10 +19,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Design.NoActionBar">
-        <activity android:name=".RMCalcActivity">
+        <activity android:name=".menu.Settings.NotificationActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.NotificationActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".menu.Settings.RMCalcActivity">
             <intent-filter>
                 <action android:name="android.intent.action.RMCalcActivity" />
-                <category android:name="android.intent.category.DEFAULT"/>
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity android:name=".menu.Settings.SettingsActivity" />

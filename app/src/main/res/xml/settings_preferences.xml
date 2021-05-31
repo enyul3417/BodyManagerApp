@@ -1,24 +1,29 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <Preference
-        app:key="1rm_calc"
-        app:title="1RM 계산기">
-        <intent android:action="android.intent.action.RMCalcActivity"/>
+    <PreferenceCategory app:title="편의기능">
+        <Preference
+            app:key="1rm_calc"
+            app:title="1RM 계산기">
+            <intent android:action="android.intent.action.RMCalcActivity"/>
 
-    </Preference>
+        </Preference>
+    </PreferenceCategory>
 
-    <Preference
-        app:key="set_goal"
-        app:title="목표 설정"
-        app:summary="일일/주간/월간 목표 설정">
+    <PreferenceCategory app:title="알림">
+        <Preference
+            app:key="set_goal"
+            app:title="알림 설정"
+            app:summary="목표 및 운동 알림 설정">
+            <intent android:action="android.intent.action.NotificationActivity"/>
+        </Preference>
 
-    </Preference>
-
-    <SwitchPreference
-        app:key="alarm"
-        app:defaultValue="true"
-        app:title="알림 설정"/>
+        <SwitchPreference
+            app:key="alarm"
+            app:defaultValue="true"
+            app:title="알림 허용"
+            app:summary="목표 달성 알림, 운동 알림 등 허용 여부"/>
+    </PreferenceCategory>
 
     <PreferenceCategory app:title="테마 선택">
         <ListPreference

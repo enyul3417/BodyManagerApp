@@ -4,20 +4,17 @@ import android.content.Context
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.view.*
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bodymanagerapp.R
-import com.example.bodymanagerapp.myDBHelper
+import com.example.bodymanagerapp.MyDBHelper
 
 class DietRecyclerViewAdapter(var data : ArrayList<DietData>, val context : Context, var item : RecyclerView,
                                   var itemClick : (DietData, Int)->Unit):
     RecyclerView.Adapter<DietRecyclerViewAdapter.ItemViewHolder>() {
 
-    var myDBHelper: myDBHelper = myDBHelper(context)
+    var MyDBHelper: MyDBHelper = MyDBHelper(context)
     lateinit var sqldb: SQLiteDatabase
 
     var pos : Int = -1
@@ -41,7 +38,7 @@ class DietRecyclerViewAdapter(var data : ArrayList<DietData>, val context : Cont
                 update = menu.add("수정")
 
                 delete.setOnMenuItemClickListener {
-                    sqldb = myDBHelper.writableDatabase
+                    sqldb = MyDBHelper.writableDatabase
                     sqldb.execSQL("DELETE FROM diet_record WHERE DId = $id;")
                     sqldb.close()
 

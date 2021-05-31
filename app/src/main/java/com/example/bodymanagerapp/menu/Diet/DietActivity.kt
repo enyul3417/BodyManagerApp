@@ -20,9 +20,8 @@ import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.menu.Body.BodyActivity
 import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
 import com.example.bodymanagerapp.menu.Pet.PetActivity
-import com.example.bodymanagerapp.menu.Settings.SettingsFragment
 import com.example.bodymanagerapp.menu.Stats.StatsActivity
-import com.example.bodymanagerapp.myDBHelper
+import com.example.bodymanagerapp.MyDBHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.util.*
 import kotlin.collections.ArrayList
@@ -34,7 +33,7 @@ class DietActivity : AppCompatActivity() {
     lateinit var toolbar: Toolbar
 
     // DB
-    lateinit var myDBHelper: myDBHelper
+    lateinit var MyDBHelper: MyDBHelper
     lateinit var sqldb: SQLiteDatabase
     lateinit var cursor : Cursor
 
@@ -55,7 +54,7 @@ class DietActivity : AppCompatActivity() {
         bottom_nav_view = findViewById(R.id.bottom_nav_view)
         toolbar = findViewById(R.id.toolbar)
 
-        myDBHelper = myDBHelper(this)
+        MyDBHelper = MyDBHelper(this)
         rv = findViewById(R.id.recycler_diet)
 
         text_date = findViewById(R.id.text_diet_date) // 날짜
@@ -181,7 +180,7 @@ class DietActivity : AppCompatActivity() {
     // 불러오기
     private fun loadDiet() : ArrayList<DietData> {
         var dietData = ArrayList<DietData>()
-        sqldb = myDBHelper.readableDatabase
+        sqldb = MyDBHelper.readableDatabase
         cursor = sqldb.rawQuery("SELECT * FROM diet_record WHERE date = $date ORDER BY time ASC", null)
 
         if(cursor.moveToFirst()) { // 저장된 글이 있으면

@@ -1,16 +1,10 @@
 package com.example.bodymanagerapp.menu.Exercise
 
-import android.Manifest
 import android.app.Activity
-import android.app.Activity.RESULT_OK
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.database.sqlite.SQLiteDatabase
 import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build
 import android.os.Bundle
@@ -21,19 +15,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.menu.Exercise.Routine.LoadRoutineActivity
 import com.example.bodymanagerapp.menu.Exercise.Routine.SavedRoutineActivity
-import com.example.bodymanagerapp.myDBHelper
+import com.example.bodymanagerapp.MyDBHelper
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -42,7 +30,7 @@ import kotlin.concurrent.timer
 
 class ExerciseFragment : Fragment()/*, SensorEventListener*/ {
     // DB
-    lateinit var myDBHelper: myDBHelper
+    lateinit var MyDBHelper: MyDBHelper
     lateinit var sqldb: SQLiteDatabase
     var exerciseData = ArrayList<ExerciseData>()
 
@@ -96,7 +84,7 @@ class ExerciseFragment : Fragment()/*, SensorEventListener*/ {
         val view = inflater.inflate(R.layout.fragment_exercise, container, false)
         ct = container!!.context
 
-        myDBHelper = myDBHelper(ct)
+        MyDBHelper = MyDBHelper(ct)
         rv = view.findViewById(R.id.recycler_exercise)
 
         // 운동 타이머
@@ -303,7 +291,7 @@ class ExerciseFragment : Fragment()/*, SensorEventListener*/ {
         Log.d("exercise", "신호 수신")
 
         var data = ArrayList<ExerciseData>()
-        sqldb = myDBHelper.readableDatabase
+        sqldb = MyDBHelper.readableDatabase
 
         // 중복 없이 운동명 가져오기
         var nameCursor = sqldb.rawQuery("SELECT DISTINCT exercise_name FROM exercise_counter WHERE date = ${date_format.toInt()};", null)
@@ -340,7 +328,7 @@ class ExerciseFragment : Fragment()/*, SensorEventListener*/ {
         Log.d("exercise", "신호 수신")
 
         var data = ArrayList<ExerciseData>()
-        sqldb = myDBHelper.readableDatabase
+        sqldb = MyDBHelper.readableDatabase
 
         var cursor = sqldb.rawQuery("SELECT * FROM exercise_counter WHERE date = ${date_format.toInt()} AND exercise_name = '${name}';", null)
 
@@ -365,7 +353,7 @@ class ExerciseFragment : Fragment()/*, SensorEventListener*/ {
     }
 
     private fun saveExercise() {
-        sqldb = myDBHelper.writableDatabase
+        sqldb = MyDBHelper.writableDatabase
         var hour = timer_hour.text.toString().toInt() * 3600
         var min = timer_minute.text.toString().toInt() * 60
         var time = hour + min + (timer_second.text.toString().toInt())

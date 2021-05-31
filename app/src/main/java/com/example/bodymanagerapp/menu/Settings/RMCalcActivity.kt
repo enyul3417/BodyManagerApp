@@ -1,4 +1,4 @@
-package com.example.bodymanagerapp
+package com.example.bodymanagerapp.menu.Settings
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import com.example.bodymanagerapp.R
 
 class RMCalcActivity : AppCompatActivity() {
     lateinit var weightET : EditText

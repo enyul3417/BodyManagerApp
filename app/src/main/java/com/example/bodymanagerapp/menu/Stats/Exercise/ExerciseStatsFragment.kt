@@ -12,7 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import com.example.bodymanagerapp.R
-import com.example.bodymanagerapp.myDBHelper
+import com.example.bodymanagerapp.MyDBHelper
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -30,7 +30,7 @@ import kotlin.collections.ArrayList
 
 class ExerciseStatsFragment : Fragment() {
     // DB
-    lateinit var myDBHelper: myDBHelper
+    lateinit var MyDBHelper: MyDBHelper
     lateinit var sqldb: SQLiteDatabase
 
     lateinit var tv_start_date : TextView // 시작 날짜
@@ -82,7 +82,7 @@ class ExerciseStatsFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_exericse_stats, container, false)
         ct = container!!.context
 
-        myDBHelper = myDBHelper(ct)
+        MyDBHelper = MyDBHelper(ct)
 
         var calendar : Calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
@@ -307,7 +307,7 @@ class ExerciseStatsFragment : Fragment() {
     private fun loadExerciseName() {
         nameList.clear()
 
-        sqldb = myDBHelper.readableDatabase
+        sqldb = MyDBHelper.readableDatabase
         var cursor : Cursor = sqldb.rawQuery("SELECT DISTINCT exercise_name FROM exercise_counter ORDER BY exercise_name ASC", null)
 
         if(cursor.moveToFirst()) {
@@ -324,7 +324,7 @@ class ExerciseStatsFragment : Fragment() {
     private fun loadGraphData() : ArrayList<ExerciseStatsData> {
         var data = ArrayList<ExerciseStatsData>()
 
-        sqldb = myDBHelper.readableDatabase
+        sqldb = MyDBHelper.readableDatabase
         val dateCursor : Cursor = sqldb.rawQuery("SELECT DISTINCT date FROM exercise_counter " +
                 "WHERE exercise_name = '${nameList[spinner.selectedItemPosition]}' AND date >= $start_date AND date <= $end_date " +
                 "ORDER BY date ASC", null)
@@ -432,7 +432,7 @@ class ExerciseStatsFragment : Fragment() {
     private fun loadExerciseData() : ArrayList<ExerciseStatsData> {
         var data = ArrayList<ExerciseStatsData>()
 
-        sqldb = myDBHelper.readableDatabase
+        sqldb = MyDBHelper.readableDatabase
         val dateCursor : Cursor = sqldb.rawQuery("SELECT DISTINCT date FROM exercise_counter " +
                 "WHERE date >= $start_date AND date <= $end_date " +
                 "ORDER BY date ASC", null)
@@ -462,7 +462,7 @@ class ExerciseStatsFragment : Fragment() {
     }
 
     private fun loadExerciseRecord() {
-        sqldb = myDBHelper.readableDatabase
+        sqldb = MyDBHelper.readableDatabase
         val cursor : Cursor = sqldb.rawQuery("SELECT * FROM exercise_record " +
                 "WHERE date >= $start_date AND date <= $end_date",null)
 

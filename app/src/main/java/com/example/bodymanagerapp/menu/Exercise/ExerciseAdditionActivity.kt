@@ -4,10 +4,8 @@ package com.example.bodymanagerapp.menu.Exercise
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -21,7 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.example.bodymanagerapp.MainActivity
 import com.example.bodymanagerapp.R
-import com.example.bodymanagerapp.myDBHelper
+import com.example.bodymanagerapp.MyDBHelper
 import com.google.firebase.database.*
 import com.mancj.materialsearchbar.MaterialSearchBar
 import java.time.LocalDate
@@ -42,7 +40,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
     lateinit var toolbar: Toolbar
 
     // DB
-    lateinit var myDBHelper: myDBHelper
+    lateinit var MyDBHelper: MyDBHelper
     lateinit var sqldb: SQLiteDatabase
 
     lateinit var searchBar : MaterialSearchBar
@@ -90,7 +88,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
         setContentView(R.layout.activity_exercise_addition)
 
         toolbar = findViewById(R.id.toolbar)
-        myDBHelper = myDBHelper(this)
+        MyDBHelper = MyDBHelper(this)
 
         searchBar = findViewById(R.id.search_exercise)
         list_view = findViewById(R.id.lv_exercise)
@@ -375,7 +373,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
 
     // 정리 필요함
     private fun addExercise() {
-        sqldb = myDBHelper.writableDatabase
+        sqldb = MyDBHelper.writableDatabase
 
         var weightArray : ArrayList<Float> ?= ArrayList() // 무게 배열
         var numArray : ArrayList<Int> ?= ArrayList() // 횟수 배열
@@ -471,7 +469,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
     }
 
     private fun loadExercise() {
-        sqldb = myDBHelper.readableDatabase
+        sqldb = MyDBHelper.readableDatabase
         var cursor = sqldb.rawQuery("SELECT * FROM exercise_counter WHERE date = $date AND exercise_name = '$name';", null)
         if(cursor.moveToFirst()) { // 저장된 글이 있으면
             isLoaded = true
@@ -699,7 +697,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
     }
 
     private fun checkLastData() {
-        sqldb = myDBHelper.readableDatabase
+        sqldb = MyDBHelper.readableDatabase
         lastData.clear()
         var weightList = ArrayList<Float>()
         var countList = ArrayList<Int>()

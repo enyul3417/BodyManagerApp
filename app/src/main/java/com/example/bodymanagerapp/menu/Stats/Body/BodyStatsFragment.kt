@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bodymanagerapp.Preference.MyPreference
 import com.example.bodymanagerapp.R
-import com.example.bodymanagerapp.myDBHelper
+import com.example.bodymanagerapp.MyDBHelper
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -39,7 +39,7 @@ import kotlin.math.round
 
 class BodyStatsFragment : Fragment() {
     // DB
-    lateinit var myDBHelper: myDBHelper
+    lateinit var MyDBHelper: MyDBHelper
     lateinit var sqldb: SQLiteDatabase
 
     // recyclerView
@@ -90,7 +90,7 @@ class BodyStatsFragment : Fragment() {
         var view = inflater.inflate(R.layout.fragment_body_stats, container, false)
         ct = container!!.context
 
-        myDBHelper = myDBHelper(ct)
+        MyDBHelper = MyDBHelper(ct)
         rv = view.findViewById(R.id.recycler_sb)
 
         var calendar : Calendar = Calendar.getInstance()
@@ -261,7 +261,7 @@ class BodyStatsFragment : Fragment() {
         data_list.clear()
         date_list.clear()
 
-        sqldb = myDBHelper.readableDatabase
+        sqldb = MyDBHelper.readableDatabase
         var cursor : Cursor = sqldb.rawQuery("SELECT $str, date FROM body_record WHERE date >= $start_date AND date <= $end_date", null)
 
         if(cursor.moveToFirst()) {
@@ -276,7 +276,7 @@ class BodyStatsFragment : Fragment() {
         body_list .clear()
         diet_list.clear()
 
-        sqldb = myDBHelper.readableDatabase
+        sqldb = MyDBHelper.readableDatabase
 
         var bodyCursor : Cursor = sqldb.rawQuery("SELECT * FROM body_record " +
                 "WHERE date >= $start_date AND date <= $end_date " +
@@ -368,7 +368,7 @@ class BodyStatsFragment : Fragment() {
     // 저장된 이미지 불러오기
     private fun loadImage() : ArrayList<BodyImageData> {
         var imgData = ArrayList<BodyImageData>()
-        sqldb = myDBHelper.readableDatabase
+        sqldb = MyDBHelper.readableDatabase
         val cursor = sqldb.rawQuery("SELECT date, body_photo FROM body_record WHERE date >= $start_date AND date <= $end_date", null)
 
         if(cursor.moveToFirst()) { // 저장된 글이 있으면

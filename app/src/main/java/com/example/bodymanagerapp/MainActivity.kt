@@ -20,14 +20,15 @@ class MainActivity : AppCompatActivity() {
     lateinit var toolbar: Toolbar
 
     // DB
-    lateinit var myDBHelper: myDBHelper
+    lateinit var MyDBHelper: MyDBHelper
     lateinit var sqldb : SQLiteDatabase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        myDBHelper = myDBHelper(this)
-        sqldb = myDBHelper.writableDatabase
+        MyDBHelper = MyDBHelper(this)
+        sqldb = MyDBHelper.writableDatabase
 
         bottom_nav_view = findViewById(R.id.bottom_nav_view)
         toolbar = findViewById(R.id.toolbar)

@@ -4,11 +4,8 @@ import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
-import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.AssetManager
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteStatement
 import android.graphics.Bitmap
@@ -26,23 +23,18 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewDebug
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.bodymanagerapp.Preference.MyPreference
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.menu.Diet.DietActivity
-import com.example.bodymanagerapp.menu.Diet.DietData
-import com.example.bodymanagerapp.menu.Diet.DietRecyclerViewAdapter
-import com.example.bodymanagerapp.menu.Diet.NewDietActivity
 import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
 import com.example.bodymanagerapp.menu.Pet.PetActivity
 import com.example.bodymanagerapp.menu.Stats.StatsActivity
-import com.example.bodymanagerapp.myDBHelper
+import com.example.bodymanagerapp.MyDBHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.googlecode.tesseract.android.TessBaseAPI
 import com.gun0912.tedpermission.PermissionListener
@@ -58,7 +50,7 @@ import java.util.*
 
 class BodyActivity : AppCompatActivity() {
     // DB
-    lateinit var myDBHelper: myDBHelper
+    lateinit var MyDBHelper: MyDBHelper
     lateinit var sqldb : SQLiteDatabase
 
     // Tesseract API
@@ -105,7 +97,7 @@ class BodyActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_body)
 
-        myDBHelper = myDBHelper(this)
+        MyDBHelper = MyDBHelper(this)
 
         //메뉴
         bottom_nav_view = findViewById(R.id.bottom_nav_view)
@@ -423,7 +415,7 @@ class BodyActivity : AppCompatActivity() {
 
     // 저장하기
     private fun saveBody() {
-        sqldb = myDBHelper.writableDatabase
+        sqldb = MyDBHelper.writableDatabase
 
         var height : Float = et_height.text.toString().toFloat()
         var weight : Float = et_weight.text.toString().toFloat()
@@ -468,7 +460,7 @@ class BodyActivity : AppCompatActivity() {
         body_image.visibility = View.GONE
         isLoaded = false
 
-        sqldb = myDBHelper.readableDatabase
+        sqldb = MyDBHelper.readableDatabase
         val cursor = sqldb.rawQuery("SELECT * FROM body_record WHERE date = $date", null)
 
         if(cursor.moveToFirst()) { // 저장된 글이 있으면
@@ -507,7 +499,7 @@ class BodyActivity : AppCompatActivity() {
 
     // 수정하기
     private fun updateBody() {
-        sqldb = myDBHelper.writableDatabase
+        sqldb = MyDBHelper.writableDatabase
 
         var height : Float = et_height.text.toString().toFloat()
         var weight : Float = et_weight.text.toString().toFloat()
@@ -548,7 +540,7 @@ class BodyActivity : AppCompatActivity() {
 
     // 삭제하기
     private fun deleteBody() {
-        sqldb = myDBHelper.writableDatabase
+        sqldb = MyDBHelper.writableDatabase
         sqldb.execSQL("DELETE FROM body_record WHERE date = $date")
         sqldb.close()
     }

@@ -10,18 +10,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
-import com.example.bodymanagerapp.MainActivity
 import com.example.bodymanagerapp.R
-import com.example.bodymanagerapp.menu.Body.BodyActivity
-import com.example.bodymanagerapp.menu.Diet.DietData
-import com.example.bodymanagerapp.menu.Diet.NewDietActivity
-import com.example.bodymanagerapp.myDBHelper
+import com.example.bodymanagerapp.MyDBHelper
 
 class ExerciseRecyclerViewAdapter(var data : ArrayList<ExerciseData>, val context: Context,
                                   var item : RecyclerView):
     RecyclerView.Adapter<ExerciseRecyclerViewAdapter.ItemViewHolder>() {
 
-    var myDBHelper: myDBHelper = myDBHelper(context)
+    var MyDBHelper: MyDBHelper = MyDBHelper(context)
     lateinit var sqldb: SQLiteDatabase
 
     lateinit var delete : MenuItem
@@ -51,7 +47,7 @@ class ExerciseRecyclerViewAdapter(var data : ArrayList<ExerciseData>, val contex
                     dig.setTitle("삭제 확인") // 제목
                     dig.setMessage("삭제하시겠습니까?")
                     dig.setPositiveButton("확인") { dialog, which ->
-                        sqldb = myDBHelper.writableDatabase
+                        sqldb = MyDBHelper.writableDatabase
                         sqldb.execSQL("DELETE FROM exercise_counter WHERE date = $eDate AND exercise_name = '$eName';")
                         sqldb.close()
                         Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
