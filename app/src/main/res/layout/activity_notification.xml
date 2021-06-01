@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".menu.Settings.NotificationActivity"
+    tools:context=".menu.Settings.Notification.NotificationActivity"
     android:orientation="vertical">
 
     <!-- 앱 상단 -->
@@ -75,7 +75,7 @@
                 android:id="@+id/rv_nf_goal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:orientation="vertical"/>
             <View
                 android:layout_width="match_parent"

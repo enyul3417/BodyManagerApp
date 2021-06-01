@@ -1,4 +1,4 @@
-package com.example.bodymanagerapp.menu.Settings
+package com.example.bodymanagerapp.menu.Settings.Notification
 
 
 import android.app.Activity
@@ -7,7 +7,6 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
-import android.view.Window
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -37,7 +36,7 @@ class GoalDialog(context: Context) {
         sqldb = MyDBHelper.writableDatabase
 
         dialog.setContentView(R.layout.goal_dialog) // Dialog에 사용할 xml 파일 불러오기
-        dialog.setCancelable(false)
+        dialog.setCancelable(false) // Dialog 밖 클릭 시 화면 사라지지 않음
 
         goalET = dialog.findViewById(R.id.et_goal)
         dateTV = dialog.findViewById(R.id.tv_goal_date)
@@ -106,6 +105,7 @@ class GoalDialog(context: Context) {
                 dateTV.text = "${year}년 ${month}월 ${day}일"
             } while (cursor.moveToNext())
         }
+        sqldb.close()
     }
 
     private fun updateGoal(id : Int, goal: String, date: Int) {

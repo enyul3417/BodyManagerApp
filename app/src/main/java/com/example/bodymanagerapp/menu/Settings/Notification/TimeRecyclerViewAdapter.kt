@@ -1,4 +1,4 @@
-package com.example.bodymanagerapp.menu.Settings
+package com.example.bodymanagerapp.menu.Settings.Notification
 
 import android.app.Activity
 import android.content.Context
@@ -10,19 +10,16 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.Switch
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bodymanagerapp.MyDBHelper
 import com.example.bodymanagerapp.R
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
-
-class GoalRecyclerViewAdapter(var data : ArrayList<NotificationData>, val context: Context,
+class TimeRecyclerViewAdapter(var data : ArrayList<NotificationData>, val context: Context,
                               var item : RecyclerView, var itemClick:(NotificationData)->Unit)
-    : RecyclerView.Adapter<GoalRecyclerViewAdapter.ItemViewHolder>() {
-    var MyDBHelper: MyDBHelper = MyDBHelper(context)
+    : RecyclerView.Adapter<TimeRecyclerViewAdapter.ItemViewHolder>() {
+    var myDBHelper: MyDBHelper = MyDBHelper(context)
     lateinit var sqldb: SQLiteDatabase
 
     var pos : Int = -1
@@ -41,8 +38,8 @@ class GoalRecyclerViewAdapter(var data : ArrayList<NotificationData>, val contex
                 delete = menu.add("삭제")
 
                 delete.setOnMenuItemClickListener {
-                    sqldb = MyDBHelper.writableDatabase
-                    sqldb.execSQL("DELETE FROM goal_table WHERE gId = $id;")
+                    sqldb = myDBHelper.writableDatabase
+                    sqldb.execSQL("DELETE FROM time_table WHERE tId = $id;")
                     sqldb.close()
 
                     val intent = Intent(context, NotificationActivity::class.java)
@@ -53,26 +50,20 @@ class GoalRecyclerViewAdapter(var data : ArrayList<NotificationData>, val contex
                 }
             }
         }
-        var goalTV : TextView = view.findViewById(R.id.tv_gi_goal)
-        var dDayTV : TextView = view.findViewById(R.id.tv_gi_days)
-        var dateTV : TextView = view.findViewById(R.id.tv_gi_date)
-        var check : CheckBox = view.findViewById(R.id.cb_gi)
-
-        @RequiresApi(Build.VERSION_CODES.O)
-        var now = LocalDate.now()
-        @RequiresApi(Build.VERSION_CODES.O)
-        var today = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+        var timeTV : TextView = view.findViewById(R.id.tv_time_alarm)
+        var daysTV : TextView = view.findViewById(R.id.tv_time_days)
+        var memoTV : TextView = view.findViewById(R.id.tv_time_memo)
+        var switch : Switch = view.findViewById(R.id.switch_time)
 
         //onBindViewHolder에서 호출할 bind 함수
         fun bind(data: NotificationData, position: Int) {
-            goalTV.text = data.string
-            val date = data.int
-            val year = date / 10000
-            val month = date % 10000 / 100
-            val day = date % 10000 % 100
-            dateTV.text = "${year}년 ${month}월 ${day}일까지"
-            dDayTV.text = "D-${date - today.toInt()}"
-            check.isChecked = data.isChecked
+            val time = data.int
+            val hour = time / 60
+            val min = time % 60
+            timeTV.text = "${hour}:${min}"
+            daysTV.text = data.days
+            memoTV.text = data.string
+            switch.isChecked = data.isChecked
 
             itemView.setOnClickListener {
                 itemClick(data)
@@ -80,12 +71,12 @@ class GoalRecyclerViewAdapter(var data : ArrayList<NotificationData>, val contex
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GoalRecyclerViewAdapter.ItemViewHolder {
-        var view = LayoutInflater.from(context).inflate(R.layout.goal_items, parent, false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
+        var view = LayoutInflater.from(context).inflate(R.layout.time_items, parent, false)
         return ItemViewHolder(view, itemClick)
     }
 
-    override fun onBindViewHolder(holder: GoalRecyclerViewAdapter.ItemViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         holder.bind(data[position], position)
     }
 

@@ -69,7 +69,9 @@ class MyDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
         db?.execSQL("CREATE TABLE time_table (" +
                 "tId INTEGER, " +
                 "time INTEGER, " +
+                "days TEXT, " +
                 "memo TEXT, " +
+                "isOn INTEGER, " +
                 "PRIMARY KEY(tId AUTOINCREMENT));")
     }
 
