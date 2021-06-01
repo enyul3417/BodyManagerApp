@@ -180,7 +180,7 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/exericse_items" />
+                tools:listitem="@layout/exercise_items" />
 
             <Button
                 android:id="@+id/button_exercise_add"

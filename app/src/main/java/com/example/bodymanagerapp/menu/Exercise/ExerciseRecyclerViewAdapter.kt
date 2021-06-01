@@ -17,7 +17,7 @@ class ExerciseRecyclerViewAdapter(var data : ArrayList<ExerciseData>, val contex
                                   var item : RecyclerView):
     RecyclerView.Adapter<ExerciseRecyclerViewAdapter.ItemViewHolder>() {
 
-    var MyDBHelper: MyDBHelper = MyDBHelper(context)
+    var myDBHelper: MyDBHelper = MyDBHelper(context)
     lateinit var sqldb: SQLiteDatabase
 
     lateinit var delete : MenuItem
@@ -47,7 +47,7 @@ class ExerciseRecyclerViewAdapter(var data : ArrayList<ExerciseData>, val contex
                     dig.setTitle("삭제 확인") // 제목
                     dig.setMessage("삭제하시겠습니까?")
                     dig.setPositiveButton("확인") { dialog, which ->
-                        sqldb = MyDBHelper.writableDatabase
+                        sqldb = myDBHelper.writableDatabase
                         sqldb.execSQL("DELETE FROM exercise_counter WHERE date = $eDate AND exercise_name = '$eName';")
                         sqldb.close()
                         Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
@@ -190,7 +190,7 @@ class ExerciseRecyclerViewAdapter(var data : ArrayList<ExerciseData>, val contex
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        var view = LayoutInflater.from(context).inflate(R.layout.exericse_items, parent, false)
+        var view = LayoutInflater.from(context).inflate(R.layout.exercise_items, parent, false)
         return ItemViewHolder(view)
     }
 

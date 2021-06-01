@@ -1,6 +1,7 @@
 package com.example.bodymanagerapp.menu.Exercise
 
 import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -339,7 +340,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         }
     }
 
-    /*override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode == Activity.RESULT_OK) {
             when(requestCode) {
@@ -353,7 +354,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
                 }
             }
         }
-    }*/
+    }
 
     private fun loadExercise() : ArrayList<ExerciseData>{
         Log.d("exercise", "신호 수신")

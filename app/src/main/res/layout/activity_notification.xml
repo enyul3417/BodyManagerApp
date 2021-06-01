@@ -49,6 +49,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="10dp"
+                    android:layout_marginTop="5dp"
                     android:text="목표 설정"
                     android:textSize="15sp" />
 
@@ -73,12 +74,13 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_nf_goal"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:visibility="visible"/>
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                android:orientation="vertical"/>
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/white"
+                android:background="?android:attr/colorForeground"
                 android:layout_marginTop="8dp"/>
 
             <LinearLayout
@@ -118,7 +120,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/white"
+                android:background="?android:attr/colorForeground"
                 android:layout_marginTop="8dp"/>
 
         </LinearLayout>

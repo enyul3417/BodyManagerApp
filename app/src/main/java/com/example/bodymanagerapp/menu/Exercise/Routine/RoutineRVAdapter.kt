@@ -125,7 +125,7 @@ class RoutineRVAdapter (var data : ArrayList<RoutineData>, val context: Context,
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RoutineRVAdapter.ItemViewHolder {
-        var view = LayoutInflater.from(context).inflate(R.layout.exericse_items, parent, false)
+        var view = LayoutInflater.from(context).inflate(R.layout.exercise_items, parent, false)
         return ItemViewHolder(view)
     }
 
