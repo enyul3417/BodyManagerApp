@@ -24,6 +24,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -41,6 +42,8 @@ import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import java.io.*
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 // 수정해야할 것
@@ -93,6 +96,7 @@ class BodyActivity : AppCompatActivity() {
     // 성별 값 가져오기
     var sex : Int = MyPreference.prefs.getInt("sex", 0)
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_body)
@@ -145,6 +149,10 @@ class BodyActivity : AppCompatActivity() {
         }
 
         Log.d("sex : ", "$sex")
+
+        var now = LocalDate.now()
+        var today = now.format(DateTimeFormatter.ofPattern("yyyy년 M월 d일"))
+        text_date.text = today.toString()
 
         // 날짜 텍스트 클릭 시 달력으로 날짜 선택
         text_date.setOnClickListener {

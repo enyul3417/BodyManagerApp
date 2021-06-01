@@ -6,12 +6,14 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +25,8 @@ import com.example.bodymanagerapp.menu.Pet.PetActivity
 import com.example.bodymanagerapp.menu.Stats.StatsActivity
 import com.example.bodymanagerapp.MyDBHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -47,6 +51,7 @@ class DietActivity : AppCompatActivity() {
     lateinit var button_diet_add: Button // 식단 추가 버튼
     var date : Int = 0
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_diet)
@@ -62,6 +67,10 @@ class DietActivity : AppCompatActivity() {
 
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
         setSupportActionBar(toolbar)
+
+        var now = LocalDate.now()
+        var today = now.format(DateTimeFormatter.ofPattern("yyyy년 M월 d일"))
+        text_date.text = today.toString()
 
         // 날짜 텍스트 클릭 시
         text_date.setOnClickListener {
