@@ -2,6 +2,9 @@ package com.example.bodymanagerapp.menu.Settings
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.ThemeUtils
+import androidx.core.graphics.drawable.DrawableCompat.applyTheme
 import androidx.fragment.app.Fragment
 import androidx.preference.*
 import com.example.bodymanagerapp.R
@@ -56,6 +59,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
                 if (themList.key.equals("블랙")) {
                     themList.summary = prefs.getString("theme_selection", "블랙")
+
                 } else if (themList.key.equals("화이트")) {
                     themList.summary = prefs.getString("theme_selection", "화이트")
                 }

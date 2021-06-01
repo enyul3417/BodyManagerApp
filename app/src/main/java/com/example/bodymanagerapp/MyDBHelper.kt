@@ -63,6 +63,7 @@ class MyDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
                 "gId INTEGER, " +
                 "goal TEXT, " +
                 "date INTEGER, " +
+                "achievement INTEGER, " +
                 "PRIMARY KEY(gId AUTOINCREMENT));")
 
         db?.execSQL("CREATE TABLE time_table (" +
@@ -79,6 +80,8 @@ class MyDBHelper(context : Context) : SQLiteOpenHelper(context, "bmDB", null, 1)
         db?.execSQL("DROP TABLE IF EXISTS exercise_counter")
         db?.execSQL("DROP TABLE IF EXISTS diet_record")
         db?.execSQL("DROP TABLE IF EXISTS body_record")
+        db?.execSQL("DROP TABLE IF EXISTS goal_table")
+        db?.execSQL("DROP TABLE IF EXISTS time_table")
         onCreate(db)
     }
 }

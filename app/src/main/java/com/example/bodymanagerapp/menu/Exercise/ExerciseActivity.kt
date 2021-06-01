@@ -32,6 +32,7 @@ import com.example.bodymanagerapp.menu.Exercise.Routine.SavedRoutineActivity
 import com.example.bodymanagerapp.menu.Pet.PetActivity
 import com.example.bodymanagerapp.menu.Stats.StatsActivity
 import com.example.bodymanagerapp.MyDBHelper
+import com.example.bodymanagerapp.menu.Settings.SettingsActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -261,7 +262,8 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         when(item?.itemId)
         {
             R.id.menu_settings -> {
-                //MainActivity().replaceFragment(SettingsFragment())
+                var intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
                 return true
             }
         }

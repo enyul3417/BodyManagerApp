@@ -18,7 +18,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Design.NoActionBar">
+        android:theme="@style/Theme.BodyManagerApp">
         <activity android:name=".menu.Settings.NotificationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.NotificationActivity" />
@@ -39,16 +39,18 @@
         <activity android:name=".menu.Pet.PetActivity" />
         <activity android:name=".menu.Stats.StatsActivity" />
         <activity android:name=".menu.Body.BodyActivity" />
-        <activity android:name=".menu.Exercise.ExerciseActivity" />
-        <activity android:name=".menu.Diet.NewDietActivity" />
-        <activity android:name=".menu.Diet.DietActivity" />
-        <activity android:name=".menu.Exercise.ExerciseAdditionActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".menu.Exercise.ExerciseActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".menu.Diet.NewDietActivity" />
+        <activity android:name=".menu.Diet.DietActivity" />
+        <activity android:name=".menu.Exercise.ExerciseAdditionActivity" />
+        <activity android:name=".MainActivity">
+
         </activity>
 
         <provider
