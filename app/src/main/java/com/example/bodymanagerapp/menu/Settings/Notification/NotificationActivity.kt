@@ -81,7 +81,6 @@ class NotificationActivity : AppCompatActivity() {
             val dialog = TimeDialog(this)
             dialog.start(this, -1)
         }
-
     }
 
     private fun loadGoals() : ArrayList<NotificationData> {

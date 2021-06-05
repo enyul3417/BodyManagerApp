@@ -11,6 +11,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.NotificationCompat
 import com.example.bodymanagerapp.MyDBHelper
 import com.example.bodymanagerapp.R
 import java.util.*
@@ -65,7 +66,10 @@ class GoalDialog(context: Context) {
             goal = goalET.text.toString()
             if (goal != "" && date != 0) {
                 if(id != -1) updateGoal(id, goal, date)
-                else saveGoal(goal, date)
+                else {
+                    saveGoal(goal, date)
+                    //setNotification(context, goal, date)
+                }
                 dialog.dismiss()
 
                 val intent = Intent(context, NotificationActivity::class.java)
@@ -113,5 +117,15 @@ class GoalDialog(context: Context) {
         sqldb.execSQL("UPDATE goal_table SET goal = '$goal', date = $date WHERE gID = $id;")
         sqldb.close()
     }
+
+    /*private fun setNotification(context: Context, goal: String, date: Int) {
+        var builder : NotificationCompat.Builder = NotificationCompat.Builder(context)
+                .setSmallIcon(R.drawable.cat)
+                .setContentTitle(goal)
+                .setContentText("${date}까지")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(false)
+
+    }*/
 
 }
