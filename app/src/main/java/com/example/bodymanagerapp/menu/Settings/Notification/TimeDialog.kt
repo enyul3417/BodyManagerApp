@@ -173,4 +173,9 @@ class TimeDialog(context : Context) {
             }
         }
     }
+
+    fun setAlarm(context: Context) {
+        var intent : Intent = Intent(context, AlarmReceiver::class.java)
+        //intent.putExtra("index", alarmIdx)
+    }
 }
