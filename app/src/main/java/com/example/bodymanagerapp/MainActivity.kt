@@ -1,13 +1,18 @@
 package com.example.bodymanagerapp
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.bodymanagerapp.menu.*
 import com.example.bodymanagerapp.menu.Exercise.ExerciseFragment
@@ -109,4 +114,5 @@ class MainActivity : AppCompatActivity() {
         fragment.onActivityResult(requestCode, resultCode, data)
         Log.d("데이터 전달", "$requestCode, $resultCode, $data")
     }
+
 }

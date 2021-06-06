@@ -25,4 +25,7 @@
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
 
+    <string name = "goal_notification">"목표 알림"</string>
+    <string name="channel_name">notification_channel</string>
+
 </resources>

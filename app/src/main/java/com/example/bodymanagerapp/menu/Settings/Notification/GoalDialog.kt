@@ -1,12 +1,13 @@
 package com.example.bodymanagerapp.menu.Settings.Notification
 
 
-import android.app.Activity
-import android.app.DatePickerDialog
-import android.app.Dialog
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
+import android.os.Build
+import android.provider.Settings.Global.getString
+import android.transition.TransitionInflater.from
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -17,6 +18,10 @@ import com.example.bodymanagerapp.R
 import java.util.*
 
 class GoalDialog(context: Context) {
+    val CHANNEL_ID = "목표"
+    val CHANNEL_NAME = "목표 채널"
+    val CHANNEL_DESCRIPTION = "바디 매니저에서 설정한 목표와 날짜"
+
     // DB
     lateinit var MyDBHelper: MyDBHelper
     lateinit var sqldb : SQLiteDatabase
@@ -68,7 +73,8 @@ class GoalDialog(context: Context) {
                 if(id != -1) updateGoal(id, goal, date)
                 else {
                     saveGoal(goal, date)
-                    //setNotification(context, goal, date)
+                    //createChannel(context)
+                    setNotification(context, goal, date)
                 }
                 dialog.dismiss()
 
@@ -118,14 +124,36 @@ class GoalDialog(context: Context) {
         sqldb.close()
     }
 
-    /*private fun setNotification(context: Context, goal: String, date: Int) {
-        var builder : NotificationCompat.Builder = NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.cat)
+    private fun setNotification(context: Context, goal: String, date: Int) {
+        val year = date / 10000
+        val month = date % 10000 / 100
+        val day = date % 10000 % 100
+        var builder : NotificationCompat.Builder = NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_baseline_fitness_center_24)
                 .setContentTitle(goal)
-                .setContentText("${date}까지")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentText("${year}년 ${month}월 ${day}일까지")
+                .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setAutoCancel(false)
 
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance).apply {
+                description = CHANNEL_DESCRIPTION
+            }
+            // Register the channel with the system
+            val notificationManager: NotificationManager =
+                    context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+            notificationManager.notify(0, builder.build())
+        }
+
+    }
+
+    /*private fun createChannel(context: Context) {
+
+
     }*/
+
+
 
 }

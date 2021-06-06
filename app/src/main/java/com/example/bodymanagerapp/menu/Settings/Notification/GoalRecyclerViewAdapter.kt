@@ -15,6 +15,7 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bodymanagerapp.MyDBHelper
 import com.example.bodymanagerapp.R
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -71,9 +72,11 @@ class GoalRecyclerViewAdapter(var data : ArrayList<NotificationData>, val contex
             val month = date % 10000 / 100
             val day = date % 10000 % 100
             dateTV.text = "${year}년 ${month}월 ${day}일까지"
-            dDayTV.text = "D-${date - today.toInt()}"
+            var format = SimpleDateFormat("yyyyMMdd")
+            var date1 = format.parse(date.toString())
+            var date2 = format.parse(today.toString())
+            dDayTV.text = "D${((date2.time - date1.time) / (60 * 60 * 24 * 1000)).toInt() + 1}"
             check.isChecked = data.isChecked
-
             itemView.setOnClickListener {
                 itemClick(data)
             }
