@@ -128,11 +128,19 @@ class GoalDialog(context: Context) {
         val year = date / 10000
         val month = date % 10000 / 100
         val day = date % 10000 % 100
+
+        // Create an explicit intent for an Activity in your app
+        val intent = Intent(context, NotificationActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
+
         var builder : NotificationCompat.Builder = NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_baseline_fitness_center_24)
                 .setContentTitle(goal)
                 .setContentText("${year}년 ${month}월 ${day}일까지")
                 .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setContentIntent(pendingIntent)
                 .setAutoCancel(false)
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -146,14 +154,6 @@ class GoalDialog(context: Context) {
             notificationManager.createNotificationChannel(channel)
             notificationManager.notify(0, builder.build())
         }
-
     }
-
-    /*private fun createChannel(context: Context) {
-
-
-    }*/
-
-
 
 }
