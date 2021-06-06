@@ -1,6 +1,8 @@
 package com.example.bodymanagerapp.menu.Settings.Notification
 
 import android.app.Activity
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
@@ -30,6 +32,7 @@ class GoalRecyclerViewAdapter(var data : ArrayList<NotificationData>, val contex
     var id : Int = -1
 
     lateinit var delete : MenuItem
+    lateinit var alarmManager : AlarmManager
 
     inner class ItemViewHolder(view: View, itemClick: (NotificationData) -> Unit) : RecyclerView.ViewHolder(view) {
         init {
@@ -42,6 +45,13 @@ class GoalRecyclerViewAdapter(var data : ArrayList<NotificationData>, val contex
                 delete = menu.add("삭제")
 
                 delete.setOnMenuItemClickListener {
+                    alarmManager = context.applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                    fun cancelAlarm(context: Context) {
+                        var intent = Intent(context, AlarmReceiver::class.java)
+                        var pIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
+                        alarmManager.cancel(pIntent)
+                    }
+
                     sqldb = myDBHelper.writableDatabase
                     sqldb.execSQL("DELETE FROM goal_table WHERE gId = $id;")
                     sqldb.close()

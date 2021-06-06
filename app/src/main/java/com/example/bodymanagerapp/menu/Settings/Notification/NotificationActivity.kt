@@ -1,11 +1,13 @@
 package com.example.bodymanagerapp.menu.Settings.Notification
 
 import android.database.sqlite.SQLiteDatabase
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bodymanagerapp.R
@@ -32,6 +34,7 @@ class NotificationActivity : AppCompatActivity() {
     lateinit var goalAdapter : GoalRecyclerViewAdapter
     lateinit var timeAdapter: TimeRecyclerViewAdapter
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_notification)
