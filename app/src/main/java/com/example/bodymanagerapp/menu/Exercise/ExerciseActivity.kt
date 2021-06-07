@@ -124,7 +124,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         var now = LocalDate.now()
         date_format = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
 
-        // 만보기 사용을 위한 센서 접근 권한
+        /*// 만보기 사용을 위한 센서 접근 권한
         var sensorPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)
 
         if(sensorPermission != PackageManager.PERMISSION_GRANTED) { // 권한이 허용되지 않은 경우
@@ -157,6 +157,20 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         }
         catch (ise : IllegalStateException){
             Toast.makeText(this, "걸음 센서가 없습니다", Toast.LENGTH_SHORT).show()
+        }*/
+        // 만보기 권한 확인
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)
+                == PackageManager.PERMISSION_DENIED) {
+            requestPermissions(arrayOf(Manifest.permission.ACTIVITY_RECOGNITION), REQUEST_ACTIVITY_RECOGNITION)
+        }
+
+        // 만보기
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        stepCountSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+
+        // 디바이스에 걸음 센서 존재 여부 체크
+        if (stepCountSensor == null) {
+            Toast.makeText(this, "걸음 센서가 없습니다.", Toast.LENGTH_SHORT).show()
         }
 
         // 오늘 입력해둔 운동 불러오기
@@ -316,27 +330,32 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         }
     }
 
-    override fun onStop() {
+    /*override fun onStop() {
         super.onStop()
         if(sensorManager != null) {
             sensorManager.unregisterListener(this)
         }
-    }
+    }*/
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
 
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
-        if(event?.sensor?.type == Sensor.TYPE_STEP_COUNTER) {
+        if(event!!.sensor.type == Sensor.TYPE_STEP_COUNTER) {
             // TYPE_STEP_COUNTER는 앱이 꺼지더라도 초기화 되지 않음
             // 초기값 필요
-            if(counterSteps < 1) {
+            /*if(counterSteps < 1) {
                 counterSteps = event.values[0].toInt()
             }
             // 리셋 안된 값 + 현재 값 - 리셋 안된 값
             steps = event.values[0].toInt() - counterSteps
-            stepsTextView.text = steps.toString()
+            stepsTextView.text = steps.toString()*/
+
+            if(event!!.values[0] == 1.0f) {
+                counterSteps++
+                stepsTextView.text = counterSteps.toString()
+            }
         }
     }
 
