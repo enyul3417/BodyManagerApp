@@ -139,6 +139,11 @@ class BodyStatsFragment : Fragment() {
 
         // 7일 버튼 클릭 시
         btn_7days.setOnClickListener {
+            btn_7days.isSelected = true
+            btn_1month.isSelected = false
+            btn_3months.isSelected = false
+            btn_1year.isSelected = false
+
             if(date > 7) {
                 start_date = dateToInt(year, month, date - 7)
                 tv_start_date.text = "${year}년 ${month}월 ${date - 7}일"
@@ -165,6 +170,11 @@ class BodyStatsFragment : Fragment() {
 
         // 1개월 버튼 클릭 시
         btn_1month.setOnClickListener {
+            btn_7days.isSelected = false
+            btn_1month.isSelected = true
+            btn_3months.isSelected = false
+            btn_1year.isSelected = false
+
             start_date = dateToInt(year, month - 1, date)
             tv_start_date.text = "${year}년 ${month - 1}월 ${date}일"
             end_date = dateToInt(year, month, date)
@@ -176,6 +186,11 @@ class BodyStatsFragment : Fragment() {
 
         // 3개월 버튼 클릭 시
         btn_3months.setOnClickListener {
+            btn_7days.isSelected = false
+            btn_1month.isSelected = false
+            btn_3months.isSelected = true
+            btn_1year.isSelected = false
+
             start_date = dateToInt(year, month - 3, date)
             tv_start_date.text = "${year}년 ${month - 3}월 ${date}일"
             end_date = dateToInt(year, month, date)
@@ -187,6 +202,11 @@ class BodyStatsFragment : Fragment() {
 
         // 1년 버튼 클릭 시
         btn_1year.setOnClickListener {
+            btn_7days.isSelected = false
+            btn_1month.isSelected = false
+            btn_3months.isSelected = false
+            btn_1year.isSelected = true
+
             start_date = dateToInt(year - 1, month, date)
             tv_start_date.text = "${year - 1}년 ${month}월 ${date}일"
             end_date = dateToInt(year, month, date)
@@ -198,6 +218,12 @@ class BodyStatsFragment : Fragment() {
 
         // 키 버튼 클릭 시
         btn_height.setOnClickListener {
+            btn_height.isSelected = true
+            btn_weight.isSelected = false
+            btn_muscle.isSelected = false
+            btn_fat.isSelected = false
+            btn_body_img.isSelected = false
+
             loadData("height")
             lineChartGraph(view, data_list, date_list, "키")
             lineChart.visibility = View.VISIBLE
@@ -206,6 +232,12 @@ class BodyStatsFragment : Fragment() {
 
         // 몸무게 버튼 클릭 시
         btn_weight.setOnClickListener {
+            btn_height.isSelected = false
+            btn_weight.isSelected = true
+            btn_muscle.isSelected = false
+            btn_fat.isSelected = false
+            btn_body_img.isSelected = false
+
             loadData("weight")
             lineChartGraph(view, data_list, date_list, "몸무게")
             lineChart.visibility = View.VISIBLE
@@ -214,6 +246,12 @@ class BodyStatsFragment : Fragment() {
 
         // 골격근량 버튼 클릭 시
         btn_muscle.setOnClickListener {
+            btn_height.isSelected = false
+            btn_weight.isSelected = false
+            btn_muscle.isSelected = true
+            btn_fat.isSelected = false
+            btn_body_img.isSelected = false
+
             loadData("muscle_mass")
             lineChartGraph(view, data_list, date_list, "골격근량")
             lineChart.visibility = View.VISIBLE
@@ -222,6 +260,12 @@ class BodyStatsFragment : Fragment() {
 
         // 체지방량 버튼 클릭 시
         btn_fat.setOnClickListener {
+            btn_height.isSelected = false
+            btn_weight.isSelected = false
+            btn_muscle.isSelected = false
+            btn_fat.isSelected = true
+            btn_body_img.isSelected = false
+
             loadData("fat_mass")
             lineChartGraph(view, data_list, date_list, "체지방량")
             lineChart.visibility = View.VISIBLE
@@ -230,6 +274,12 @@ class BodyStatsFragment : Fragment() {
         
         // 눈바디 버튼 클릭 시
         btn_body_img.setOnClickListener {
+            btn_height.isSelected = false
+            btn_weight.isSelected = false
+            btn_muscle.isSelected = false
+            btn_fat.isSelected = false
+            btn_body_img.isSelected = true
+
             data.clear()
             data.addAll(loadImage())
             rvAdapter = BodyImageRecyclerViewAdapter(data, ct, rv)

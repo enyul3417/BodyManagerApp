@@ -40,10 +40,15 @@ class StatsActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         btn_exercise.setOnClickListener {
+            btn_exercise.isSelected = true
+            btn_body.isSelected = false
+
             replaceFragment(ExerciseStatsFragment())
         }
 
         btn_body.setOnClickListener {
+            btn_exercise.isSelected = false
+            btn_body.isSelected = true
             replaceFragment(BodyStatsFragment())
         }
     }

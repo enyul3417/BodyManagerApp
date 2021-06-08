@@ -179,6 +179,10 @@ class ExerciseAdditionActivity : AppCompatActivity() {
 
         // 무게, 횟수 버튼 클릭 시
         button_weight_number.setOnClickListener {
+            button_weight_number.isSelected = true
+            button_number.isSelected = false
+            button_time.isSelected = false
+
             try {
                 snum = Integer.parseInt(set_num.text.toString()) // 입력 없을시 에러 발생, 익셉션 처리 필요
             } catch (nfe: NumberFormatException) {
@@ -190,6 +194,10 @@ class ExerciseAdditionActivity : AppCompatActivity() {
         }
         // 횟수 버튼 클릭 시
         button_number.setOnClickListener {
+            button_weight_number.isSelected = false
+            button_number.isSelected = true
+            button_time.isSelected = false
+
             try {
                 snum = Integer.parseInt(set_num.text.toString()) // 입력 없을시 에러 발생, 익셉션 처리 필요
             } catch (nfe: NumberFormatException) {
@@ -201,6 +209,9 @@ class ExerciseAdditionActivity : AppCompatActivity() {
         }
         // 시간 버튼 클릭 시
         button_time.setOnClickListener {
+            button_weight_number.isSelected = false
+            button_number.isSelected = false
+            button_time.isSelected = true
             try {
                 snum = Integer.parseInt(set_num.text.toString()) // 입력 없을시 에러 발생, 익셉션 처리 필요
             } catch (nfe: NumberFormatException) {

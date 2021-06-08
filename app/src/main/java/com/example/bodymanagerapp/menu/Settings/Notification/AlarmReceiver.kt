@@ -41,6 +41,7 @@ class AlarmReceiver : BroadcastReceiver() {
                     .setContentText("${memo}")
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setContentIntent(pendingIntent)
+                    .setAutoCancel(true)
 
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val importance = NotificationManager.IMPORTANCE_HIGH

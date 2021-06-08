@@ -142,6 +142,11 @@ class ExerciseStatsFragment : Fragment() {
 
         // 7일 버튼 클릭 시
         btn_7days.setOnClickListener {
+            btn_7days.isSelected = true
+            btn_1month.isSelected = false
+            btn_3months.isSelected = false
+            btn_1year.isSelected = false
+
             if(day > 7) {
                 start_date = dateToInt(year, month, day - 7)
                 tv_start_date.text = dateToString(start_date)
@@ -170,6 +175,11 @@ class ExerciseStatsFragment : Fragment() {
 
         // 1개월 버튼 클릭 시
         btn_1month.setOnClickListener {
+            btn_7days.isSelected = false
+            btn_1month.isSelected = true
+            btn_3months.isSelected = false
+            btn_1year.isSelected = false
+
             start_date = dateToInt(year, month - 1, day)
             tv_start_date.text = dateToString(start_date)
             end_date = dateToInt(year, month, day)
@@ -183,6 +193,11 @@ class ExerciseStatsFragment : Fragment() {
 
         // 3개월 버튼 클릭 시
         btn_3months.setOnClickListener {
+            btn_7days.isSelected = false
+            btn_1month.isSelected = false
+            btn_3months.isSelected = true
+            btn_1year.isSelected = false
+
             start_date = dateToInt(year, month - 3, day)
             tv_start_date.text = dateToString(start_date)
             end_date = dateToInt(year, month, day)
@@ -196,6 +211,11 @@ class ExerciseStatsFragment : Fragment() {
 
         // 1년 버튼 클릭 시
         btn_1year.setOnClickListener {
+            btn_7days.isSelected = false
+            btn_1month.isSelected = false
+            btn_3months.isSelected = false
+            btn_1year.isSelected = true
+
             start_date = dateToInt(year - 1, month, day)
             tv_start_date.text = dateToString(start_date)
             end_date = dateToInt(year, month, day)
@@ -209,6 +229,9 @@ class ExerciseStatsFragment : Fragment() {
 
         // 최대 무게 (1RM) 버튼 클릭 시
         btn_max_weight.setOnClickListener {
+            btn_max_weight.isSelected = true
+            btn_volume.isSelected = false
+            btn_time.isSelected = false
             exerciseData.clear()
             maxWeightList.clear()
             exerciseData.addAll(loadGraphData())
@@ -230,6 +253,10 @@ class ExerciseStatsFragment : Fragment() {
 
         // 볼륨 버튼 클릭 시
         btn_volume.setOnClickListener {
+            btn_max_weight.isSelected = false
+            btn_volume.isSelected = true
+            btn_time.isSelected = false
+
             exerciseData.clear()
             volumeList.clear()
             exerciseData.addAll(loadGraphData())
@@ -260,6 +287,10 @@ class ExerciseStatsFragment : Fragment() {
 
         // 시간 버튼 클릭 시
         btn_time.setOnClickListener {
+            btn_max_weight.isSelected = false
+            btn_volume.isSelected = false
+            btn_time.isSelected = true
+
             exerciseData.clear()
             timeList.clear()
             exerciseData.addAll(loadGraphData())
@@ -528,9 +559,15 @@ class ExerciseStatsFragment : Fragment() {
         var min = parts.indexOf(parts.min())
         tv_max_part.text = partsString[max]
         tv_min_part.text = partsString[min]
+        var avg_time = 0
 
         var days = dateToDays(start_date, end_date)
-        var avg_time = total_time/exercise_days
+        try {
+            avg_time = total_time/exercise_days
+        } catch (ae : ArithmeticException) {
+            Toast.makeText(ct, "저장된 데이터가 없습니다.", Toast.LENGTH_SHORT).show()
+        }
+
         var minute = (avg_time / 3600 * 60) + (avg_time % 3600 / 60)
         var sec = avg_time % 3600 % 60
 

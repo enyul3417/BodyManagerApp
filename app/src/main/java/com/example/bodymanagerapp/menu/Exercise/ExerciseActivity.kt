@@ -18,6 +18,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.View.GONE
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
@@ -74,6 +75,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
     lateinit var button_done : Button // 운동 끝
 
     // 만보기
+    lateinit var stepsLinear : LinearLayout
     lateinit var stepsTextView: TextView
     //lateinit var steps: Steps
     lateinit var sensorManager : SensorManager
@@ -110,6 +112,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
 
         // 만보기
         stepsTextView = findViewById(R.id.steps)
+        stepsLinear = findViewById(R.id.ll_steps)
 
         // 운동
         button_exercise_add = findViewById(R.id.button_exercise_add)
@@ -171,6 +174,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         // 디바이스에 걸음 센서 존재 여부 체크
         if (stepCountSensor == null) {
             Toast.makeText(this, "걸음 센서가 없습니다.", Toast.LENGTH_SHORT).show()
+            stepsLinear.visibility = GONE
         }
 
         // 오늘 입력해둔 운동 불러오기

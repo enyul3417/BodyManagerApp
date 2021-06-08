@@ -157,19 +157,22 @@
                     android:id="@+id/button_weight_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="무게, 횟수" />
+                    android:text="무게, 횟수"
+                    android:background="@drawable/button_click" />
 
                 <Button
                     android:id="@+id/button_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="횟수"/>
+                    android:text="횟수"
+                    android:background="@drawable/button_click"/>
 
                 <Button
                     android:id="@+id/button_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="시간"/>
+                    android:text="시간"
+                    android:background="@drawable/button_click"/>
 
             </LinearLayout>
 

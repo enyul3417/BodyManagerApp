@@ -58,28 +58,32 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="7일"
-                    android:textSize="10sp" />
+                    android:textSize="10sp"
+                    android:background="@drawable/button_click"/>
 
                 <Button
                     android:id="@+id/button_se_1month"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="1개월"
-                    android:textSize="10sp" />
+                    android:textSize="10sp"
+                    android:background="@drawable/button_click"/>
 
                 <Button
                     android:id="@+id/button_se_3months"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="3개월"
-                    android:textSize="10sp" />
+                    android:textSize="10sp"
+                    android:background="@drawable/button_click"/>
 
                 <Button
                     android:id="@+id/button_se_1year"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="1년"
-                    android:textSize="10sp" />
+                    android:textSize="10sp"
+                    android:background="@drawable/button_click"/>
 
             </LinearLayout>
 
@@ -102,21 +106,24 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="최대 무게(1RM)"
-                    android:textSize="10sp" />
+                    android:textSize="10sp"
+                    android:background="@drawable/button_click"/>
 
                 <Button
                     android:id="@+id/button_se_volume"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="볼륨"
-                    android:textSize="10sp" />
+                    android:textSize="10sp"
+                    android:background="@drawable/button_click"/>
 
                 <Button
                     android:id="@+id/button_se_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="시간"
-                    android:textSize="10sp" />
+                    android:textSize="10sp"
+                    android:background="@drawable/button_click"/>
             </LinearLayout>
 
             <com.github.mikephil.charting.charts.LineChart
