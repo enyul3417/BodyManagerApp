@@ -223,7 +223,7 @@ class ExerciseAdditionActivity : AppCompatActivity() {
         }
         // 운동 추가 완료
         button_exercise_add_done.setOnClickListener {
-            if (mode == 0) {
+            if (mode == 0 || exercise_name.text.toString() == "") {
                 Toast.makeText(this, "내용을 작성해주세요.", Toast.LENGTH_SHORT).show()
             } else {
                 /*snum = try {
@@ -239,45 +239,53 @@ class ExerciseAdditionActivity : AppCompatActivity() {
                         1 -> { // 무게, 횟수
                             var vol1 = 0f
                             var vol2 = 0f
-                            for(i in 0 until lastData[0].weight!!.size) {
+                            for (i in 0 until lastData[0].weight!!.size) {
                                 vol1 += lastData[0].weight!![i] * lastData[0].num!![i]
                             }
-                            for(i in 0 until set_num.text.toString().toInt()) {
+                            for (i in 0 until set_num.text.toString().toInt()) {
                                 vol2 += findViewById<EditText>(WEIGHT_ID + i).text.toString().toFloat() * findViewById<EditText>(NUM_ID + i).text.toString().toInt()
                             }
-                            if(vol1 > vol2) {
+                            if (vol1 > vol2) {
                                 var dig = AlertDialog.Builder(this) // 대화상자
                                 dig.setTitle("볼륨 감소") // 제목
                                 dig.setMessage("마지막 기록보다 볼륨이 ${round((vol1 - vol2) * 10) / 10}kg 감소했습니다. 진행하시겠습니까?")
                                 dig.setPositiveButton("예") { dialog, which ->
-                                    addExercise()
-                                    val intent = Intent(this, MainActivity::class.java)
-                                    intent.putExtra("NAME", exercise_name.text.toString())
-                                    setResult(Activity.RESULT_OK, intent)
-                                    Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
-                                    finish()
+                                    try {
+                                        addExercise()
+                                        val intent = Intent(this, ExerciseActivity::class.java)
+                                        intent.putExtra("NAME", exercise_name.text.toString())
+                                        setResult(Activity.RESULT_OK, intent)
+                                        Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
+                                        finish()
+                                    } catch (nfe: NumberFormatException) {
+                                        Toast.makeText(this, "내용을 모두 입력해주세요.", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                                 dig.setNegativeButton("아니오", null)
                                 dig.show()
                             }
 
                             var weight1 = lastData[0].weight!![0]
-                            var rm1  = weight1 + (weight1 * lastData[0].num!![0] * 0.025f)
+                            var rm1 = weight1 + (weight1 * lastData[0].num!![0] * 0.025f)
                             var weight2 = findViewById<EditText>(WEIGHT_ID).text.toString().toFloat()
                             var count = findViewById<EditText>(NUM_ID).text.toString().toInt()
                             var rm2 = weight2 + (weight2 * count * 0.025f)
 
-                            if(rm1 > rm2) {
+                            if (rm1 > rm2) {
                                 var dig = AlertDialog.Builder(this) // 대화상자
                                 dig.setTitle("1RM 감소") // 제목
                                 dig.setMessage("마지막 기록보다 1RM이 ${round((rm1 - rm2) * 10) / 10}kg 감소했습니다. 진행하시겠습니까?")
                                 dig.setPositiveButton("예") { dialog, which ->
-                                    addExercise()
-                                    val intent = Intent(this, MainActivity::class.java)
-                                    intent.putExtra("NAME", exercise_name.text.toString())
-                                    setResult(Activity.RESULT_OK, intent)
-                                    Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
-                                    finish()
+                                    try {
+                                        addExercise()
+                                        val intent = Intent(this, ExerciseActivity::class.java)
+                                        intent.putExtra("NAME", exercise_name.text.toString())
+                                        setResult(Activity.RESULT_OK, intent)
+                                        Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
+                                        finish()
+                                    } catch (nfe: NumberFormatException) {
+                                        Toast.makeText(this, "내용을 모두 입력해주세요.", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                                 dig.setNegativeButton("아니오", null)
                                 dig.show()
@@ -297,12 +305,16 @@ class ExerciseAdditionActivity : AppCompatActivity() {
                                 dig.setTitle("볼륨 감소") // 제목
                                 dig.setMessage("마지막 기록보다 볼륨이 ${round((vol1 - vol2) * 10) / 10}회 감소했습니다. 진행하시겠습니까?")
                                 dig.setPositiveButton("예") { dialog, which ->
-                                    addExercise()
-                                    val intent = Intent(this, MainActivity::class.java)
-                                    intent.putExtra("NAME", exercise_name.text.toString())
-                                    setResult(Activity.RESULT_OK, intent)
-                                    Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
-                                    finish()
+                                    try {
+                                        addExercise()
+                                        val intent = Intent(this, ExerciseActivity::class.java)
+                                        intent.putExtra("NAME", exercise_name.text.toString())
+                                        setResult(Activity.RESULT_OK, intent)
+                                        Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
+                                        finish()
+                                    }  catch (nfe: NumberFormatException) {
+                                        Toast.makeText(this, "내용을 모두 입력해주세요.", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                                 dig.setNegativeButton("아니오", null)
                                 dig.show()
@@ -327,32 +339,44 @@ class ExerciseAdditionActivity : AppCompatActivity() {
                                 dig.setTitle("시간 감소") // 제목
                                 dig.setMessage("마지막 기록보다 시간이 ${time / 3600}시 ${time / 3600 % 60}분 ${time % 3600 % 60}초 감소했습니다. 진행하시겠습니까?")
                                 dig.setPositiveButton("예") { dialog, which ->
-                                    addExercise()
-                                    val intent = Intent(this, MainActivity::class.java)
-                                    intent.putExtra("NAME", exercise_name.text.toString())
-                                    setResult(Activity.RESULT_OK, intent)
-                                    Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
-                                    finish()
+                                    try {
+                                        addExercise()
+                                        val intent = Intent(this, ExerciseActivity::class.java)
+                                        intent.putExtra("NAME", exercise_name.text.toString())
+                                        setResult(Activity.RESULT_OK, intent)
+                                        Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
+                                        finish()
+                                    }  catch (nfe: NumberFormatException) {
+                                        Toast.makeText(this, "내용을 모두 입력해주세요.", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                                 dig.setNegativeButton("아니오", null)
                                 dig.show()
                             } else {
-                                addExercise()
-                                val intent = Intent(this, MainActivity::class.java)
-                                intent.putExtra("NAME", exercise_name.text.toString())
-                                setResult(Activity.RESULT_OK, intent)
-                                Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
-                                finish()
+                                try {
+                                    addExercise()
+                                    val intent = Intent(this, ExerciseActivity::class.java)
+                                    intent.putExtra("NAME", exercise_name.text.toString())
+                                    setResult(Activity.RESULT_OK, intent)
+                                    Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
+                                    finish()
+                                } catch (nfe: NumberFormatException) {
+                                    Toast.makeText(this, "내용을 모두 입력해주세요.", Toast.LENGTH_SHORT).show()
+                                }
                             }
                         }
                     }
                 } else {
-                    addExercise()
-                    /*val intent = Intent()
-                    intent.putExtra("NAME", exercise_name.text.toString())*/
-                    setResult(Activity.RESULT_OK, null)
-                    Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
-                    finish()
+                    try {
+                        addExercise()
+                        val intent = Intent(this, ExerciseActivity::class.java)
+                        intent.putExtra("NAME", exercise_name.text.toString())
+                        setResult(Activity.RESULT_OK, intent)
+                        Toast.makeText(this, "완료되었습니다.", Toast.LENGTH_SHORT).show()
+                        finish()
+                    } catch (nfe: NumberFormatException) {
+                        Toast.makeText(this, "내용을 모두 입력해주세요.", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
@@ -455,10 +479,29 @@ class ExerciseAdditionActivity : AppCompatActivity() {
         if(findViewById<EditText>(HOUR_ID) != null || findViewById<EditText>(MIN_ID) != null || findViewById<EditText>(SEC_ID) != null) { // 입력한 시간 값이 있으면
             for(i in 0 until snum) { // 사용자가 입력한 값 가져오기
                 var time : Int = 0
-                var hour : EditText = findViewById(HOUR_ID + i)
-                var min : EditText = findViewById(MIN_ID + i)
-                var sec : EditText = findViewById(SEC_ID + i)
-                time = (hour.text.toString().toInt() * 3600) + (min.text.toString().toInt() * 60) + (sec.text.toString().toInt())
+                var hourET : EditText = findViewById(HOUR_ID + i)
+                var minET : EditText = findViewById(MIN_ID + i)
+                var secET : EditText = findViewById(SEC_ID + i)
+                var hour = 0
+                var min = 0
+                var sec = 0
+                hour = try {
+                    hourET.text.toString().toInt()
+                } catch (nfe : NumberFormatException) {
+                    0
+                }
+                min = try {
+                    minET.text.toString().toInt()
+                } catch (nfe : NumberFormatException) {
+                    0
+                }
+                sec = try {
+                    secET.text.toString().toInt()
+                } catch (nfe : NumberFormatException) {
+                    0
+                }
+
+                time = (hour * 3600) + (min * 60) + sec
                 timeArray?.add(time)
             }
         } else {
