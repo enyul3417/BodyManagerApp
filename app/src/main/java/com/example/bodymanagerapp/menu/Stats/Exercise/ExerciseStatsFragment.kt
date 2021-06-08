@@ -137,7 +137,10 @@ class ExerciseStatsFragment : Fragment() {
                     loadExerciseRecord()
                     setFeedback(exerciseData)
                 }
-            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE)).show()
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE)
+            ).apply {
+                datePicker.maxDate = System.currentTimeMillis()
+            }.show()
         }
 
         // 7일 버튼 클릭 시

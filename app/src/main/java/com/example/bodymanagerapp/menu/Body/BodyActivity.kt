@@ -168,7 +168,10 @@ class BodyActivity : AppCompatActivity() {
                 date = ymd.toInt()
                 text_date.text = "${y}년 ${m+1}월 ${d}일"
                 loadBody()
-            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE)).show()
+            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE)
+            ).apply {
+                datePicker.maxDate = System.currentTimeMillis()
+            }.show()
         }
 
         // 카메라로 사진 찍기

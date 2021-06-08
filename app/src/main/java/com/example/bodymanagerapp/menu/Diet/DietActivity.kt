@@ -97,7 +97,10 @@ class DietActivity : AppCompatActivity() {
                 rv.adapter = rvAdapter
                 rv.layoutManager = LinearLayoutManager(this)
                 rv.visibility = View.VISIBLE
-            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE)).show()
+            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE)
+            ).apply {
+                datePicker.maxDate = System.currentTimeMillis()
+            }.show()
         }
 
         // 식단 추가 버튼 클릭 시
