@@ -152,7 +152,10 @@ class BodyActivity : AppCompatActivity() {
 
         var now = LocalDate.now()
         var today = now.format(DateTimeFormatter.ofPattern("yyyy년 M월 d일"))
+        var dateformat = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
         text_date.text = today.toString()
+        date = dateformat.toInt()
+        loadBody()
 
         // 날짜 텍스트 클릭 시 달력으로 날짜 선택
         text_date.setOnClickListener {
@@ -177,7 +180,6 @@ class BodyActivity : AppCompatActivity() {
         // 카메라로 사진 찍기
         button_camera.setOnClickListener {
             cameraPermission()
-            startCapture()
         }
 
         // 갤러리에서 사진 가져오기
@@ -367,10 +369,11 @@ class BodyActivity : AppCompatActivity() {
         var camPer = object : PermissionListener {
             override fun onPermissionGranted() {
                 //Toast.makeText(this@BodyActivity, "카메라 권한에 동의하셨습니다.", Toast.LENGTH_SHORT).show()
+                startCapture()
             }
 
             override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
-                //Toast.makeText(this@BodyActivity, "카메라 권한을 거부하셨습니다.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@BodyActivity, "카메라 권한을 거부하셨습니다.", Toast.LENGTH_SHORT).show()
             }
         }
         TedPermission.with(this)

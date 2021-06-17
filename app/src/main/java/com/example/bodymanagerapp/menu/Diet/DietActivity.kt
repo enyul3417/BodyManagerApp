@@ -70,7 +70,20 @@ class DietActivity : AppCompatActivity() {
 
         var now = LocalDate.now()
         var today = now.format(DateTimeFormatter.ofPattern("yyyy년 M월 d일"))
+        var dateformat = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
         text_date.text = today.toString()
+        date = dateformat.toInt()
+        data.clear()
+        data.addAll(loadDiet())
+        rvAdapter = DietRecyclerViewAdapter(data, this, rv) {
+                data, num ->
+            var intent = Intent(this, NewDietActivity::class.java)
+            intent.putExtra("ID", data.id)
+            startActivity(intent)
+        }
+        rv.adapter = rvAdapter
+        rv.layoutManager = LinearLayoutManager(this)
+        rv.visibility = View.VISIBLE
 
         // 날짜 텍스트 클릭 시
         text_date.setOnClickListener {
