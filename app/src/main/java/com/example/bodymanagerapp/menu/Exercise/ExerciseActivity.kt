@@ -368,12 +368,20 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         if(resultCode == Activity.RESULT_OK) {
             when(requestCode) {
                 REQUEST_CODE_ADD_EXERCISE -> {
-                    name = data?.getStringExtra("NAME").toString()
+                    /*name = data?.getStringExtra("NAME").toString()
                     exerciseData.addAll(addExercise())
                     rvAdapter = ExerciseRecyclerViewAdapter(exerciseData, this, rv)
                     rv.adapter = rvAdapter
                     rv.layoutManager = LinearLayoutManager(this)
-                    rv.visibility = View.VISIBLE
+                    rv.visibility = View.VISIBLE*/
+                    exerciseData.clear()
+                    exerciseData.addAll(loadExercise())
+                    if (exerciseData.size > 0) {
+                        rvAdapter = ExerciseRecyclerViewAdapter(exerciseData, this, rv)
+                        rv.adapter = rvAdapter
+                        rv.layoutManager = LinearLayoutManager(this)
+                        rv.visibility = View.VISIBLE
+                    }
                 }
             }
         }

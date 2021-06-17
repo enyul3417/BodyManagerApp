@@ -198,6 +198,9 @@ class BodyActivity : AppCompatActivity() {
                     MyPreference.prefs.setInt("point", (point + 100)) // 포인트 획득
                 }
                 Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
+                var intent = Intent(this, BodyActivity::class.java)
+                startActivity(intent)
+                finish()
             }
         }
 
@@ -431,14 +434,37 @@ class BodyActivity : AppCompatActivity() {
     private fun saveBody() {
         sqldb = MyDBHelper.writableDatabase
 
-        var height : Float = et_height.text.toString().toFloat()
+        var height : Float = 0f
+        var weight : Float = 0f
+        var muscle : Float = 0f
+        var fat : Float = 0f
+        var bmi : Float = 0f
+        var fat_percent : Float = 0f
+        var image : Drawable = body_image.drawable
+        var byteArray : ByteArray ?= null
+
+        if(!et_height.text.isEmpty())
+            height = et_height.text.toString().toFloat()
+        if(!et_weight.text.isEmpty())
+            et_weight.text.toString().toFloat()
+        if(!et_muscle.text.isEmpty())
+            et_muscle.text.toString().toFloat()
+        if(!et_fat.text.isEmpty())
+            et_fat.text.toString().toFloat()
+        if(!et_bmi.text.isEmpty())
+            et_bmi.text.toString().toFloat()
+        if(!et_fat_percent.text.isEmpty())
+            et_fat_percent.text.toString().toFloat()
+
+
+        /*var height : Float = et_height.text.toString().toFloat()
         var weight : Float = et_weight.text.toString().toFloat()
         var muscle : Float = et_muscle.text.toString().toFloat()
         var fat : Float = et_fat.text.toString().toFloat()
         var bmi : Float = et_bmi.text.toString().toFloat()
         var fat_percent : Float = et_fat_percent.text.toString().toFloat()
         var image : Drawable = body_image.drawable
-        var byteArray : ByteArray ?= null
+        var byteArray : ByteArray ?= null*/
         
         try {
             // 이미지 파일을 Bitmap 파일로, Bitmap 파일을 byteArray로 변환시켜서 BLOB 형으로 DB에 저장

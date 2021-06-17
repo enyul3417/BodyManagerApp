@@ -1,5 +1,6 @@
 package com.example.bodymanagerapp.menu.Exercise
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -9,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.MyDBHelper
@@ -16,6 +18,8 @@ import com.example.bodymanagerapp.MyDBHelper
 class ExerciseRecyclerViewAdapter(var data : ArrayList<ExerciseData>, val context: Context,
                                   var item : RecyclerView):
     RecyclerView.Adapter<ExerciseRecyclerViewAdapter.ItemViewHolder>() {
+
+    private val REQUEST_CODE_ADD_EXERCISE = 100
 
     var myDBHelper: MyDBHelper = MyDBHelper(context)
     lateinit var sqldb: SQLiteDatabase
@@ -64,7 +68,8 @@ class ExerciseRecyclerViewAdapter(var data : ArrayList<ExerciseData>, val contex
                     var intent = Intent(context, ExerciseAdditionActivity::class.java)
                     intent.putExtra("DATE", eDate)
                     intent.putExtra("NAME", eName)
-                    context.startActivity(intent)
+                    //context.startActivity(intent)
+                    startActivityForResult(context as Activity, intent, REQUEST_CODE_ADD_EXERCISE, null)
                     return@setOnMenuItemClickListener true
 
                 }

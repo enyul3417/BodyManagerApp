@@ -31,6 +31,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class DietActivity : AppCompatActivity() {
+    private val REQUEST_ADD_DIET_CODE = 100
 
     // BottomNavigationView
     lateinit var bottom_nav_view: BottomNavigationView
@@ -75,12 +76,12 @@ class DietActivity : AppCompatActivity() {
         date = dateformat.toInt()
         data.clear()
         data.addAll(loadDiet())
-        rvAdapter = DietRecyclerViewAdapter(data, this, rv) {
+        rvAdapter = DietRecyclerViewAdapter(data, this, rv) /*{
                 data, num ->
             var intent = Intent(this, NewDietActivity::class.java)
             intent.putExtra("ID", data.id)
             startActivity(intent)
-        }
+        }*/
         rv.adapter = rvAdapter
         rv.layoutManager = LinearLayoutManager(this)
         rv.visibility = View.VISIBLE
@@ -101,12 +102,12 @@ class DietActivity : AppCompatActivity() {
                 text_date.text = "${y}년 ${m + 1}월 ${d}일"
                 // 해당 날짜에 저장된 식단들 불러오기
                 data.addAll(loadDiet())
-                rvAdapter = DietRecyclerViewAdapter(data, this, rv) {
+                rvAdapter = DietRecyclerViewAdapter(data, this, rv) /*{
                     data, num ->
                     var intent = Intent(this, NewDietActivity::class.java)
                     intent.putExtra("ID", data.id)
                     startActivity(intent)
-                }
+                }*/
                 rv.adapter = rvAdapter
                 rv.layoutManager = LinearLayoutManager(this)
                 rv.visibility = View.VISIBLE
@@ -124,8 +125,29 @@ class DietActivity : AppCompatActivity() {
             else {
                 var intent : Intent = Intent(this, NewDietActivity::class.java)
                 intent.putExtra("DATE", date)
-                startActivity(intent)
-                //rvAdapter.notifyDataSetChanged()
+                //startActivity(intent)
+                startActivityForResult(intent, REQUEST_ADD_DIET_CODE)
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
+        when(requestCode) {
+            REQUEST_ADD_DIET_CODE -> {
+                date = intent?.getIntExtra("DATE", 0)!!
+                data.clear()
+                data.addAll(loadDiet())
+                rvAdapter = DietRecyclerViewAdapter(data, this, rv) /*{
+                        data, num ->
+                    var intent = Intent(this, NewDietActivity::class.java)
+                    intent.putExtra("ID", data.id)
+                    startActivity(intent)
+                }*/
+                rv.adapter = rvAdapter
+                rv.layoutManager = LinearLayoutManager(this)
+                rv.visibility = View.VISIBLE
+
             }
         }
     }

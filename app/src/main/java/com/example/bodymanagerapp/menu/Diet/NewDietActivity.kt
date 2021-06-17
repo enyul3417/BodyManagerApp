@@ -30,6 +30,7 @@ import androidx.core.content.FileProvider
 import com.example.bodymanagerapp.Preference.MyPreference
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.MyDBHelper
+import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import java.io.ByteArrayOutputStream
@@ -119,6 +120,9 @@ class NewDietActivity : AppCompatActivity() {
                 updateDiet()
                 Toast.makeText(this, "수정되었습니다.", Toast.LENGTH_SHORT).show()
             }
+            val intent = Intent(this, DietActivity::class.java)
+            intent.putExtra("DATE", date)
+            setResult(Activity.RESULT_OK, intent)
             finish()
         }
 

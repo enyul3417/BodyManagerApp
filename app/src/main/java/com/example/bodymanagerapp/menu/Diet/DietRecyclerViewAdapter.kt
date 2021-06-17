@@ -1,18 +1,24 @@
 package com.example.bodymanagerapp.menu.Diet
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.recyclerview.widget.RecyclerView
-import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.MyDBHelper
+import com.example.bodymanagerapp.R
 
-class DietRecyclerViewAdapter(var data : ArrayList<DietData>, val context : Context, var item : RecyclerView,
-                                  var itemClick : (DietData, Int)->Unit):
+class DietRecyclerViewAdapter(
+    var data: ArrayList<DietData>, val context: Context, var item: RecyclerView/*,
+    var itemClick: (DietData, Int) -> Unit*/
+):
     RecyclerView.Adapter<DietRecyclerViewAdapter.ItemViewHolder>() {
+
+    private val REQUEST_ADD_DIET_CODE = 100
 
     var MyDBHelper: MyDBHelper = MyDBHelper(context)
     lateinit var sqldb: SQLiteDatabase
@@ -24,7 +30,9 @@ class DietRecyclerViewAdapter(var data : ArrayList<DietData>, val context : Cont
     lateinit var update : MenuItem
 
     //뷰홀더 클래스 내부 클래스로 선언
-    inner class ItemViewHolder(view: View, itemClick: (DietData, Int) -> Unit) : RecyclerView.ViewHolder(view) {
+    inner class ItemViewHolder(view: View/*, itemClick: (DietData, Int) -> Unit*/) : RecyclerView.ViewHolder(
+        view
+    ) {
 
         init{
             // 길게 클릭 시
@@ -42,13 +50,18 @@ class DietRecyclerViewAdapter(var data : ArrayList<DietData>, val context : Cont
                     sqldb.execSQL("DELETE FROM diet_record WHERE DId = $id;")
                     sqldb.close()
 
+                    var intent = Intent(context, DietActivity::class.java)
+                    context.startActivity(intent)
+                    (context as Activity).finish()
                     return@setOnMenuItemClickListener true
                 }
 
                 update.setOnMenuItemClickListener {
                     var intent = Intent(context, NewDietActivity::class.java)
                     intent.putExtra("ID", id)
-                    context.startActivity(intent)
+                    intent.putExtra("DATE", data[pos].date)
+                    //context.startActivity(intent)
+                    startActivityForResult(context as Activity, intent, REQUEST_ADD_DIET_CODE, null)
                     return@setOnMenuItemClickListener true
 
                 }
@@ -72,15 +85,15 @@ class DietRecyclerViewAdapter(var data : ArrayList<DietData>, val context : Cont
                 image.visibility = View.GONE
             }
 
-            itemView.setOnClickListener {
+            /*itemView.setOnClickListener {
                 itemClick(data, num)
-            }
+            }*/
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         var view = LayoutInflater.from(context).inflate(R.layout.diet_items, parent, false)
-        return ItemViewHolder(view,itemClick)
+        return ItemViewHolder(view/*, itemClick*/)
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
