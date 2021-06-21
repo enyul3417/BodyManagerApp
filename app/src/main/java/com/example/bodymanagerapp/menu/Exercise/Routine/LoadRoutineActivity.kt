@@ -14,9 +14,9 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.bodymanagerapp.MainActivity
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.MyDBHelper
+import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -99,7 +99,7 @@ class LoadRoutineActivity : AppCompatActivity() {
         btn_load.setOnClickListener { // 불러오기 버튼
             deleteAllExercise()
             addExercise()
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, ExerciseActivity::class.java)
             setResult(Activity.RESULT_OK, intent)
             /*val intent = Intent(this, ExerciseActivity::class.java)
             startActivity(intent)*/

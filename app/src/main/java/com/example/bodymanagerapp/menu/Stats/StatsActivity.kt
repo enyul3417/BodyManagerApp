@@ -13,6 +13,7 @@ import com.example.bodymanagerapp.menu.Body.BodyActivity
 import com.example.bodymanagerapp.menu.Diet.DietActivity
 import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
 import com.example.bodymanagerapp.menu.Pet.PetActivity
+import com.example.bodymanagerapp.menu.Settings.SettingsActivity
 import com.example.bodymanagerapp.menu.Stats.Body.BodyStatsFragment
 import com.example.bodymanagerapp.menu.Stats.Exercise.ExerciseStatsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -115,7 +116,8 @@ class StatsActivity : AppCompatActivity() {
         when(item?.itemId)
         {
             R.id.menu_settings -> {
-
+                var intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
                 return true
             }
         }

@@ -18,6 +18,7 @@ import com.example.bodymanagerapp.menu.Diet.DietActivity
 import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
 import com.example.bodymanagerapp.menu.Stats.StatsActivity
 import com.example.bodymanagerapp.MyDBHelper
+import com.example.bodymanagerapp.menu.Settings.SettingsActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.util.*
 import kotlin.concurrent.timer
@@ -214,7 +215,8 @@ class PetActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item?.itemId) {
             R.id.menu_settings -> {
-                //replaceFragment(SettingsFragment())
+                var intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
                 return true
             }
         }

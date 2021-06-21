@@ -24,6 +24,7 @@ import com.example.bodymanagerapp.menu.Exercise.ExerciseActivity
 import com.example.bodymanagerapp.menu.Pet.PetActivity
 import com.example.bodymanagerapp.menu.Stats.StatsActivity
 import com.example.bodymanagerapp.MyDBHelper
+import com.example.bodymanagerapp.menu.Settings.SettingsActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -211,18 +212,12 @@ class DietActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item?.itemId) {
             R.id.menu_settings -> {
-                //replaceFragment(SettingsFragment())
+                var intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
                 return true
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    // 프레그먼트 변경
-    fun replaceFragment(fragment: Fragment) {
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.content_layout, fragment)
-        fragmentTransaction.commit()
     }
 
     // 불러오기

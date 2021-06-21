@@ -53,9 +53,6 @@
         <activity android:name=".menu.Diet.NewDietActivity" />
         <activity android:name=".menu.Diet.DietActivity" />
         <activity android:name=".menu.Exercise.ExerciseAdditionActivity" />
-        <activity android:name=".MainActivity">
-
-        </activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"

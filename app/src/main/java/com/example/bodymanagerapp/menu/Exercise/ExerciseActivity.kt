@@ -213,7 +213,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         // 루틴 불러오기 버튼 클릭 시
         button_load_routine.setOnClickListener {
             val intent : Intent = Intent(this, LoadRoutineActivity::class.java)
-            startActivity(intent)
+            startActivityForResult(intent, REQUEST_CODE_LOAD_ROUTINE)
         }
 
         // 운동 추가 버튼 클릭 시
@@ -368,7 +368,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode == Activity.RESULT_OK) {
             when(requestCode) {
-                REQUEST_CODE_ADD_EXERCISE -> {
+                REQUEST_CODE_ADD_EXERCISE, REQUEST_CODE_LOAD_ROUTINE -> {
                     /*name = data?.getStringExtra("NAME").toString()
                     exerciseData.addAll(addExercise())
                     rvAdapter = ExerciseRecyclerViewAdapter(exerciseData, this, rv)
@@ -425,7 +425,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         return data
     }
 
-    private fun addExercise() : ArrayList<ExerciseData> {
+   /* private fun addExercise() : ArrayList<ExerciseData> {
         Log.d("exercise", "신호 수신")
 
         var data = ArrayList<ExerciseData>()
@@ -451,7 +451,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         }
 
         return data
-    }
+    }*/
 
     private fun saveExercise() {
         sqldb = MyDBHelper.writableDatabase

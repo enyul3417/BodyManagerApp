@@ -17,7 +17,6 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import com.example.bodymanagerapp.MainActivity
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.MyDBHelper
 import com.google.firebase.database.*
