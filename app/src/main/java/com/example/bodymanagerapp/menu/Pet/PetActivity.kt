@@ -72,6 +72,7 @@ class PetActivity : AppCompatActivity() {
         img_pet = findViewById(R.id.img_pet)
 
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
+        bottom_nav_view.menu.findItem(R.id.navigation_pet).isChecked = true
         setSupportActionBar(toolbar)
 
         loadData()

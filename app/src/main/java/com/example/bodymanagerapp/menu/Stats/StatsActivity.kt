@@ -37,6 +37,7 @@ class StatsActivity : AppCompatActivity() {
 
         replaceFragment(ExerciseStatsFragment())
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
+        bottom_nav_view.menu.findItem(R.id.navigation_stats).isChecked = true
         setSupportActionBar(toolbar)
 
         btn_exercise.setOnClickListener {

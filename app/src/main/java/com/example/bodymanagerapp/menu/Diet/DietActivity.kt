@@ -67,6 +67,7 @@ class DietActivity : AppCompatActivity() {
         button_diet_add = findViewById(R.id.button_diet_add) // 식단 추가 버튼
 
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
+        bottom_nav_view.menu.findItem(R.id.navigation_diet).isChecked = true
         setSupportActionBar(toolbar)
 
         var now = LocalDate.now()

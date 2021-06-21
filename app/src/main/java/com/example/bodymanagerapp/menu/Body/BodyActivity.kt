@@ -124,6 +124,7 @@ class BodyActivity : AppCompatActivity() {
         test = findViewById(R.id.tv_test)
 
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
+        bottom_nav_view.menu.findItem(R.id.navigation_body).isChecked = true
         setSupportActionBar(toolbar)
 
        /* dataPath = "${filesDir.toString()}/tesseract/"  // 언어 데이터의 경로 미리 지정

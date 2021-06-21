@@ -122,6 +122,7 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
         button_save_routine = findViewById(R.id.button_save_routine)
 
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
+        bottom_nav_view.menu.findItem(R.id.navigation_exercise).isChecked = true
         setSupportActionBar(toolbar)
 
         var now = LocalDate.now()
