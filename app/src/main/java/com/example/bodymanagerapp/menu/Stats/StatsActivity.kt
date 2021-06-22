@@ -41,6 +41,8 @@ class StatsActivity : AppCompatActivity() {
         bottom_nav_view.menu.findItem(R.id.navigation_stats).isChecked = true
         setSupportActionBar(toolbar)
 
+        btn_exercise.isSelected = true
+
         btn_exercise.setOnClickListener {
             btn_exercise.isSelected = true
             btn_body.isSelected = false

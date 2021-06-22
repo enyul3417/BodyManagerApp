@@ -20,6 +20,7 @@ class ExerciseRecyclerViewAdapter(var data : ArrayList<ExerciseData>, val contex
     RecyclerView.Adapter<ExerciseRecyclerViewAdapter.ItemViewHolder>() {
 
     private val REQUEST_CODE_ADD_EXERCISE = 100
+    private val CHECK_BOX_ID = 800
 
     var myDBHelper: MyDBHelper = MyDBHelper(context)
     lateinit var sqldb: SQLiteDatabase
@@ -114,6 +115,8 @@ class ExerciseRecyclerViewAdapter(var data : ArrayList<ExerciseData>, val contex
 
                         val checkBox = CheckBox(context)
                         checkBox.gravity = 17 // 중앙 정렬
+                        checkBox.id = CHECK_BOX_ID + i
+                        if (data.complete[i-1] == 1) checkBox.isChecked = true
                         tableRow.addView(checkBox)
                     }
                 } else { // 세트, 횟수, 무게
@@ -148,6 +151,8 @@ class ExerciseRecyclerViewAdapter(var data : ArrayList<ExerciseData>, val contex
 
                         val checkBox = CheckBox(context)
                         checkBox.gravity = 17 // 중앙 정렬
+                        checkBox.id = CHECK_BOX_ID + i
+                        if (data.complete[i-1] == 1) checkBox.isChecked = true
                         tableRow.addView(checkBox)
                     }
                 }
@@ -188,7 +193,20 @@ class ExerciseRecyclerViewAdapter(var data : ArrayList<ExerciseData>, val contex
 
                     val checkBox = CheckBox(context)
                     checkBox.gravity = 17 // 중앙 정렬
+                    checkBox.id = CHECK_BOX_ID + i
+                    if (data.complete[i-1] == 1) checkBox.isChecked = true
                     tableRow.addView(checkBox)
+                }
+            }
+
+            for(i in 1..data.set.size) {
+                itemView.findViewById<CheckBox>(CHECK_BOX_ID + i).setOnClickListener {
+                    if (itemView.findViewById<CheckBox>(CHECK_BOX_ID + i).isChecked){
+                        sqldb = myDBHelper.writableDatabase
+                        sqldb.execSQL("UPDATE exercise_counter SET is_complete = 1 WHERE date = ${data.date} AND exercise_name = '${data.name}' AND set_num = $i")
+                        sqldb.close()
+                    }
+
                 }
             }
         }

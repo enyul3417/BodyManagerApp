@@ -8,6 +8,7 @@ class ExerciseData() {
     var num = ArrayList<Int>()
     var weight = ArrayList<Float>()
     var time = ArrayList<Int>()
+    var complete = ArrayList<Int>()
 
     constructor(name : String, parts : String) : this() {
         this.name = name
@@ -21,9 +22,10 @@ class ExerciseData() {
     }
 
     constructor(date : Int, name : String, set : ArrayList<Int>, num : ArrayList<Int>?,
-                weight : ArrayList<Float>?, time : ArrayList<Int>?): this(num, weight, time){
+                weight : ArrayList<Float>?, time : ArrayList<Int>?, complete : ArrayList<Int>): this(num, weight, time){
         this.date = date
         this.name = name
         this.set = set
+        this.complete = complete
     }
 }

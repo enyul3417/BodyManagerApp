@@ -410,14 +410,16 @@ class ExerciseActivity : AppCompatActivity(), SensorEventListener {
                     var weight = ArrayList<Float>()
                     var num = ArrayList<Int>()
                     var time = ArrayList<Int>()
+                    var complete = ArrayList<Int>()
 
                     do {
                         set.add(cursor.getInt(cursor.getColumnIndex("set_num")))
                         weight.add(cursor.getFloat(cursor.getColumnIndex("weight")))
                         num.add(cursor.getInt(cursor.getColumnIndex("exercise_count")))
                         time.add(cursor.getInt(cursor.getColumnIndex("time")))
+                        complete.add(cursor.getInt(cursor.getColumnIndex("is_complete")))
                     } while (cursor.moveToNext())
-                    data.add(ExerciseData(date_format.toInt(), name, set, num, weight, time))
+                    data.add(ExerciseData(date_format.toInt(), name, set, num, weight, time, complete))
                 }
             } while (nameCursor.moveToNext())
         }

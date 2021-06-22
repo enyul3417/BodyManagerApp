@@ -23,6 +23,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.View.GONE
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
@@ -127,6 +128,8 @@ class BodyActivity : AppCompatActivity() {
         bottom_nav_view.setOnNavigationItemSelectedListener(bottomNavItemSelectedListener)
         bottom_nav_view.menu.findItem(R.id.navigation_body).isChecked = true
         setSupportActionBar(toolbar)
+
+        button_inbody.visibility = GONE
 
        /* dataPath = "${filesDir.toString()}/tesseract/"  // 언어 데이터의 경로 미리 지정
 
@@ -437,37 +440,27 @@ class BodyActivity : AppCompatActivity() {
     private fun saveBody() {
         sqldb = MyDBHelper.writableDatabase
 
-        var height : Float = 0f
-        var weight : Float = 0f
-        var muscle : Float = 0f
-        var fat : Float = 0f
-        var bmi : Float = 0f
-        var fat_percent : Float = 0f
+        var height : Float ?= null
+        var weight : Float ?= null
+        var muscle : Float ?= null
+        var fat : Float ?= null
+        var bmi : Float ?= null
+        var fat_percent : Float ?= null
         var image : Drawable = body_image.drawable
         var byteArray : ByteArray ?= null
 
-        if(!et_height.text.isEmpty())
+        if(et_height.text.isNotEmpty())
             height = et_height.text.toString().toFloat()
-        if(!et_weight.text.isEmpty())
-            et_weight.text.toString().toFloat()
-        if(!et_muscle.text.isEmpty())
-            et_muscle.text.toString().toFloat()
-        if(!et_fat.text.isEmpty())
-            et_fat.text.toString().toFloat()
-        if(!et_bmi.text.isEmpty())
-            et_bmi.text.toString().toFloat()
-        if(!et_fat_percent.text.isEmpty())
-            et_fat_percent.text.toString().toFloat()
-
-
-        /*var height : Float = et_height.text.toString().toFloat()
-        var weight : Float = et_weight.text.toString().toFloat()
-        var muscle : Float = et_muscle.text.toString().toFloat()
-        var fat : Float = et_fat.text.toString().toFloat()
-        var bmi : Float = et_bmi.text.toString().toFloat()
-        var fat_percent : Float = et_fat_percent.text.toString().toFloat()
-        var image : Drawable = body_image.drawable
-        var byteArray : ByteArray ?= null*/
+        if(et_weight.text.isNotEmpty())
+            weight = et_weight.text.toString().toFloat()
+        if(et_muscle.text.isNotEmpty())
+            muscle = et_muscle.text.toString().toFloat()
+        if(et_fat.text.isNotEmpty())
+            fat = et_fat.text.toString().toFloat()
+        if(et_bmi.text.isNotEmpty())
+            bmi = et_bmi.text.toString().toFloat()
+        if(et_fat_percent.text.isNotEmpty())
+            fat_percent = et_fat_percent.text.toString().toFloat()
         
         try {
             // 이미지 파일을 Bitmap 파일로, Bitmap 파일을 byteArray로 변환시켜서 BLOB 형으로 DB에 저장
@@ -522,12 +515,18 @@ class BodyActivity : AppCompatActivity() {
                 null
             }
 
-            et_height.setText(height.toString())
-            et_weight.setText(weight.toString())
-            et_muscle.setText(muscle.toString())
-            et_fat.setText(fat.toString())
-            et_bmi.setText(bmi.toString())
-            et_fat_percent.setText(fat_percent.toString())
+            if(height > 0.0)
+                et_height.setText(height.toString())
+            if(weight > 0.0)
+                et_weight.setText(weight.toString())
+            if(muscle > 0.0)
+                et_muscle.setText(muscle.toString())
+            if(fat > 0.0)
+                et_fat.setText(fat.toString())
+            if(bmi > 0.0)
+                et_bmi.setText(bmi.toString())
+            if(fat_percent > 0.0)
+                et_fat_percent.setText(fat_percent.toString())
             body_image.setImageBitmap(bitmap)
             if (bitmap != null ) { // 등록한 이미지가 있다면
                 body_image.visibility = View.VISIBLE
@@ -544,14 +543,27 @@ class BodyActivity : AppCompatActivity() {
     private fun updateBody() {
         sqldb = MyDBHelper.writableDatabase
 
-        var height : Float = et_height.text.toString().toFloat()
-        var weight : Float = et_weight.text.toString().toFloat()
-        var muscle : Float = et_muscle.text.toString().toFloat()
-        var fat : Float = et_fat.text.toString().toFloat()
-        var bmi : Float = et_bmi.text.toString().toFloat()
-        var fat_percent : Float = et_fat_percent.text.toString().toFloat()
+        var height : Float ?= null
+        var weight : Float ?= null
+        var muscle : Float ?= null
+        var fat : Float ?= null
+        var bmi : Float ?= null
+        var fat_percent : Float ?= null
         var image : Drawable = body_image.drawable
         var byteArray : ByteArray ?= null
+
+        if(et_height.text.isNotEmpty())
+            height = et_height.text.toString().toFloat()
+        if(et_weight.text.isNotEmpty())
+            weight = et_weight.text.toString().toFloat()
+        if(et_muscle.text.isNotEmpty())
+            muscle = et_muscle.text.toString().toFloat()
+        if(et_fat.text.isNotEmpty())
+            fat = et_fat.text.toString().toFloat()
+        if(et_bmi.text.isNotEmpty())
+            bmi = et_bmi.text.toString().toFloat()
+        if(et_fat_percent.text.isNotEmpty())
+            fat_percent = et_fat_percent.text.toString().toFloat()
 
         try {
             // 이미지 파일을 Bitmap 파일로, Bitmap 파일을 byteArray로 변환시켜서 BLOB 형으로 DB에 저장
@@ -564,16 +576,16 @@ class BodyActivity : AppCompatActivity() {
             Log.d("image null", "이미지 저장 안함")
         }
 
-        if(byteArray == null) { // 저장하려는 사진이 없을 경우
+        if(byteArray!!.isEmpty()) { // 저장하려는 사진이 없을 경우
             sqldb.execSQL("UPDATE body_record SET " +
                     "height = $height, weight = $weight, muscle_mass = $muscle, fat_mass = $fat, " +
-                    "bmi = $bmi, fat_percent = $fat_percent, body_photo = null" +
-                    "where date = $date")
+                    "bmi = $bmi, fat_percent = $fat_percent, body_photo = null " +
+                    "WHERE date = $date")
         } else { // 저장하려는 사진이 있는 경우
             var udtQuery : String = "UPDATE body_record SET " +
                     "height = $height, weight = $weight, muscle_mass = $muscle, fat_mass = $fat, " +
                     "bmi = $bmi, fat_percent = $fat_percent, body_photo = ?" +
-                    "where date = $date"
+                    "WHERE date = $date"
             var stmt : SQLiteStatement = sqldb.compileStatement(udtQuery)
             stmt.bindBlob(1, byteArray)
             stmt.execute()
