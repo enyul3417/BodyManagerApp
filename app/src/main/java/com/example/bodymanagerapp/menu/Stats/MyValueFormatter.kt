@@ -5,7 +5,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.ViewPortHandler
 import java.text.DecimalFormat
 
-class MyValueFormatter : ValueFormatter {
+class MyValueFormatter : ValueFormatter() {
     private lateinit var mFormat : DecimalFormat
     fun MyValueFormatter() {
         mFormat = DecimalFormat("###,###,##0.00") // use one decimal

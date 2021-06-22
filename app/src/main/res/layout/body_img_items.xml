@@ -18,6 +18,7 @@
         android:layout_width="300dp"
         android:layout_height="400dp"
         android:layout_gravity="center"
-        android:layout_margin="10dp"/>
+        android:layout_margin="10dp"
+        android:scaleType="fitXY"/>
 
 </LinearLayout>

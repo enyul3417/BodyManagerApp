@@ -22,12 +22,15 @@ import com.example.bodymanagerapp.Preference.MyPreference
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.MyDBHelper
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
+import com.github.mikephil.charting.utils.ViewPortHandler
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -319,8 +322,11 @@ class BodyStatsFragment : Fragment() {
 
         if(cursor.moveToFirst()) {
             do {
-                data_list.add(cursor.getFloat(cursor.getColumnIndex("$str")))
-                date_list.add(cursor.getInt(cursor.getColumnIndex("date")))
+                var temp = cursor.getFloat(cursor.getColumnIndex("$str"))
+                if (temp != 0.0f) {
+                    data_list.add(temp)
+                    date_list.add(cursor.getInt(cursor.getColumnIndex("date")))
+                }
             } while (cursor.moveToNext())
         }
     }
@@ -371,33 +377,6 @@ class BodyStatsFragment : Fragment() {
 
     // 이미지를 제외한 값들의 그래프
     private fun lineChartGraph(view : View, data_list : ArrayList<Float>, date_list : ArrayList<Int>, str : String ) {
-
-
-        var entries : ArrayList<Entry> = ArrayList() // 그래프에서 표현하려는 데이터 리스트
-        for(i in 0 until data_list.size) {
-            entries.add(Entry(data_list[i], i))
-        }
-
-        val xAxis : XAxis = lineChart.xAxis // x축 가져오기
-        xAxis.apply {
-            position = XAxis.XAxisPosition.BOTTOM // x축 데이터의 위치를 아래로
-            textSize = 10f // 텍스트 크기 지정
-            setDrawGridLines(false) // 배경 그리드 라인
-            //xAxis.setAxisMaxValue(end_date.toFloat())
-            //xAxis.setAxisMinValue(start_date.toFloat())
-        }
-
-        lineChart.apply { // 라인차트 세팅
-            axisRight.isEnabled = false // y축의 오른쪽 데이터 비활성화
-            axisLeft.textColor = Color.BLACK // y축 왼쪽 데이터 글자 색
-            setBackgroundColor(Color.WHITE) // 배경 색상
-            setDescription("날짜") // description 글자
-            setDescriptionTextSize(12f) // description 글자 크기
-        }
-
-        var depenses : LineDataSet = LineDataSet(entries, "$str")
-        depenses.axisDependency = YAxis.AxisDependency.LEFT
-
         var dates : ArrayList<String> = ArrayList()
         for(i in 0 until date_list.size) {
             val year = date_list[i] / 10000
@@ -406,9 +385,41 @@ class BodyStatsFragment : Fragment() {
             dates.add("${year}년 ${month}월 ${date}일")
         }
 
+        var entries : ArrayList<Entry> = ArrayList() // 그래프에서 표현하려는 데이터 리스트
+        for(i in 0 until data_list.size) {
+            entries.add(Entry(date_list[i].toFloat(), data_list[i]))
+        }
+
+        val xAxis : XAxis = lineChart.xAxis // x축 가져오기
+        xAxis.apply {
+            position = XAxis.XAxisPosition.BOTTOM // x축 데이터의 위치를 아래로
+            textSize = 10f // 텍스트 크기 지정
+            setDrawGridLines(false) // 배경 그리드 라인
+            valueFormatter = DateFormatter()
+            labelCount = 3
+
+        }
+
+        val yAxis : YAxis = lineChart.axisLeft
+        yAxis.labelCount = 5
+
+        lineChart.apply { // 라인차트 세팅
+            axisRight.isEnabled = false // y축의 오른쪽 데이터 비활성화
+            axisLeft.textColor = Color.BLACK // y축 왼쪽 데이터 글자 색
+            setBackgroundColor(Color.WHITE) // 배경 색상
+            description.text = "날짜" // description 글자
+            //setDescriptionTextSize(12f) // description 글자 크기
+        }
+
+
+        var depenses : LineDataSet = LineDataSet(entries, "$str")
+        depenses.axisDependency = YAxis.AxisDependency.LEFT
+
+
+
         var data_sets : ArrayList<ILineDataSet> = ArrayList()
         data_sets.add(depenses)
-        var data : LineData = LineData(dates, data_sets)
+        var data : LineData = LineData(data_sets)
         depenses.color = Color.BLACK
         depenses.valueTextSize = 10f
         //depenses.valueFormatter = MyValueFormatter()
@@ -416,6 +427,21 @@ class BodyStatsFragment : Fragment() {
 
         lineChart.data = data
         lineChart.invalidate()
+    }
+
+    inner class DateFormatter : ValueFormatter() {
+        override fun getFormattedValue(value: Float): String {
+            val year = value.toInt() / 10000
+            val month = (value.toInt() % 10000) / 100
+            val day = (value.toInt() % 10000) % 100
+            return "${year}/${month}/${day}"
+        }
+        /*override fun getFormattedValue(value: Float, entry: Entry?, dataSetIndex: Int, viewPortHandler: ViewPortHandler?): String {
+            val year = value.toInt() / 10000
+            val month = (value.toInt() % 10000) / 100
+            val day = (value.toInt() % 10000) % 100
+            return "${year}/${month}/${day}"
+        }*/
     }
 
     // 저장된 이미지 불러오기

@@ -63,11 +63,12 @@
 
     <ImageView
         android:id="@+id/image_diet"
-        android:layout_width="300dp"
+        android:layout_width="350dp"
         android:layout_height="300dp"
         android:src="@drawable/ic_baseline_image_24"
         android:layout_gravity="center"
-        android:layout_margin="15dp"/>
+        android:layout_margin="15dp"
+        android:scaleType="fitXY"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

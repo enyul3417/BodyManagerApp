@@ -14,13 +14,15 @@ import android.widget.*
 import com.example.bodymanagerapp.R
 import com.example.bodymanagerapp.MyDBHelper
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.AxisBase
+import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
-import com.github.mikephil.charting.formatter.YAxisValueFormatter
+/*import com.github.mikephil.charting.formatter.YAxisValueFormatter*/
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.mikephil.charting.utils.ViewPortHandler
 import java.text.SimpleDateFormat
@@ -393,7 +395,7 @@ class ExerciseStatsFragment : Fragment() {
 
         var entries : ArrayList<Entry> = ArrayList() // 그래프에서 표현하려는 데이터 리스트
         for(i in 0 until dataList.size) {
-            entries.add(Entry(dataList[i], i))
+            entries.add(Entry(exerciseData[i].date.toFloat(), dataList[i]))
         }
 
         val xAxis : XAxis = lineChart.xAxis // x축 가져오기
@@ -401,7 +403,9 @@ class ExerciseStatsFragment : Fragment() {
             position = XAxis.XAxisPosition.BOTTOM // x축 데이터의 위치를 아래로
             textSize = 10f // 텍스트 크기 지정
             setDrawGridLines(false) // 배경 그리드 라인
+            valueFormatter = DateFormatter()
         }
+        xAxis.labelCount = 3
 
         lineChart.apply { // 라인차트 세팅
             axisRight.isEnabled = false // y축의 오른쪽 데이터 비활성화
@@ -412,8 +416,8 @@ class ExerciseStatsFragment : Fragment() {
                 axisLeft.valueFormatter = null
             }
             setBackgroundColor(Color.WHITE) // 배경 색상
-            setDescription("날짜") // description 글자
-            setDescriptionTextSize(12f) // description 글자 크기
+            description.text = "날짜" // description 글자
+            //setDescriptionTextSize(12f) // description 글자 크기
         }
 
         var depenses : LineDataSet = LineDataSet(entries, "$str")
@@ -430,7 +434,7 @@ class ExerciseStatsFragment : Fragment() {
 
         var data_sets : ArrayList<ILineDataSet> = ArrayList()
         data_sets.add(depenses)
-        var data : LineData = LineData(dates, data_sets)
+        var data : LineData = LineData(data_sets)
         depenses.color = Color.BLACK
         depenses.valueTextSize = 10f
         if(dataList == timeList) { // 시간이면 시간 형태에 맞춰서 표기
@@ -444,7 +448,7 @@ class ExerciseStatsFragment : Fragment() {
         lineChart.invalidate()
     }
 
-    inner class TimeFormatter : ValueFormatter {
+    inner class TimeFormatter : ValueFormatter() {
         override fun getFormattedValue(value: Float, entry: Entry?, dataSetIndex: Int, viewPortHandler: ViewPortHandler?): String {
             val hour = value.toInt() / 3600
             val min = (value.toInt() % 3600) / 60
@@ -453,14 +457,22 @@ class ExerciseStatsFragment : Fragment() {
         }
     }
 
-    inner class YAxisFormatter : YAxisValueFormatter {
-        override fun getFormattedValue(value: Float, yAxis: YAxis?): String {
+    inner class YAxisFormatter : ValueFormatter() {
+        override fun getFormattedValue(value: Float, axis: AxisBase?): String? {
             val hour = value.toInt() / 3600
             val min = (value.toInt() % 3600) / 60
             val sec = (value.toInt() % 3600) % 60
             return "$hour:$min:$sec"
         }
+    }
 
+    inner class DateFormatter : ValueFormatter() {
+        override fun getFormattedValue(value: Float): String {
+            val year = value.toInt() / 10000
+            val month = (value.toInt() % 10000) / 100
+            val day = (value.toInt() % 10000) % 100
+            return "${year}/${month}/${day}"
+        }
     }
 
     private fun loadExerciseData() : ArrayList<ExerciseStatsData> {
@@ -598,7 +610,7 @@ class ExerciseStatsFragment : Fragment() {
                         " 조금 더 해보시는 것은 어떨까요?"
             }
             minute < 60 -> {
-                "\n 사용자님은 충분한 시간을 운동에 쓰고 계시네요. 건강한 습관을 응원합니다!"
+                "\n 사용자님은 1회당 적절한 시간을 운동에 쓰고 계시네요. 건강한 습관을 응원합니다!"
             }
             else -> {
                 "\n 사용자님께서는 운동 시간이 긴편에 속해요. 혹시 운동 후 피로나 통증이 오래 지속된다면 " +

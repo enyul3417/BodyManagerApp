@@ -137,7 +137,11 @@ class DietActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, intent)
         when(requestCode) {
             REQUEST_ADD_DIET_CODE -> {
-                date = intent?.getIntExtra("DATE", 0)!!
+                date = try {
+                    intent?.getIntExtra("DATE", 0)!!
+                } catch (re : RuntimeException) {
+                    date
+                }
                 data.clear()
                 data.addAll(loadDiet())
                 rvAdapter = DietRecyclerViewAdapter(data, this, rv) /*{
@@ -149,7 +153,6 @@ class DietActivity : AppCompatActivity() {
                 rv.adapter = rvAdapter
                 rv.layoutManager = LinearLayoutManager(this)
                 rv.visibility = View.VISIBLE
-
             }
         }
     }
